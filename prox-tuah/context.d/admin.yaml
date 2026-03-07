@@ -1,0 +1,3 @@
+admin:
+  description: "Enter ADMIN mode"
+  can_get: false
