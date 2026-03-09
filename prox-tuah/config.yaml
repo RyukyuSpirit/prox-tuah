@@ -1,0 +1,7 @@
+server: <server_IP> # Ex. 192.168.1.2
+user: <username> # Ex. user01
+realm: <auth_realm> # Ex. pam
+password: <password> # Ex. myPass123!
+spice_client_path: '<path>' # 'C:\program Files\VirtViewer v11.0-256\bin\remote-viewer.exe'
+custom_hosts:
+  <fqdn>: <IP> # Ex. proxmox01.ex.net: 192.168.1.2
