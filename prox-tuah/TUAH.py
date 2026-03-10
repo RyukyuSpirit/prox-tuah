@@ -2,8 +2,7 @@ import os
 import sys
 import colorama
 import re
-from prompt_toolkit import Application,prompt,PromptSession
-from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit import prompt,PromptSession
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.key_binding import KeyBindings
