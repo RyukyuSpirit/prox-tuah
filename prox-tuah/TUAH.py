@@ -590,6 +590,9 @@ class TUAH():
 
                 # print table
                 print(indent(tabulate(values_list, headers=header_list), "  "))
+            elif isinstance(output, dict):
+                # print table
+                print(indent(tabulate(output.items(), headers=["Key", "Value"]), "  "))
         elif format == "pretty":
             pprint(output)
         else:
