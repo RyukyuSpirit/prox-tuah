@@ -42,6 +42,9 @@ class ProxmoxHandler(ProxmoxAPI):
     def get_vms_name_list(self):
         return [{vm['vmid']: vm['name']} for vm in self.get_vms_list()]
 
+    def get_vms_name_dict(self, *args, **kwargs):
+        return [{'vmid': vm['vmid'], 'name': vm['name']} for vm in self.get_vms_list()]
+
     def get_templates_list(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 1]
 

@@ -7,6 +7,7 @@ user:
       actions:
         list:
           description: "List VMs"
+          run_func: get_vms_name_dict
       context:
         vmid:
           is_variable: True
