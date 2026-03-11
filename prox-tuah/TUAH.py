@@ -2,11 +2,14 @@ import os
 import sys
 import colorama
 import re
+import fnmatch
 from prompt_toolkit import prompt,PromptSession
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.key_binding import KeyBindings
 from pprint import pprint
+from tabulate import tabulate
+from textwrap import indent
 
 
 class TUAH():
@@ -18,7 +21,6 @@ class TUAH():
         self.handler = handler # handler object
         self.full_context = context # dictionary of application context(s)
         self.context = context # context at current level
-#        self.help = {} # dictionary of options and their description at the current level 
         self.global_help = {
             "exit": "Go back one context",
             "func": "Run handler function directly",
@@ -26,11 +28,11 @@ class TUAH():
             "main": "Return to main context",
             "rawdog": "Run raw Proxmox API call",
         }
-        self.level_list = [] # list of keys to get to context 
+        self.level_list = [] # list of keys to get to context
         self.prompt = "main# " # displayed prompt text
         self.welcome = "Welcome to prox-tuah. Enter commands or '?' for help.\n"
         self.typed_text = "" # last text string typed into the prompt (even if 'enter' not pressed)
-        self.entry = "" # last text string entered into the prompt 
+        self.entry = "" # last text string entered into the prompt
         self.session = PromptSession() # The prompt session
         self.handle_help = False # should help be displayed before next prompt
         self.handle_tab = False # should tab press be handled before next prompt
@@ -60,10 +62,31 @@ class TUAH():
 
     def save_text_and_exit(self, event):
         """
-        Save typed text from current prompt and exit prompt 
+        Save typed text from current prompt and exit prompt
         """
         self.typed_text = get_app().current_buffer.text
         event.app.exit(exception=KeyboardInterrupt)
+
+    def print_pipe_help(self):
+
+        pipe_help = {
+            "fields": "Return only values of comma-separated fields, if applicable (Ex. name,description)",
+            "filter": "Return only matches of filter (Ex. user0*)",
+            "format": "Return format format (Options: raw, table, or pretty)",
+        }
+        max_length = 1
+
+        # get max length based on longest option for formatting.
+        for h in pipe_help.keys():
+            if len(h) > max_length:
+                max_length = len(h)
+
+        print("\n  Pipe Options (<param>=<value>)")
+        print("  ---------------")
+        for k,v in pipe_help.items():
+            print(f"    {k.ljust(max_length + 5)}{v}")
+
+        print("")
 
     def print_help(self, context, inc_global=True):
         max_length = 1
@@ -76,7 +99,7 @@ class TUAH():
                 for c in help[t].keys():
                     if len(c) > max_length:
                         max_length = len(c)
-        
+
         if help.get('actions'):
             print("\n  Actions")
             print("  ---------------")
@@ -97,7 +120,7 @@ class TUAH():
             print("  ---------------")
             for k,v in help.get('params').items():
                 print(f"    {k.ljust(max_length + 5)}{v}")
-        
+
         if inc_global:
             print("\n  Global Commands")
             print("  ---------------")
@@ -114,12 +137,12 @@ class TUAH():
         for k,v in context.get('context',{}).items():
             # add dict to matches of match and it's description
             if text in k:
-                matches.append({k: {'description': v.get('description')}}) 
+                matches.append({k: {'description': v.get('description')}})
 
         for k,v in context.get('actions',{}).items():
             # add dict to matches of match and it's description
             if text in k:
-                matches.append({k: {'description': v.get('description')}}) 
+                matches.append({k: {'description': v.get('description')}})
 
         return matches
 
@@ -127,7 +150,6 @@ class TUAH():
         """
         Returns list of required parameters from given action_context
         """
-        print(f"action_context is {action_context}")
         req_params = []
 
         params = action_context.get("params", {})
@@ -135,9 +157,9 @@ class TUAH():
         for k,v in params.items():
             if v.get('required'):
                 req_params.append(k)
-        
+
         return req_params
-               
+
 
     def complete_cmd(self, commands, run=False):
         """
@@ -147,83 +169,114 @@ class TUAH():
         is_ambiguous = False
         is_same = False
         has_params = False
-        action_context = None 
+        is_piped = False
+        action_context = None
         do_print_help = False
-        completed_commands = [] 
-        
+        out_modifiers = {} # output modifiers
+        completed_commands = []
+
         running_context = self.context
         running_level_list = self.level_list.copy()
         running_params_list = []
 
-        # check if typed levels are in context and non-ambiguous
+        # process each text in command line
         for text in commands:
-            do_print_help = False
-            # get matches in running_context
-            matches = self.get_matches(text, running_context)
-
-            # if text is a kwarg parameter, add to running_params
-            if "=" in text:
-                k_name = text.split("=")[0]
-                if running_context.get("params", {}).get(k_name):
-                    has_params = True
-                    running_params_list.append(text)
-                    completed_commands.append(text)
-                    self.typed_text = " ".join(completed_commands)
-
-            # if unambiguous match found, proceed to checking next level
-            elif len(matches) == 1: 
-                completed_word = next(iter(matches[0]))
-                completed_commands.append(completed_word)
-                if running_context.get('context', {}).get(completed_word):
-                    running_context = running_context['context'][completed_word]
-                elif running_context.get('actions', {}).get(completed_word):
-                    running_context = running_context['actions'][completed_word]
-                    is_action = True
-                    action_context = running_context.copy() 
-                running_level_list.append(completed_word)
-                self.typed_text = " ".join(completed_commands)
-
-            # if ambiguous match found, print matches and descriptions
-            elif len(matches) > 1:
-                max_length = 1
-
-                print(f'\n  Ambiguous matches found for "{text}"')
-                print("  ---------------")
-                for m in matches:
-                    for k in m.keys():
-                        if len(k) > max_length:
-                            max_length = len(k)
-                for m in matches:
-                    for k,v in m.items():
-                        print(f"    {k.ljust(max_length + 5)}{v['description']}")
-                print("")
-                run = False
-                completed_commands.append(text)
-                self.typed_text = " ".join(completed_commands)
-                is_ambiguous = True
-                break
-
-            else:
-                # if text is variable then accept as var and print help
-                var_name = ""
-                for k,v in running_context.get('context', {}).items():
-                    if v.get('is_variable', {}):
-                        var_name = k 
-                if var_name: 
-                    running_context = running_context['context'][k]
-                    running_level_list.append(text)
-                    completed_commands.append(text)
-                    self.typed_text = " ".join(completed_commands)
-                    do_print_help = True
-                
+            # if passed pipe, collect output modifiers
+            if is_piped:
+                if "=" in text:
+                    k_name = text.split("=")[0]
+                    if k_name in ["field","filter","format"]:
+                        out_modifiers.update({k_name: text.split("=")[1]})
+                        completed_commands.append(text)
+                        self.typed_text = " ".join(completed_commands)
+                    else:
+                        print_error(f"No output modifier with name: {k_name}")
+                        return
                 else:
-                    # if no matches found, break
-                    if not action_context:
-                        print(f'  No commands found starting with "{text}":')
+                    print_error(f"Invalid output modifier '{text}', must be keyword argument (<param>=<value>)")
+                    return
+
+            # otherwise continue processing command text
+            else:
+                do_print_help = False
+
+                # get matches in running_context
+                matches = self.get_matches(text, running_context)
+
+                # if text is a pipe, begin collecting output modifiers
+                if text == "|":
+                    # only continue w/ output modifiers if typed command is an action
+                    if is_action:
+                        is_piped = True
+                        completed_commands.append(text)
+                        self.typed_text = " ".join(completed_commands)
+                    else:
+                        print_error(f"Output modifiers only work on actions")
+                        return
+
+                # if text is a kwarg parameter, add to running_params
+                elif "=" in text:
+                    k_name = text.split("=")[0]
+                    if running_context.get("params", {}).get(k_name):
+                        has_params = True
+                        running_params_list.append(text)
+                        completed_commands.append(text)
+                        self.typed_text = " ".join(completed_commands)
+
+                # if unambiguous match found, proceed to checking next level
+                elif len(matches) == 1:
+                    completed_word = next(iter(matches[0]))
+                    completed_commands.append(completed_word)
+                    if running_context.get('context', {}).get(completed_word):
+                        running_context = running_context['context'][completed_word]
+                    elif running_context.get('actions', {}).get(completed_word):
+                        running_context = running_context['actions'][completed_word]
+                        is_action = True
+                        action_context = running_context.copy()
+                    running_level_list.append(completed_word)
+                    self.typed_text = " ".join(completed_commands)
+
+                # if ambiguous match found, print matches and descriptions
+                elif len(matches) > 1:
+                    max_length = 1
+
+                    print(f'\n  Ambiguous matches found for "{text}"')
+                    print("  ---------------")
+                    for m in matches:
+                        for k in m.keys():
+                            if len(k) > max_length:
+                                max_length = len(k)
+                    for m in matches:
+                        for k,v in m.items():
+                            print(f"    {k.ljust(max_length + 5)}{v['description']}")
+                    print("")
                     run = False
                     completed_commands.append(text)
-                    self.typed_text = " ".join(completed_commands) 
+                    self.typed_text = " ".join(completed_commands)
+                    is_ambiguous = True
                     break
+
+                else:
+                    # if text is variable then accept as var and print help
+                    var_name = ""
+                    for k,v in running_context.get('context', {}).items():
+                        if v.get('is_variable', {}):
+                            var_name = k
+                    if var_name:
+                        running_context = running_context['context'][k]
+                        running_level_list.append(text)
+                        completed_commands.append(text)
+                        self.typed_text = " ".join(completed_commands)
+                        do_print_help = True
+
+                    else:
+                        # if no matches found, break
+                        if not action_context:
+                            print(f'  No commands found starting with "{text}":')
+                        run = False
+                        completed_commands.append(text)
+                        self.typed_text = " ".join(completed_commands)
+                        break
 
         # if run was specified execute action or switch contexts
         if run:
@@ -242,12 +295,12 @@ class TUAH():
                         for p in req_params:
                             if p not in typed_params:
                                 missing_req_params.append(p)
-                        
+
                         # notify of missing params and retain typed_text
                         if missing_req_params:
                             results = f"Missing required parameter(s): {' | '.join(missing_req_params)}"
                             completed_commands.append(text)
-                            self.typed_text = " ".join(completed_commands) 
+                            self.typed_text = " ".join(completed_commands)
                             self.retain_text = True
                         else:
                             results = self.handler_func(self.handler, run_func, running_level_list, params=running_params_list)
@@ -255,17 +308,28 @@ class TUAH():
                         results = self.handler_func(self.handler, run_func, running_level_list, params=running_params_list)
                     else:
                         results = self.handler_func(self.handler, run_func, running_level_list)
-                    self.handle_output(results)
+
+                    # output results
+                    if not out_modifiers:
+                        self.handle_output(results)
+                    else:
+                        self.handle_output(results, out_modifiers)
+
             # if not action, switch context
             else:
                 self.update_context(running_context, running_level_list)
 
-        # otherwise retain completed text 
+        # otherwise retain completed text
         else:
             self.retain_text = True
 
             # if command is unchanged or do_print_help, print help for running context
-            if commands == completed_commands or do_print_help: 
+            if commands == completed_commands or do_print_help:
+                # print pipe help if piped
+                if is_piped:
+                    self.print_pipe_help()
+
+                # print command help if not ambiguous
                 if not is_ambiguous:
                     self.print_help(running_context, inc_global=False)
 
@@ -296,7 +360,7 @@ class TUAH():
         """
 
         # update help
-        help = {} 
+        help = {}
         help['context'] = {}
         help['actions'] = {}
         help['params'] = {}
@@ -327,13 +391,13 @@ class TUAH():
 
         # update prompt
         if self.context == self.full_context:
-            self.prompt = "main# " 
+            self.prompt = "main# "
         else:
             self.prompt = f"{self.context.get('prompt', '/'.join(self.level_list))}# "
 
     def handle_events(self):
         """
-        Handle events (key-presses) if needed 
+        Handle events (key-presses) if needed
         """
         if self.handle_clear_screen:
             self.clear_screen()
@@ -347,13 +411,13 @@ class TUAH():
         elif self.handle_tab:
             self.tabbed()
             self.handle_tab = False
-    
+
     def start(self):
 
         self.clear_screen()
         self.go_to_main()
         self.run()
-    
+
     def run(self):
         while True:
             try:
@@ -372,13 +436,13 @@ class TUAH():
                 break
 
             self.handle_entry(self.entry)
-    
+
     def go_to_main(self):
         """
         Go to main (top) context
         """
         self.update_context(self.full_context, [])
-    
+
     def handler_func(self, handler, func_name, *args, **kwargs):
         """
         Runs func_name function on handler with args
@@ -392,22 +456,151 @@ class TUAH():
                 return f"Function not callable: {func_name}"
         except AttributeError:
             return f"Function not found on handler: '{func_name}'"
-    
+
     def print_error(self, msg, severity="ERROR"):
         """
         Wrapper to print an error message to the screen
         """
         print(f"  {severity}: {msg}")
-    
-    def handle_output(self, raw_output):
-        print(f"\n  {raw_output}\n")
+
+    def container_has_match(self, container, r_pattern):
+        """
+        Returns True if container's child contains a match
+        """
+        if isinstance(container, list):
+            # return True if list child contains match
+            for i in container:
+                # check for match in child(ren)
+                if isinstance(i, list) or isinstance(i, dict):
+                    if self.container_has_match(i, r_pattern):
+                        return True
+                elif isinstance(i, str):
+                    if re.search(r_pattern, i):
+                        return True
+                elif re.search(r_pattern, str(i)):
+                    return True
+
+        elif isinstance(container, dict):
+
+            # return True if dict child contains match
+            for k,v in container.items():
+                if re.search(r_pattern, k):
+                    return True
+                # check for match in child(ren)
+                elif isinstance(v, list) or isinstance(v, dict):
+                    if self.container_has_match(v, r_pattern):
+                        return True
+                elif isinstance(v, str):
+                    if re.search(r_pattern, v):
+                        return True
+                elif re.search(r_pattern, str(v)):
+                    return True
+
+        return False
+
+    def get_matching_container(self, container, r_pattern):
+        """
+        Returns dict/children items containining match
+        """
+        matching = []
+
+        if isinstance(container, list):
+
+            # add lists that contain match to matching list
+            for i in container:
+                # check for matches in child(ren)
+                if isinstance(i, list) or isinstance(i, dict):
+                    if self.container_has_match(i, r_pattern):
+                        matching.append(i)
+                elif isinstance(i, str):
+                    if re.search(r_pattern, i):
+                        matching.append(i)
+                else:
+                    if re.search(r_pattern, str(i)):
+                        matching.append(i)
+            return matching
+
+        elif isinstance(container, dict):
+            matching = {}
+
+            # add dicts that contain match to matching list
+            for k,v in container.items():
+                if re.search(r_pattern, k):
+                    matches = True
+                # check for matches in child(ren)
+                elif isinstance(v, list) or isinstance(v, dict):
+                    if self.container_has_match(v, r_pattern):
+                        matching.update({k:v})
+                elif isinstance(v, str):
+                    if re.search(r_pattern, v):
+                        matching.update({k:v})
+                else:
+                    if re.search(r_pattern, str(v)):
+                        matching.update({k:v})
+
+        return matching
+
+
+    def filter_output(self, raw_output, m_pattern):
+        """
+        Returns filtered output based on given match pattern (m_pattern)
+        """
+
+        # convert pattern string into regex pattern
+        regex_pattern = fnmatch.translate(m_pattern)
+        # filter depending on type
+        if isinstance(raw_output, str):
+            print_error("Specifying 'filter' is not supported for 'str' return types")
+            return raw_output
+        elif isinstance(raw_output, list) or isinstance(raw_output, dict):
+            return self.get_matching_container(raw_output, regex_pattern)
+        else:
+            self.print_error(f"Unhandled return type: {raw_output}")
+
+
+    def handle_output(self, raw_output, out_modifiers={}):
+        """
+        Outputs information from raw_output based on any output modifiers provided in the out_modifiers dict
+        """
+        fields = out_modifiers.get("fields", "all")
+        filter = out_modifiers.get("filter", None)
+        format = out_modifiers.get("format", "raw")
+
+        # reduce output to items matching filter
+        if filter:
+            output = self.filter_output(raw_output, filter)
+        else:
+            output = raw_output
+
+        # reduce output to requested fields, if this is a dict
+        if fields != "all":
+            if isinstance(output, dict):
+                output = get_fields(output, fields)
+            else:
+                print_error(f"Specifying fields is only supported by 'dictionary' return types")
+
+        # finalize output based on format
+        if format == "raw":
+            print(f"\n  {output}\n")
+        elif format == "table":
+            if isinstance(output, list):
+                # extract headers/values for table
+                header_list = output[0].keys()
+                values_list = [item.values() for item in output]
+
+                # print table
+                print(indent(tabulate(values_list, headers=header_list), "  "))
+        elif format == "pretty":
+            pprint(output)
+        else:
+            print_error(f"Unknown format type: {format}")
 
     def handle_entry(self, entry):
         """
-        Perform context navigation or function based on entry 
+        Perform context navigation or function based on entry
         """
         entry_list = entry.split()
- 
+
         # do nothing if entry is empty
         if not entry_list:
             return
@@ -418,10 +611,10 @@ class TUAH():
             if entry in ["logout", "quit"]:
                 print("  Terminating session...")
                 sys.exit()
-                
+
             elif entry in ["main", "top"]:
                 self.go_to_main()
-    
+
             elif entry in ["exit", "back"]:
                 # return to main menu if 1 level deep
                 if len(self.level_list) == 1:
@@ -430,7 +623,7 @@ class TUAH():
                 elif not self.level_list:
                     print("  Already at the main menu")
                     return
-                # return one level 
+                # return one level
                 else:
                     self.level_list.pop()
                     back_context = self.full_context
@@ -446,17 +639,17 @@ class TUAH():
                             var_name = ""
                             for k,v in back_context.get('context', {}).items():
                                 if v.get('is_variable', {}):
-                                    var_name = k 
-                            
+                                    var_name = k
+
                             if var_name:
                                 back_context = back_context.get('context')[var_name]
-                            
+
                             # print error if not found as static/var child
                             else:
                                 self.print_error(f"Child '{level}' not found in context: {back_context}")
 
                     self.update_context(back_context, self.level_list)
-    
+
             # if entry is a child, switch contexts
             elif entry in self.context.get('context', {}).keys():
                 self.update_context(self.context['context'][entry], self.level_list + [entry.strip()])
@@ -464,34 +657,31 @@ class TUAH():
             # check if entry is an action
             elif entry in self.context.get('actions', {}).keys():
                 run_func = self.context['actions'][entry].get('run_func')
-                # if has a run_func assigned, run have handler run it
+                # if has a run_func assigned, have handler run it
                 if run_func:
                     results = self.handler_func(self.handler, run_func, self.level_list + [entry])
                     self.handle_output(results)
-            
+
             else:
                 # if entry is variable then enter its context
                 var_name = ""
                 for k,v in self.context.get('context', {}).items():
                     if v.get('is_variable', {}):
-                        var_name = k 
+                        var_name = k
 
-                if var_name: 
+                if var_name:
                     self.update_context(self.context['context'][var_name], self.level_list + [entry])
 
                 # unhandled entries
                 else:
                     self.print_error(f"unhandled entry: {entry}")
-            
+
         # handle multi-word entry
         else:
             if entry_list[0] == "rawdog":
                 results = self.handler.rawdog(entry_list[1])
                 print(results)
 
-#            elif entry_list[0] == "func":
-#                results = self.handler_func(self.handler, entry_list[1])
-#                self.handle_output(results)
             elif entry_list[0] == "func":
                 # break func arguments into components
                 full_string = "".join(entry_list[1:]).strip()
@@ -500,7 +690,7 @@ class TUAH():
                 if not re.search(r'\w+\(*\)$', full_string):
                     self.print_error(f"Entered text '{full_string}' not formatted as function: <name>(<args>)")
                     return
-                
+
                 # get func name and arg(s)
                 func_name = full_string.split("(")[0]
                 open_index = full_string.find("(")
@@ -531,10 +721,10 @@ class TUAH():
             # moves cursor to bottom-left
             rows, columns = os.get_terminal_size()
             sys.stdout.write(f'\033[{rows};1H')
-            
+
         except OSError:
-            sys.stdout.write('\n' * 100) 
-        
+            sys.stdout.write('\n' * 100)
+
         sys.stdout.flush()
 
     def quit(self, argline):
