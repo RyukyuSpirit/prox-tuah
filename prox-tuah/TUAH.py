@@ -185,15 +185,15 @@ class TUAH():
             if is_piped:
                 if "=" in text:
                     k_name = text.split("=")[0]
-                    if k_name in ["field","filter","format"]:
+                    if k_name in ["fields","filter","format"]:
                         out_modifiers.update({k_name: text.split("=")[1]})
                         completed_commands.append(text)
                         self.typed_text = " ".join(completed_commands)
                     else:
-                        print_error(f"No output modifier with name: {k_name}")
+                        self.print_error(f"No output modifier with name: {k_name}")
                         return
                 else:
-                    print_error(f"Invalid output modifier '{text}', must be keyword argument (<param>=<value>)")
+                    self.print_error(f"Invalid output modifier '{text}', must be keyword argument (<param>=<value>)")
                     return
 
             # otherwise continue processing command text
@@ -557,6 +557,33 @@ class TUAH():
         else:
             self.print_error(f"Unhandled return type: {raw_output}")
 
+    def get_fields(self, output, fields_str):
+        """
+        Returns only specific fields from dict or list of dicts
+        """
+        fields = fields_str.split(',')
+
+        if isinstance(output, dict):
+            f_dict = {}
+            for k,v in output.items():
+                if k in fields:
+                    f_dict.update({k:v})
+            return f_dict
+        elif isinstance(output, list):
+            f_list = []
+            for i in output:
+                if isinstance(i, dict):
+                    f_dict = {}
+                    for k,v in i.items():
+                        if k in fields:
+                            f_dict.update({k:v})
+                    if f_dict:
+                        f_list.append(f_dict)
+                else:
+                    self.print_error(f"Targeting 'field(s)' not supported by this return type: {output}")
+            return f_list
+        return
+
 
     def handle_output(self, raw_output, out_modifiers={}):
         """
@@ -572,10 +599,10 @@ class TUAH():
         else:
             output = raw_output
 
-        # reduce output to requested fields, if this is a dict
+        # reduce output to requested fields, if this is a list or dict
         if fields != "all":
-            if isinstance(output, dict):
-                output = get_fields(output, fields)
+            if isinstance(output, list) or isinstance(output, dict):
+                output = self.get_fields(output, fields)
             else:
                 print_error(f"Specifying fields is only supported by 'dictionary' return types")
 
@@ -596,7 +623,7 @@ class TUAH():
         elif format == "pretty":
             pprint(output)
         else:
-            print_error(f"Unknown format type: {format}")
+            self.print_error(f"Unknown format type: {format}")
 
     def handle_entry(self, entry):
         """
