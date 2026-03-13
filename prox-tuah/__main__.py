@@ -4,7 +4,6 @@ import glob
 import os
 from TUAH import TUAH
 from proxmoxer import ProxmoxAPI
-from VMContext import VMMainContext
 from ProxmoxHandler import ProxmoxHandler
 from yamlinclude import YamlIncludeConstructor
 
