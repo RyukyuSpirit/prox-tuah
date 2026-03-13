@@ -114,9 +114,9 @@ class TUAH():
 
         if help.get('params'):
             if inc_global:
-                print("\n  Context Parameters (<param>=<value>)")
+                print("\n  Context Parameters)")
             else:
-                print("\n  Parameters (<param>=<value>)")
+                print("\n  Parameters")
             print("  ---------------")
             for k,v in help.get('params').items():
                 print(f"    {k.ljust(max_length + 5)}{v}")
@@ -156,7 +156,10 @@ class TUAH():
 
         for k,v in params.items():
             if v.get('required'):
-                req_params.append(k)
+                if v.get('is_variable'):
+                    req_params.append(f"{k}_VAR")
+                else:
+                    req_params.append(k)
 
         return req_params
 
@@ -257,17 +260,31 @@ class TUAH():
                     break
 
                 else:
-                    # if text is variable then accept as var and print help
-                    var_name = ""
+                    # check if this is a variable context
+                    c_var_name = ""
                     for k,v in running_context.get('context', {}).items():
                         if v.get('is_variable', {}):
-                            var_name = k
-                    if var_name:
+                            c_var_name = k
+                    # check if this is a variable param
+                    p_var_name = ""
+                    for k,v in running_context.get('params', {}).items():
+                        if v.get('is_variable', {}):
+                            p_var_name = k
+
+                    # accept variable context and print help
+                    if c_var_name:
                         running_context = running_context['context'][k]
                         running_level_list.append(text)
                         completed_commands.append(text)
                         self.typed_text = " ".join(completed_commands)
                         do_print_help = True
+
+                    # accept variable param
+                    elif p_var_name:
+                        has_params = True
+                        running_params_list.append(text)
+                        completed_commands.append(text)
+                        self.typed_text = " ".join(completed_commands)
 
                     else:
                         # if no matches found, break
@@ -294,7 +311,9 @@ class TUAH():
                         # get missing required params
                         for p in req_params:
                             if p not in typed_params:
-                                missing_req_params.append(p)
+                                # add to missing_req_params if not a variable param
+                                if "_VAR" not in p:
+                                    missing_req_params.append(p)
 
                         # notify of missing params and retain typed_text
                         if missing_req_params:
@@ -381,7 +400,10 @@ class TUAH():
                 elif k == "params":
                     for ck,cv in v.items():
                         if cv.get("description"):
-                            help["params"].update({ck: cv.get("description")})
+                            if cv.get("is_variable"):
+                                help["params"].update({f'<{ck}>': cv.get("description")})
+                            else:
+                                help["params"].update({f'{ck}=': cv.get("description")})
 
         return help
 
@@ -565,20 +587,30 @@ class TUAH():
 
         if isinstance(output, dict):
             f_dict = {}
+
+            # add requested fields in order received
+            for f in fields:
+                f_dict[f] = "N/A"
+
             for k,v in output.items():
                 if k in fields:
-                    f_dict.update({k:v})
+                    f_dict[k] = v
+#                    f_dict.update({k:v})
             return f_dict
         elif isinstance(output, list):
             f_list = []
             for i in output:
                 if isinstance(i, dict):
                     f_dict = {}
+
+                    # add requested fileds in order received
+                    for f in fields:
+                        f_dict[f] = "N/A"
+
                     for k,v in i.items():
                         if k in fields:
-                            f_dict.update({k:v})
-                    if f_dict:
-                        f_list.append(f_dict)
+                            f_dict[k] = v
+                    f_list.append(f_dict)
                 else:
                     self.print_error(f"Targeting 'field(s)' not supported by this return type: {output}")
             return f_list
@@ -616,10 +648,11 @@ class TUAH():
                 values_list = [item.values() for item in output]
 
                 # print table
-                print(indent(tabulate(values_list, headers=header_list), "  "))
+#                print(indent(tabulate(values_list, headers=header_list), "  "))
+                print(indent(tabulate(output, headers="keys"), "  "))
             elif isinstance(output, dict):
                 # print table
-                print(indent(tabulate(output.items(), headers=["Key", "Value"]), "  "))
+                print(indent(tabulate(output.items(), headers=["Field", "Value"]), "  "))
         elif format == "pretty":
             pprint(output)
         else:
@@ -708,37 +741,7 @@ class TUAH():
 
         # handle multi-word entry
         else:
-            if entry_list[0] == "rawdog":
-                results = self.handler.rawdog(entry_list[1])
-                print(results)
-
-            elif entry_list[0] == "func":
-                # break func arguments into components
-                full_string = "".join(entry_list[1:]).strip()
-
-                # confirm function syntax
-                if not re.search(r'\w+\(*\)$', full_string):
-                    self.print_error(f"Entered text '{full_string}' not formatted as function: <name>(<args>)")
-                    return
-
-                # get func name and arg(s)
-                func_name = full_string.split("(")[0]
-                open_index = full_string.find("(")
-                arg_string = full_string[open_index + 1:-1]
-                arg_list = []
-                print(f"arg_string is {arg_string}")
-                if arg_string:
-                    arg_list = arg_string.split(",")
-                print(f"arg list is {arg_list}")
-
-                if arg_list:
-                    results = self.handler.run_func(func_name, *arg_list)
-                else:
-                    results = self.handler.run_func(func_name)
-                self.handle_output(results)
-
-            else:
-                self.complete_cmd(self.entry.split(), run=True)
+            self.complete_cmd(self.entry.split(), run=True)
 
     def clear_screen(self):
         """

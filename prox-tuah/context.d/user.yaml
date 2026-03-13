@@ -5,9 +5,13 @@ user:
     vm:
       description: "VM context"
       actions:
-        list:
-          description: "List VMs"
-          run_func: get_vms_name_dict
+        show:
+          description: "Show all VMs"
+          run_func: show_vms
+          params:
+            scope:
+              is_variable: True
+              description: "Amount of info to return per VM (Options: brief|detail|config)"
       context:
         vmid:
           is_variable: True
@@ -36,6 +40,3 @@ user:
                   description: "Number of CPU sockets"
             show:
               description: "Show VM configuration"
-
-
-              

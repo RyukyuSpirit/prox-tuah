@@ -1,3 +1,43 @@
 admin:
   description: "Enter ADMIN mode"
   can_get: false
+  context:
+    vm:
+      description: "VM context"
+      actions:
+        show:
+          description: "Show all VMs"
+          run_func: show_vms
+          params:
+            scope:
+              is_variable: True
+              description: "Amount of info to return per VM (Options: brief|detail|config)"
+      context:
+        vmid:
+          is_variable: True
+          description: "Enter specific VM's context"
+          actions:
+            clone:
+              description: "Clone VM"
+              run_func: clone_vm
+              params:
+                newid:
+                  description: "VMID for the clone"
+                  required: True
+                name:
+                  description: "Name for the clone"
+                pool:
+                  description: "Destination pool for the clone"
+            delete:
+              description: "Delete VM"
+            edit:
+              description: "Edit VM configuration"
+              params:
+                cores:
+                  description: "Number of cores per socket"
+                memory:
+                  description: "Amount of memory in MB"
+                sockets:
+                  description: "Number of CPU sockets"
+            show:
+              description: "Show VM configuration"
