@@ -1,4 +1,5 @@
 import yaml
+import re
 from proxmoxer import ProxmoxAPI
 from pprint import pprint
 
@@ -27,23 +28,24 @@ class ProxmoxHandler(ProxmoxAPI):
             print(f"Error parsing YAML file: {e}")
             return None
 
-    def get_vms_list(self):
+
+    def get_vms(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 0]
 
     def get_vms_dict(self):
         vms = {}
-        for vm in self.get_vms_list():
+        for vm in self.get_vms():
             vms.update({str(vm['vmid']): vm})
         return vms
 
     def get_vm(self, vmid):
         return self.get_vms_dict().get(vmid) 
 
-    def get_vms_name_list(self):
-        return [{vm['vmid']: vm['name']} for vm in self.get_vms_list()]
+    def get_vms_name_list(self, *args, **kwargs):
+        return [{vm['vmid']: vm['name']} for vm in self.get_vms()]
 
-    def get_vms_name_dict(self, *args, **kwargs):
-        return [{'vmid': vm['vmid'], 'name': vm['name']} for vm in self.get_vms_list()]
+    def get_vms_brief(self):
+        return [{'vmid': vm['vmid'], 'name': vm['name'], 'status': vm['status']} for vm in self.get_vms()]
 
     def get_templates_list(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 1]
@@ -74,54 +76,6 @@ class ProxmoxHandler(ProxmoxAPI):
             results = f"Error: Failed to run {call}: {e}"
         return results
 
-    def rawdog(self, call):
-        """
-        Accepts fully formatted function call and attempts to run it
-        """
-        try:
-            results = eval(call)
-        except Exception as e:
-            results = f"Error: Failed to run {call}: {e}"
-        return results
-
-
-    def print_func(self, func_name, *args):
-        try:
-            func = getattr(self, func_name)
-        except:
-            print(f"Error: Function {func_name} not found")
-            return
-        if args:
-            print(func(*args))
-        else:
-            print(func())
-
-    def run_func(self, func_name, *args, **kwargs):
-        # check if this is a ProxmoxHandler function
-        if func_name in ProxmoxHandler.__dict__:
-            if callable(ProxmoxHandler.__dict__[func_name]):
-                func = getattr(self, func_name)
-                
-                try:
-                    results = func(*args, **kwargs)
-                except Exception as e:
-                    results = f"Error: {e}"
-        else:
-            results = f"Error: Function {func_name} not found"
-
-#        try:
-#            func = getattr(self, func_name)
-#        except:
-#            results = f"Error: Function {func_name} not found"
-#            return results
-#        
-#        if args:
-#            results = func(*args)
-#        else:
-#            results = func()
-
-        return results
-
     def get_endpoint_list(self, commands):
         """
         Returns a string-notation formatted endpoint string of commands list
@@ -131,6 +85,90 @@ class ProxmoxHandler(ProxmoxAPI):
             if c in commands:
                 commands.remove(c)
         return commands
+
+### TUAH HANDLER FUNCS BELOW THIS LINE ###
+
+    def clone_vm(self, *args, **kwargs):
+        """
+        Wrapper to provide correct list of VMs depending on received scope
+        """
+        params = []
+        if kwargs.get('params'):
+            params = kwargs['params']
+        
+        match scope.lower():
+            case "brief":
+                return self.get_vms_brief()
+            case "detail":
+                return self.get_vms()
+            case "config":
+                return "TO BE IMPLEMENTED"
+
+    def show_vms(self, *args, **kwargs):
+        """
+        Wrapper to provide correct list of VMs depending on received scope
+        """
+        scope = "brief"
+        if kwargs.get('params'):
+            scope = kwargs['params'][0]
+        
+        match scope.lower():
+            case "brief":
+                return self.get_vms_brief()
+            case "detail":
+                return self.get_vms()
+            case "config":
+                return "TO BE IMPLEMENTED"
+
+
+    def rawdog(self, *args, **kwargs):
+        """
+        Accepts fully formatted function call and attempts to run it
+        """
+        print(f"args is: {args}")
+        print(f"kwargs is: {kwargs}")
+
+        call = kwargs['params'][0]
+
+        try:
+            results = eval(call)
+        except Exception as e:
+            results = f"Error: Failed to run {call}: {e}"
+        return results
+
+    def run_func(self, *args, **kwargs):
+        # first item in params is param string
+        full_string = "".join(kwargs.get('params'))
+
+        # confirm function syntax
+        if not re.search(r'\w+\(*\)$', full_string):
+            self.print_error(f"Entered text '{full_string}' not formatted as function: <name>(<args>)")
+            return
+
+        # get func name and arg(s)
+        func_name = full_string.split("(")[0]
+        open_index = full_string.find("(")
+        arg_string = full_string[open_index + 1:-1]
+        arg_list = []
+        if arg_string:
+            arg_list = arg_string.split(",")
+
+        # check if this is a ProxmoxHandler function
+        if func_name in ProxmoxHandler.__dict__:
+            if callable(ProxmoxHandler.__dict__[func_name]):
+                func = getattr(self, func_name)
+                
+                try:
+                    if arg_list:
+                        results = func(*arg_list)
+                    else:
+                        results = func()
+                except Exception as e:
+                    results = f"Error: {e}"
+        else:
+            results = f"Error: Function {func_name} not found"
+
+        return results
     
     def get(self, commands, **kwargs):
         """
