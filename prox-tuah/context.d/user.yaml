@@ -11,32 +11,16 @@ user:
           params:
             scope:
               is_variable: True
-              description: "Amount of info to return per VM (Options: brief|detail|config)"
+              description: "(brief|detail|config) Amount of info to return per VM (Options: brief|detail|config)"
       context:
         vmid:
           is_variable: True
           description: "Enter specific VM's context"
           actions:
-            clone:
-              description: "Clone VM"
-              params:
-                newid:
-                  description: "VMID for the clone"
-                  required: True
-                name:
-                  description: "Name for the clone"
-                pool:
-                  description: "Destination pool for the clone"
-            delete:
-              description: "Delete VM"
-            edit:
-              description: "Edit VM configuration"
-              params:
-                cores:
-                  description: "Number of cores per socket"
-                memory:
-                  description: "Amount of memory in MB"
-                sockets:
-                  description: "Number of CPU sockets"
             show:
               description: "Show VM configuration"
+              run_func: show_vm
+              params:
+                scope:
+                  is_variable: True
+                  description: "(brief|detail|config) Type of information about the VM to return"

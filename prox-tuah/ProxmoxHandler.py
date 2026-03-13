@@ -45,7 +45,7 @@ class ProxmoxHandler(ProxmoxAPI):
         return [{vm['vmid']: vm['name']} for vm in self.get_vms()]
 
     def get_vms_brief(self):
-        return [{'vmid': vm['vmid'], 'name': vm['name'], 'status': vm['status']} for vm in self.get_vms()]
+        return [{'vmid': vm['vmid'], 'name': vm['name'], 'node': vm['node'], 'status': vm['status']} for vm in self.get_vms()]
 
     def get_templates_list(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 1]
@@ -101,9 +101,29 @@ class ProxmoxHandler(ProxmoxAPI):
             case "config":
                 return "TO BE IMPLEMENTED"
 
+    def show_vm(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of specific VM's info depending on received scope
+        """
+        # get vmid (next after 'vm' level)
+        vmid = level_list[level_list.index("vm") + 1]
+
+        scope = "brief"
+
+        if params:
+            scope = params[0]
+
+        match scope.lower():
+            case "brief":
+                return [vm for vm in self.get_vms_brief() if f'{vm.get("vmid","")}' == vmid][0]
+            case "detail":
+                return [vm for vm in self.get_vms() if f'{vm.get("vmid","")}' == vmid][0]
+            case "config":
+                return "TO BE IMPLEMENTED"
+
     def show_vms(self, level_list=[], params=[]):
         """
-        Wrapper to provide correct list of VMs depending on received scope
+        Wrapper to provide list of all VM info depending on received scope
         """
         scope = "brief"
 

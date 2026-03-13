@@ -623,7 +623,7 @@ class TUAH():
         """
         fields = out_modifiers.get("fields", "all")
         filter = out_modifiers.get("filter", None)
-        format = out_modifiers.get("format", "raw")
+        format = out_modifiers.get("format", "table")
 
         # reduce output to items matching filter
         if filter:
@@ -644,12 +644,14 @@ class TUAH():
         elif format == "table":
             if isinstance(output, list):
                 # print list of dict table
-                print(indent(tabulate(output, headers="keys"), "  "))
+                print(f'\n{indent(tabulate(output, headers="keys"), "  ")}\n')
             elif isinstance(output, dict):
                 # print dict table
-                print(indent(tabulate(output.items(), headers=["Field", "Value"]), "  "))
+                print(f'\n{indent(tabulate(output.items(), headers=["Field", "Value"]), "  ")}\n')
         elif format == "pretty":
+            print()
             pprint(output)
+            print()
         else:
             self.print_error(f"Unknown format type: {format}")
 
