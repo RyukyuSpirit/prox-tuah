@@ -1,0 +1,20 @@
+dev:
+  description: "Enter DEV mode"
+  can_get: false
+  actions:
+    func:
+      description: "Run handler function directly"
+      run_func: run_func
+      params:
+        func_call:
+          is_variable: True
+          required: True
+          description: "Function to call (ex. myFunc(arg1,kwarg1=value) )"
+    rawdog:
+      description: "Run raw Proxmox API call"
+      run_func: rawdog
+      params:
+        raw_cmd:
+          is_variable: True
+          required: True
+          description: "Raw command to run (ex. self('version').get() )"
