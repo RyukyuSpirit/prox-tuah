@@ -24,3 +24,6 @@ user:
                 scope:
                   is_variable: True
                   description: "(brief|detail|config) Type of information about the VM to return"
+            connect:
+              description: "Connect to VM (Default: SPICE)"
+              run_func: connect_vm

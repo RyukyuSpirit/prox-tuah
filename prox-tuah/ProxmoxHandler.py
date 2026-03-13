@@ -1,7 +1,9 @@
 import yaml
 import re
+import subprocess
 from proxmoxer import ProxmoxAPI
 from pprint import pprint
+from pathlib import Path
 
 class ProxmoxHandler(ProxmoxAPI):
     """
@@ -86,6 +88,18 @@ class ProxmoxHandler(ProxmoxAPI):
                 commands.remove(c)
         return commands
 
+    def _get_vmid(self, level_list):
+        """
+        Returns the vmid from the given level_list
+        """
+        return level_list[level_list.index("vm") + 1]
+
+    def _get_vmid_node(self, vmid):
+        """
+        Returns the node of the given vmid
+        """
+        return [vm['node'] for vm in self.get_vms() if f"{vm.get('vmid')}" == vmid][0]
+
 ### TUAH HANDLER FUNCS BELOW THIS LINE ###
 
     def clone_vm(self, level_list=[], params=[]):
@@ -101,12 +115,39 @@ class ProxmoxHandler(ProxmoxAPI):
             case "config":
                 return "TO BE IMPLEMENTED"
 
+    def connect_vm(self, level_list=[], params=[]):
+        """
+        Wrapper to connect to specific VM
+        """
+        vmid = self._get_vmid(level_list)
+        node = self._get_vmid_node(vmid)
+
+        # get and write formatted spice file
+        spice_conf = self.get_spice_config(vmid, node)
+        filename = self.config.get('spice_file', 'tmp_spice.vv')
+
+        try:
+            with open(filename, "w") as f:
+                f.write("[virt-viewer]\n")
+                for k,v in spice_conf.items():
+                    f.write(f"{k}={v}\n")
+        except IOError as e:
+            return f"Error: Failed to create spice file '{filename}': {e}"
+
+        # open spice file with spice client
+        try:
+            spice_client = Path(self.config.get('spice_client_path', 'remote-viewer'))
+            subprocess.Popen([str(spice_client), filename], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return f"Launched spice client"
+        except Exception as e:
+            return f"Error occurred launching spice client '{spice_client}': {e}"
+
+
     def show_vm(self, level_list=[], params=[]):
         """
         Wrapper to provide list of specific VM's info depending on received scope
         """
-        # get vmid (next after 'vm' level)
-        vmid = level_list[level_list.index("vm") + 1]
+        vmid = self._get_vmid(level_list)
 
         scope = "brief"
 

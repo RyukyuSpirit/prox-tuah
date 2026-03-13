@@ -648,6 +648,8 @@ class TUAH():
             elif isinstance(output, dict):
                 # print dict table
                 print(f'\n{indent(tabulate(output.items(), headers=["Field", "Value"]), "  ")}\n')
+            else:
+                print(f'\n{output}\n')
         elif format == "pretty":
             print()
             pprint(output)
