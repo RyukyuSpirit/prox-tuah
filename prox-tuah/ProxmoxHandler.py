@@ -39,7 +39,7 @@ class ProxmoxHandler(ProxmoxAPI):
         return vms
 
     def get_vm(self, vmid):
-        return self.get_vms_dict().get(vmid) 
+        return self.get_vms_dict().get(vmid)
 
     def get_vms_name_list(self, *args, **kwargs):
         return [{vm['vmid']: vm['name']} for vm in self.get_vms()]
@@ -52,20 +52,20 @@ class ProxmoxHandler(ProxmoxAPI):
 
     def get_templates_name_list(self):
         return [{vm['vmid']: vm['name']} for vm in self.get_templates_list()]
-    
+
     def get_spice_config(self, vmid, node):
         spice_conf = self.nodes(node).qemu(vmid).spiceproxy.create()
-        
+
         custom_hosts = self.config.get('custom_hosts')
         if custom_hosts:
             url = spice_conf['proxy']
             host = url.split("//")[1].split(':')[0]
             if host in custom_hosts.keys():
-              old_host = host 
+              old_host = host
               url = f"http://{custom_hosts[host]}:3128"
               spice_conf["proxy"] = url
         return spice_conf
-    
+
     def rawdog_dotted(self, call):
         """
         Accepts function call in dotted notation and attempts to run it on self
@@ -88,14 +88,11 @@ class ProxmoxHandler(ProxmoxAPI):
 
 ### TUAH HANDLER FUNCS BELOW THIS LINE ###
 
-    def clone_vm(self, *args, **kwargs):
+    def clone_vm(self, level_list=[], params=[]):
         """
-        Wrapper to provide correct list of VMs depending on received scope
+        Clones a vm with requested params
         """
-        params = []
-        if kwargs.get('params'):
-            params = kwargs['params']
-        
+
         match scope.lower():
             case "brief":
                 return self.get_vms_brief()
@@ -104,14 +101,15 @@ class ProxmoxHandler(ProxmoxAPI):
             case "config":
                 return "TO BE IMPLEMENTED"
 
-    def show_vms(self, *args, **kwargs):
+    def show_vms(self, level_list=[], params=[]):
         """
         Wrapper to provide correct list of VMs depending on received scope
         """
         scope = "brief"
-        if kwargs.get('params'):
-            scope = kwargs['params'][0]
-        
+
+        if params:
+            scope = params[0]
+
         match scope.lower():
             case "brief":
                 return self.get_vms_brief()
@@ -121,14 +119,11 @@ class ProxmoxHandler(ProxmoxAPI):
                 return "TO BE IMPLEMENTED"
 
 
-    def rawdog(self, *args, **kwargs):
+    def rawdog(self, level_list=[], params=[]):
         """
         Accepts fully formatted function call and attempts to run it
         """
-        print(f"args is: {args}")
-        print(f"kwargs is: {kwargs}")
-
-        call = kwargs['params'][0]
+        call = params[0]
 
         try:
             results = eval(call)
@@ -136,9 +131,9 @@ class ProxmoxHandler(ProxmoxAPI):
             results = f"Error: Failed to run {call}: {e}"
         return results
 
-    def run_func(self, *args, **kwargs):
+    def run_func(self, level_list=[], params=[]):
         # first item in params is param string
-        full_string = "".join(kwargs.get('params'))
+        full_string = "".join(params)
 
         # confirm function syntax
         if not re.search(r'\w+\(*\)$', full_string):
@@ -157,7 +152,7 @@ class ProxmoxHandler(ProxmoxAPI):
         if func_name in ProxmoxHandler.__dict__:
             if callable(ProxmoxHandler.__dict__[func_name]):
                 func = getattr(self, func_name)
-                
+
                 try:
                     if arg_list:
                         results = func(*arg_list)
@@ -169,34 +164,32 @@ class ProxmoxHandler(ProxmoxAPI):
             results = f"Error: Function {func_name} not found"
 
         return results
-    
-    def get(self, commands, **kwargs):
+
+    def get(self, level_list=[], params=[]):
         """
-        Executes api get call 
+        Executes api get call
         """
-        # strip api/get from command list
-        commands.remove('api') 
-        commands.remove('get') 
+        # strip api/get from level_list
+        level_list.remove('api')
+        level_list.remove('get')
 
         # consolidate endpoints for string-notation call
-        endpoint = "/".join(commands)
-        
+        endpoint = "/".join(level_list)
+
         try:
             results = eval(f"self('{endpoint}').get()")
         except:
             results = (f"Error: failed to GET: {endpoint}")
-        
-        return results
-    
-    def post(self, commands, **kwargs):
-        """
-        Executes api post call
-        """
 
-        params = kwargs.get('params')        
+        return results
+
+    def post(self, level_list=[], params=[]):
+        """
+        Executes api post call where endpoint is derived from level_list and params from params
+        """
 
         # get endpoint for string-notation call
-        endpoint = "/".join(self.get_endpoint_list(commands))
+        endpoint = "/".join(self.get_endpoint_list(level_list))
 
         # attempt api call
         try:
@@ -209,5 +202,5 @@ class ProxmoxHandler(ProxmoxAPI):
                 results = (f"Error: failed to POST '{endpoint}' with params '{params}' ({e})")
             else:
                 results = (f"Error: failed to POST '{endpoint}' with no params ({e})")
-        
+
         return results

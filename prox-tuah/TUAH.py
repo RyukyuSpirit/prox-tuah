@@ -322,11 +322,11 @@ class TUAH():
                             self.typed_text = " ".join(completed_commands)
                             self.retain_text = True
                         else:
-                            results = self.handler_func(self.handler, run_func, running_level_list, params=running_params_list)
+                            results = self.handler_func(self.handler, run_func, level_list=running_level_list, params=running_params_list)
                     elif has_params:
-                        results = self.handler_func(self.handler, run_func, running_level_list, params=running_params_list)
+                        results = self.handler_func(self.handler, run_func, level_list=running_level_list, params=running_params_list)
                     else:
-                        results = self.handler_func(self.handler, run_func, running_level_list)
+                        results = self.handler_func(self.handler, run_func, level_list=running_level_list)
 
                     # output results
                     if not out_modifiers:
@@ -465,7 +465,7 @@ class TUAH():
         """
         self.update_context(self.full_context, [])
 
-    def handler_func(self, handler, func_name, *args, **kwargs):
+    def handler_func(self, handler, func_name, level_list=[], params=[]):
         """
         Runs func_name function on handler with args
         """
@@ -473,7 +473,7 @@ class TUAH():
         try:
             h_func = getattr(handler, func_name)
             if callable(h_func):
-                return h_func(*args, **kwargs)
+                return h_func(level_list=level_list, params=params)
             else:
                 return f"Function not callable: {func_name}"
         except AttributeError:
@@ -643,15 +643,10 @@ class TUAH():
             print(f"\n  {output}\n")
         elif format == "table":
             if isinstance(output, list):
-                # extract headers/values for table
-                header_list = output[0].keys()
-                values_list = [item.values() for item in output]
-
-                # print table
-#                print(indent(tabulate(values_list, headers=header_list), "  "))
+                # print list of dict table
                 print(indent(tabulate(output, headers="keys"), "  "))
             elif isinstance(output, dict):
-                # print table
+                # print dict table
                 print(indent(tabulate(output.items(), headers=["Field", "Value"]), "  "))
         elif format == "pretty":
             pprint(output)
@@ -722,7 +717,8 @@ class TUAH():
                 run_func = self.context['actions'][entry].get('run_func')
                 # if has a run_func assigned, have handler run it
                 if run_func:
-                    results = self.handler_func(self.handler, run_func, self.level_list + [entry])
+                    self.level_list.append(entry)
+                    results = self.handler_func(self.handler, run_func, level_list=self.level_list)
                     self.handle_output(results)
 
             else:
