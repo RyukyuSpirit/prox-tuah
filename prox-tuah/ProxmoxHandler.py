@@ -106,14 +106,17 @@ class ProxmoxHandler(ProxmoxAPI):
         """
         Clones a vm with requested params
         """
+        vmid = self._get_vmid(level_list)
+        node = self._get_vmid_node(vmid)
 
-        match scope.lower():
-            case "brief":
-                return self.get_vms_brief()
-            case "detail":
-                return self.get_vms()
-            case "config":
-                return "TO BE IMPLEMENTED"
+        # package list of kwargs as dict for unpacking
+        params_dict = {}
+        for p in params:
+            k,v = p.split("=")
+            params_dict[k] = v
+
+        return self.nodes(node).qemu(vmid).clone.create(**params_dict)
+
 
     def connect_vm(self, level_list=[], params=[]):
         """
