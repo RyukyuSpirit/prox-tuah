@@ -90,7 +90,7 @@ UPID:pve01:002CF955:06A8C44B:69B56F80:qmstart:100:root@pam:
 ```
 
 Connect to VM (user context):
-(Note: requries spice client installed and path specified in config.yaml)
+(Note: requires spice client installed and path specified in config.yaml)
 ```
 main# user vm 100 connect
 
