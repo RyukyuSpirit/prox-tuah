@@ -130,7 +130,7 @@ class TUAH():
 
     def get_matches(self, text, context):
         """
-        Returns list of matches of text in context {<child|action>: <description>})
+        Returns list of matches of text in context {<child|action|param>: <description>})
         """
         matches = []
 
@@ -143,6 +143,34 @@ class TUAH():
             # add dict to matches of match and it's description
             if text in k:
                 matches.append({k: {'description': v.get('description')}})
+
+        for k,v in context.get('params',{}).items():
+            # add dict to matches of match and it's description
+            if text in k and not v.get("is_variable"):
+                matches.append({k: {'description': v.get('description')}})
+
+        return matches
+
+    def _get_matches(self, text, context):
+        """
+        Returns list of matches of text in context {<child|action|param>: <description>})
+        """
+        matches = []
+
+        for k,v in context.get('context',{}).items():
+            # add dict to matches of match and it's description
+            if text in k:
+                matches.append({"name": k, "description": v.get("description")})
+
+        for k,v in context.get("actions",{}).items():
+            # add dict to matches of match and it"s description
+            if text in k:
+                matches.append({"name": k, "description": v.get("description")})
+
+        for k,v in context.get("params",{}).items():
+            # add dict to matches of match and it"s description
+            if text in k and not v.get("is_variable"):
+                matches.append({"name": k, "description": v.get("description")})
 
         return matches
 
@@ -170,6 +198,7 @@ class TUAH():
         """
         is_action = False
         is_ambiguous = False
+        leave_space = True
         is_same = False
         has_params = False
         is_piped = False
@@ -199,6 +228,64 @@ class TUAH():
                     self.print_error(f"Invalid output modifier '{text}', must be keyword argument (<param>=<value>)")
                     return
 
+            # if action was found, collect params
+            elif action_context:
+
+                # check if this is a variable param
+                p_var_name = ""
+                for k,v in action_context.get('params', {}).items():
+                    if v.get('is_variable', {}):
+                        p_var_name = k
+
+                # accept if var arg param
+                if p_var_name:
+                    has_params = True
+                    running_params_list.append(text)
+                    completed_commands.append(text)
+                    self.typed_text = " ".join(completed_commands)
+
+                # accept if kwarg param
+                elif "=" in text:
+                    k_name = text.split("=")[0]
+                    # if kwarg is defined in params, accept it
+                    if action_context.get("params", {}).get(k_name):
+                        has_params = True
+                        running_params_list.append(text)
+                        completed_commands.append(text)
+                        self.typed_text = " ".join(completed_commands)
+                    # if kwarg is undefined, notify and break
+                    else:
+                        self.print_error(f'No params found starting with "{text}":')
+                        break
+
+                # check for autocompletion
+                else:
+                    # get kwarg key matches in running_context
+                    matches = self._get_matches(text, action_context)
+
+                    # if unambiguous kwarg key match found, autocomplete
+                    if len(matches) == 1:
+                        # get completed_kwarg which includes the '='
+                        completed_kwarg = f"{matches[0]['name']}="
+                        completed_commands.append(completed_kwarg)
+                        self.typed_text = " ".join(completed_commands)
+                        leave_space = False
+
+                    # if ambiguous kwarg key match found, print matches/description
+                    elif len(matches) > 1:
+                        print(f'\n  Ambiguous matches found for "{text}"')
+                        print(f'{indent(tabulate(matches), "  ")}\n')
+                        run = False
+                        completed_commands.append(text)
+                        self.typed_text = " ".join(completed_commands)
+                        is_ambiguous = True
+                        break
+
+                    # if no matches found, notify and break
+                    else:
+                        self.print_error(f'No params found starting with "{text}":')
+                        break
+
             # otherwise continue processing command text
             else:
                 do_print_help = False
@@ -216,15 +303,6 @@ class TUAH():
                     else:
                         print_error(f"Output modifiers only work on actions")
                         return
-
-                # if text is a kwarg parameter, add to running_params
-                elif "=" in text:
-                    k_name = text.split("=")[0]
-                    if running_context.get("params", {}).get(k_name):
-                        has_params = True
-                        running_params_list.append(text)
-                        completed_commands.append(text)
-                        self.typed_text = " ".join(completed_commands)
 
                 # if unambiguous match found, proceed to checking next level
                 elif len(matches) == 1:
@@ -257,6 +335,7 @@ class TUAH():
                     completed_commands.append(text)
                     self.typed_text = " ".join(completed_commands)
                     is_ambiguous = True
+                    leave_space = False
                     break
 
                 else:
@@ -265,11 +344,6 @@ class TUAH():
                     for k,v in running_context.get('context', {}).items():
                         if v.get('is_variable', {}):
                             c_var_name = k
-                    # check if this is a variable param
-                    p_var_name = ""
-                    for k,v in running_context.get('params', {}).items():
-                        if v.get('is_variable', {}):
-                            p_var_name = k
 
                     # accept variable context and print help
                     if c_var_name:
@@ -278,13 +352,6 @@ class TUAH():
                         completed_commands.append(text)
                         self.typed_text = " ".join(completed_commands)
                         do_print_help = True
-
-                    # accept variable param
-                    elif p_var_name:
-                        has_params = True
-                        running_params_list.append(text)
-                        completed_commands.append(text)
-                        self.typed_text = " ".join(completed_commands)
 
                     else:
                         # if no matches found, break
@@ -353,7 +420,7 @@ class TUAH():
                     self.print_help(running_context, inc_global=False)
 
             # add space after typed_text if unambiguous
-            if not is_ambiguous:
+            if leave_space:
                 self.typed_text += " "
 
 

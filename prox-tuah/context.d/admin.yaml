@@ -38,6 +38,7 @@ admin:
                   description: "Name for the clone"
             delete:
               description: "Delete VM"
+              run_func: delete_vm
             edit:
               description: "Edit VM configuration"
               params:
