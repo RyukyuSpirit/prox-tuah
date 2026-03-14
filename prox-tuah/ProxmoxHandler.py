@@ -117,6 +117,26 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return self.nodes(node).qemu(vmid).clone.create(**params_dict)
 
+    def edit_vm(self, level_list=[], params=[]):
+        """
+        Edits a vm with requested params
+        """
+        vmid = self._get_vmid(level_list)
+        node = self._get_vmid_node(vmid)
+
+        # package list of kwargs as dict for unpacking
+        params_dict = {}
+        for p in params:
+            k,v = p.split("=")
+            params_dict[k] = v
+
+        try:
+            output = self.nodes(node).qemu(vmid).config.create(**params_dict)
+        except Exception as e:
+            output = f"Error deleting VM {vmid}: {e}"
+
+        return output
+
     def delete_vm(self, level_list=[], params=[]):
         """
         Deletes VM

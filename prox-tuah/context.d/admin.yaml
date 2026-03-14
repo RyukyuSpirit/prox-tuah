@@ -41,6 +41,7 @@ admin:
               run_func: delete_vm
             edit:
               description: "Edit VM configuration"
+              run_func: edit_vm
               params:
                 cores:
                   description: "Number of cores per socket"
@@ -48,5 +49,3 @@ admin:
                   description: "Amount of memory in MB"
                 sockets:
                   description: "Number of CPU sockets"
-            show:
-              description: "Show VM configuration"
