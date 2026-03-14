@@ -83,31 +83,23 @@ class TUAH():
         print(f'{indent(tabulate(pipe_help.items()), "  ")}\n')
 
     def print_help(self, context, inc_global=True):
-        max_length = 1
-
         help = self.get_help(context)
 
-        # get max length based on longest option for formatting.
-        for t in ['context', 'actions', 'params']:
-            if help.get(t):
-                for c in help[t].keys():
-                    if len(c) > max_length:
-                        max_length = len(c)
-
+        print("")
         if help.get('actions'):
-            print("\n  Actions")
+            print("  Actions")
             print(f'{indent(tabulate(help['actions'].items()), "  ")}\n')
 
         if help.get('context'):
-            print("\n  Contexts")
+            print("  Contexts")
             print(f'{indent(tabulate(help['context'].items()), "  ")}\n')
 
         if help.get('params'):
-            print("\n  Parameters")
+            print("  Parameters")
             print(f'{indent(tabulate(help['params'].items()), "  ")}\n')
 
         if inc_global:
-            print("\n  Global Commands")
+            print("  Global Commands")
             print(f'{indent(tabulate(self.global_help.items()), "  ")}\n')
 
     def _get_matches(self, text, context):
