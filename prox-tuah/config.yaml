@@ -1,0 +1,7 @@
+server: <pve_ip>
+user: <user>
+realm: <realm>
+password: <password>
+spice_client_path: '<path to client executable'
+custom_hosts:
+  <pve_fqdn>: <pve_ip>
