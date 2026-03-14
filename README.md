@@ -14,7 +14,7 @@ Proxmoxer API Docs: https://proxmoxer.github.io/docs/latest/
 
 ## Examples
 
-Note: When performing commands you can either write out the entire path to the action you're trying to perform, or you can first travel to that context and issue the command directly. So the following two examples have the same effect
+**Note: When performing commands you can either write out the entire path to the action you're trying to perform, or you can first walk to that context and issue the command directly. So the following two examples have the same effect.**
 
 
 Show VM details (user context):
