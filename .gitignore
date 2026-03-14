@@ -1,5 +1,5 @@
 venv/
-#prox-tuah/config.yaml
+prox-tuah/config.yaml
 prox-tuah/notes
 prox-tuah/myconfig.yaml
 prox-tuah/__pycache__
