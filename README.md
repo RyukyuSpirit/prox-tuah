@@ -1,4 +1,4 @@
-Prox-tuah (Proxmox Text-based User and Administration Handler) is a text user interface to Proxmox Virtual Environment. There are multiple contexts with functions including accessing/displaying/managing PVE resources and walking/executing PVE API endpoint. The interface behaves similar to network devices CLIs (Cisco/Aruba) with tab completion and context-specific help menus for reference.
+Prox-tuah (Proxmox Text-based User and Administration Handler) is a text user interface to Proxmox Virtual Environment. There are multiple contexts with functions including accessing/displaying/managing PVE resources and walking/executing PVE API endpoints. The interface behaves similar to network device CLIs (Cisco/Aruba) with tab completion and context-specific help menus for reference.
 
 Contexts include:
 - user: view/access/power-control VMs
