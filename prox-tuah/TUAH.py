@@ -23,14 +23,12 @@ class TUAH():
         self.context = context # context at current level
         self.global_help = {
             "exit": "Go back one context",
-            "func": "Run handler function directly",
-            "logout": "Quit application",
             "main": "Return to main context",
-            "rawdog": "Run raw Proxmox API call",
+            "quit": "Quit application",
         }
         self.level_list = [] # list of keys to get to context
         self.prompt = "main# " # displayed prompt text
-        self.welcome = "Welcome to prox-tuah. Enter commands or '?' for help.\n"
+        self.welcome = "Welcome to prox-tuah. Enter commands, '?' for help, or 'quit' to exit application.\n"
         self.typed_text = "" # last text string typed into the prompt (even if 'enter' not pressed)
         self.entry = "" # last text string entered into the prompt
         self.session = PromptSession() # The prompt session
@@ -82,11 +80,7 @@ class TUAH():
                 max_length = len(h)
 
         print("\n  Pipe Options (<param>=<value>)")
-        print("  ---------------")
-        for k,v in pipe_help.items():
-            print(f"    {k.ljust(max_length + 5)}{v}")
-
-        print("")
+        print(f'{indent(tabulate(pipe_help.items()), "  ")}\n')
 
     def print_help(self, context, inc_global=True):
         max_length = 1
@@ -102,54 +96,19 @@ class TUAH():
 
         if help.get('actions'):
             print("\n  Actions")
-            print("  ---------------")
-            for k,v in help.get('actions').items():
-                print(f"    {k.ljust(max_length + 5)}{v}")
+            print(f'{indent(tabulate(help['actions'].items()), "  ")}\n')
 
         if help.get('context'):
             print("\n  Contexts")
-            print("  ---------------")
-            for k,v in help.get('context').items():
-                print(f"    {k.ljust(max_length + 5)}{v}")
+            print(f'{indent(tabulate(help['context'].items()), "  ")}\n')
 
         if help.get('params'):
-            if inc_global:
-                print("\n  Context Parameters)")
-            else:
-                print("\n  Parameters")
-            print("  ---------------")
-            for k,v in help.get('params').items():
-                print(f"    {k.ljust(max_length + 5)}{v}")
+            print("\n  Parameters")
+            print(f'{indent(tabulate(help['params'].items()), "  ")}\n')
 
         if inc_global:
             print("\n  Global Commands")
-            print("  ---------------")
-            for k,v in self.global_help.items():
-                print(f"    {k.ljust(max_length + 5)}{v}")
-        print("")
-
-    def get_matches(self, text, context):
-        """
-        Returns list of matches of text in context {<child|action|param>: <description>})
-        """
-        matches = []
-
-        for k,v in context.get('context',{}).items():
-            # add dict to matches of match and it's description
-            if text in k:
-                matches.append({k: {'description': v.get('description')}})
-
-        for k,v in context.get('actions',{}).items():
-            # add dict to matches of match and it's description
-            if text in k:
-                matches.append({k: {'description': v.get('description')}})
-
-        for k,v in context.get('params',{}).items():
-            # add dict to matches of match and it's description
-            if text in k and not v.get("is_variable"):
-                matches.append({k: {'description': v.get('description')}})
-
-        return matches
+            print(f'{indent(tabulate(self.global_help.items()), "  ")}\n')
 
     def _get_matches(self, text, context):
         """
@@ -237,8 +196,15 @@ class TUAH():
                     if v.get('is_variable', {}):
                         p_var_name = k
 
+                # if text is a pipe, begin collecting output modifiers
+                if text == "|":
+                    # only continue w/ output modifiers if typed command is an action
+                    is_piped = True
+                    completed_commands.append(text)
+                    self.typed_text = " ".join(completed_commands)
+
                 # accept if var arg param
-                if p_var_name:
+                elif p_var_name:
                     has_params = True
                     running_params_list.append(text)
                     completed_commands.append(text)
@@ -291,22 +257,11 @@ class TUAH():
                 do_print_help = False
 
                 # get matches in running_context
-                matches = self.get_matches(text, running_context)
-
-                # if text is a pipe, begin collecting output modifiers
-                if text == "|":
-                    # only continue w/ output modifiers if typed command is an action
-                    if is_action:
-                        is_piped = True
-                        completed_commands.append(text)
-                        self.typed_text = " ".join(completed_commands)
-                    else:
-                        print_error(f"Output modifiers only work on actions")
-                        return
+                matches = self._get_matches(text, running_context)
 
                 # if unambiguous match found, proceed to checking next level
-                elif len(matches) == 1:
-                    completed_word = next(iter(matches[0]))
+                if len(matches) == 1:
+                    completed_word = matches[0]['name']
                     completed_commands.append(completed_word)
                     if running_context.get('context', {}).get(completed_word):
                         running_context = running_context['context'][completed_word]
@@ -319,18 +274,9 @@ class TUAH():
 
                 # if ambiguous match found, print matches and descriptions
                 elif len(matches) > 1:
-                    max_length = 1
-
                     print(f'\n  Ambiguous matches found for "{text}"')
-                    print("  ---------------")
-                    for m in matches:
-                        for k in m.keys():
-                            if len(k) > max_length:
-                                max_length = len(k)
-                    for m in matches:
-                        for k,v in m.items():
-                            print(f"    {k.ljust(max_length + 5)}{v['description']}")
-                    print("")
+                    print(f'{indent(tabulate(matches), "  ")}\n')
+
                     run = False
                     completed_commands.append(text)
                     self.typed_text = " ".join(completed_commands)
@@ -508,6 +454,7 @@ class TUAH():
         self.run()
 
     def run(self):
+        print(f"{self.welcome}")
         while True:
             try:
                 self.handle_events()
