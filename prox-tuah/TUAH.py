@@ -68,9 +68,9 @@ class TUAH():
     def print_pipe_help(self):
 
         pipe_help = {
-            "fields": "Return only values of comma-separated fields, if applicable (Ex. name,description)",
-            "filter": "Return only matches of filter (Ex. user0*)",
-            "format": "Return format format (Options: raw, table, or pretty)",
+            "fields=": "Return only values of comma-separated fields, if applicable (Ex. name,description)",
+            "filter=": "Return only matches of filter (Ex. user0*)",
+            "format=": "Return format format (Options: raw, table, or pretty)",
         }
         max_length = 1
 
@@ -79,7 +79,7 @@ class TUAH():
             if len(h) > max_length:
                 max_length = len(h)
 
-        print("\n  Pipe Options (<param>=<value>)")
+        print("\n  Pipe Options")
         print(f'{indent(tabulate(pipe_help.items()), "  ")}\n')
 
     def print_help(self, context, inc_global=True):
