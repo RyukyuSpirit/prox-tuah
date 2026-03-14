@@ -4,13 +4,13 @@ prox-tuah is a text user interface to Proxmox Virtual Environment. There are mul
 
 Contexts include:
 - user: view/access/power-control VMs
-- admin: user^ funcs + /add/edit/delete VMs
-- api: walk through API endpoints and execute API calls
-- dev: direct handler/API interaction
+- admin: user^ + /add/edit/delete VMs
+- api: walk/execute API endpoints
+- dev: interace with handler/API directly
 
 ## Reference:
-PVE API Docs: https://pve.proxmox.com/pve-docs/api-viewer/
-Proxmoxer API Docs: https://proxmoxer.github.io/docs/latest/
+- PVE API Docs: https://pve.proxmox.com/pve-docs/api-viewer/
+- Proxmoxer API Docs: https://proxmoxer.github.io/docs/latest/
 
 ## Examples
 
