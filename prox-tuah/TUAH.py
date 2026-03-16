@@ -26,6 +26,17 @@ class TUAH():
             "main": "Return to main context",
             "quit": "Quit application",
         }
+        self.pipe_context = {
+            "pipe_params": {
+                "fields":
+                    {"description": "Return only values of comma-separated fields, if applicable (Ex. name,description)"},
+                "filter":
+                    {"description": "Return only matches of filter (Ex. user0*)"},
+                "format":
+                    {"description": "Return format format (Options: raw, table, or pretty)"},
+            }
+
+        }
         self.level_list = [] # list of keys to get to context
         self.prompt = "main# " # displayed prompt text
         self.welcome = "Welcome to prox-tuah. Enter commands, '?' for help, or 'quit' to exit application.\n"
@@ -65,23 +76,6 @@ class TUAH():
         self.typed_text = get_app().current_buffer.text
         event.app.exit(exception=KeyboardInterrupt)
 
-    def print_pipe_help(self):
-
-        pipe_help = {
-            "fields=": "Return only values of comma-separated fields, if applicable (Ex. name,description)",
-            "filter=": "Return only matches of filter (Ex. user0*)",
-            "format=": "Return format format (Options: raw, table, or pretty)",
-        }
-        max_length = 1
-
-        # get max length based on longest option for formatting.
-        for h in pipe_help.keys():
-            if len(h) > max_length:
-                max_length = len(h)
-
-        print("\n  Pipe Options")
-        print(f'{indent(tabulate(pipe_help.items()), "  ")}\n')
-
     def print_help(self, context, inc_global=True):
         help = self.get_help(context)
 
@@ -97,6 +91,10 @@ class TUAH():
         if help.get('params'):
             print("  Parameters")
             print(f'{indent(tabulate(help['params'].items()), "  ")}\n')
+
+        if help.get('pipe_params'):
+            print("  Pipe Options")
+            print(f'{indent(tabulate(help['pipe_params'].items()), "  ")}\n')
 
         if inc_global:
             print("  Global Commands")
@@ -121,6 +119,11 @@ class TUAH():
         for k,v in context.get("params",{}).items():
             # add dict to matches of match and it"s description
             if text in k and not v.get("is_variable"):
+                matches.append({"name": k, "description": v.get("description")})
+
+        for k,v in context.get("pipe_params",{}).items():
+            # add dict to matches of match and it"s description
+            if text in k:
                 matches.append({"name": k, "description": v.get("description")})
 
         return matches
@@ -166,18 +169,42 @@ class TUAH():
         for text in commands:
             # if passed pipe, collect output modifiers
             if is_piped:
+                # process full kwarg
                 if "=" in text:
                     k_name = text.split("=")[0]
                     if k_name in ["fields","filter","format"]:
                         out_modifiers.update({k_name: text.split("=")[1]})
                         completed_commands.append(text)
                         self.typed_text = " ".join(completed_commands)
+                    # ignore unknown kwarg
                     else:
-                        self.print_error(f"No output modifier with name: {k_name}")
-                        return
+                        break
+                # process potential partial kwarg
                 else:
-                    self.print_error(f"Invalid output modifier '{text}', must be keyword argument (<param>=<value>)")
-                    return
+                    matches = self._get_matches(text, self.pipe_context)
+
+                    # if unambiguous param match found, autocomplete
+                    if len(matches) == 1:
+                        # get completed_param which includes the '='
+                        completed_param = f"{matches[0]['name']}="
+                        completed_commands.append(completed_param)
+                        self.typed_text = " ".join(completed_commands)
+                        leave_space = False
+
+                    # if ambiguous param match found, print matches/description
+                    elif len(matches) > 1:
+                        print(f'\n  Ambiguous matches found for "{text}"')
+                        print(f'{indent(tabulate(matches), "  ")}\n')
+                        run = False
+                        completed_commands.append(text)
+                        self.typed_text = " ".join(completed_commands)
+                        is_ambiguous = True
+                        leave_space = False
+                        break
+                    # if no matches notify
+                    else:
+                        self.print_error(f'No modifiers found starting with "{text}"', severity="wARNING")
+                        break
 
             # if action was found, collect params
             elif action_context:
@@ -241,7 +268,7 @@ class TUAH():
 
                     # if no matches found, notify and break
                     else:
-                        self.print_error(f'No params found starting with "{text}":')
+                        self.print_error(f'No params found starting with "{text}"', severity="WARNING")
                         break
 
             # otherwise continue processing command text
@@ -349,13 +376,15 @@ class TUAH():
 
             # if command is unchanged or do_print_help, print help for running context
             if commands == completed_commands or do_print_help:
-                # print pipe help if piped
-                if is_piped:
-                    self.print_pipe_help()
-
-                # print command help if not ambiguous
+                # if no ambiguous matches found
                 if not is_ambiguous:
-                    self.print_help(running_context, inc_global=False)
+                    # print pipe help if piped
+                    if is_piped:
+                        self.print_help(self.pipe_context, inc_global=False)
+
+                    # otherwise print context help
+                    else:
+                        self.print_help(running_context, inc_global=False)
 
             # add space after typed_text if unambiguous
             if leave_space:
@@ -388,6 +417,7 @@ class TUAH():
         help['context'] = {}
         help['actions'] = {}
         help['params'] = {}
+        help['pipe_params'] = {}
 
         for k,v in context.items():
             if isinstance(v, dict):
@@ -409,6 +439,10 @@ class TUAH():
                                 help["params"].update({f'<{ck}>': cv.get("description")})
                             else:
                                 help["params"].update({f'{ck}=': cv.get("description")})
+                elif k == "pipe_params":
+                    for ck,cv in v.items():
+                        if cv.get("description"):
+                            help["pipe_params"].update({f'{ck}=': cv.get("description")})
 
         return help
 
