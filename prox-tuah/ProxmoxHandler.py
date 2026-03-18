@@ -324,7 +324,10 @@ class ProxmoxHandler(ProxmoxAPI):
         endpoint = "/".join(level_list)
 
         try:
-            results = eval(f"self('{endpoint}').get()")
+            if params:
+                results = eval(f"self('{endpoint}').get({','.join(params)})")
+            else:
+                results = eval(f"self('{endpoint}').get()")
         except:
             results = (f"Error: failed to GET: {endpoint}")
 
@@ -349,5 +352,27 @@ class ProxmoxHandler(ProxmoxAPI):
                 results = (f"Error: failed to POST '{endpoint}' with params '{params}' ({e})")
             else:
                 results = (f"Error: failed to POST '{endpoint}' with no params ({e})")
+
+        return results
+
+    def put(self, level_list=[], params=[]):
+        """
+        Executes api put call where endpoint is derived from level_list and params from params
+        """
+
+        # get endpoint for string-notation call
+        endpoint = "/".join(self.get_endpoint_list(level_list))
+
+        # attempt api call
+        try:
+            if params:
+                results = eval(f"self('{endpoint}').put({','.join(params)})")
+            else:
+                results = eval(f"self('{endpoint}').put()")
+        except Exception as e:
+            if params:
+                results = (f"Error: failed to PUT '{endpoint}' with params '{params}' ({e})")
+            else:
+                results = (f"Error: failed to PUT '{endpoint}' with no params ({e})")
 
         return results
