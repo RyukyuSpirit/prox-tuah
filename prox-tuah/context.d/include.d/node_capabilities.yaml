@@ -1,0 +1,31 @@
+description: Node capabilities context
+actions:
+  get:
+    description: Get node capabilities index
+context:
+  qemu:
+    description: QEMU capabilities context
+    actions:
+      get:
+        description: Get QEMU capabilies index 
+    context:
+      cpu:
+        description: CPU model context 
+        actions:
+          get:
+            description: List all custom and default CPU models
+#      cpu-flags:
+#        description: CPU flag context
+#        actions:
+#          get:
+#            description: List of available VM-specific CPU flags
+      machines:
+        description: QEMU/KVM machine types context
+        actions:
+          get:
+            description: Get available QEMU/KVM machine types
+      migration:
+        description: QEMU migration capabilies context
+        actions:
+          get:
+            description: "Get node-specific QEMU migration capabilities of the node. Requires the 'Sys.Audit' permision on '/nodes/<node>'"

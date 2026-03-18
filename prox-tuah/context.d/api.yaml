@@ -16,6 +16,9 @@ api:
           context:
             apt:
               !inc context.d/include.d/node_apt.yaml
+            capabilities:
+              !inc context.d/include.d/node_capabilities.yaml
+
             qemu:
               !inc context.d/include.d/node_qemu.yaml
     pools:
