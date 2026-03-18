@@ -339,7 +339,8 @@ class TUAH():
         if run:
             # execute if final word is an action
             if is_action:
-                run_func = running_context.get('run_func')
+                # use defined run_func or name of action if not defined
+                run_func = running_context.get('run_func', running_level_list[-1])
                 req_params = self.get_required_params(action_context)
 
                 # if has a run_func assigned, have handler run it

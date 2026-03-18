@@ -1,0 +1,52 @@
+description: Enter APT context
+actions:
+  get:
+    description: Get directory index for APT (Advanced Package Tool)
+context:
+  changelog:
+    description: APT changelog context
+    actions:
+      get:
+        description: Get package changelogs
+        params:
+          name:
+            description: Package Name
+            required: True
+  repositories:
+    description: APT repository context
+    actions:
+      get:
+        description: Get APT repository information
+      post:
+        description: Change the properties of a repository
+        params:
+          index:
+            description: Index (integer) within the file (starting from 0)
+            required: True
+          path:
+            description: Path to the containing file
+            required: True
+          digest:
+            description: Digest to detect modifications
+          enabled:
+            description: "Whether or not the repository should be enabled (<0|1>)"
+      put:
+        description: Add a standard repository to the configuration
+        params:
+          handle:
+            description: Handle that identifies a repository
+            required: True
+          digest:
+            description: Digest to detect modifications
+  update:
+    description: Node updates context
+    actions:
+      get:
+        description: List available updates
+      post:
+        description: Resynnchronize the package index files from their sources (apt-get update)
+  versions:
+    description: Package version context
+    actions:
+      get:
+        description: Get package information for important Proxmox packages

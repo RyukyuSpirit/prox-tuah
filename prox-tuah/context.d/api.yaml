@@ -14,6 +14,8 @@ api:
           is_variable: true
           type: "string"
           context:
+            apt:
+              !inc context.d/include.d/node_apt.yaml
             qemu:
               !inc context.d/include.d/node_qemu.yaml
     pools:
@@ -21,8 +23,8 @@ api:
     storage:
       description: "Enter storage context"
     version:
-      description: "API version details"                  
+      description: "API version details"
       actions:
         get:
           description: "Get API version details"
-          run_func: "get_basic" 
+          run_func: "get_basic"
