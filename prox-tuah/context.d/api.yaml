@@ -9,7 +9,13 @@ api:
     nodes:
       description: "Enter nodes context"
       context:
-        !inc context.d/include.d/nodes.yaml
+        node_name:
+          description: "Enter specific node's context"
+          is_variable: true
+          type: "string"
+          context:
+            qemu:
+              !inc context.d/include.d/node_qemu.yaml
     pools:
       description: "Enter pools context"
     storage:
@@ -20,5 +26,3 @@ api:
         get:
           description: "Get API version details"
           run_func: "get_basic" 
-
-                      
