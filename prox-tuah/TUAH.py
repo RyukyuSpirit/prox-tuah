@@ -454,7 +454,7 @@ class TUAH():
         if self.context == self.full_context:
             self.prompt = "main# "
         else:
-            self.prompt = f"{self.context.get('prompt', '/'.join(self.level_list))}# "
+            self.prompt = f"{self.context.get('prompt', '>'.join(self.level_list))}# "
 
     def handle_events(self):
         """
@@ -523,7 +523,7 @@ class TUAH():
         """
         Wrapper to print an error message to the screen
         """
-        print(f"  {severity}: {msg}")
+        print(f"\n  {severity}: {msg}\n")
 
     def container_has_match(self, container, r_pattern):
         """
@@ -732,6 +732,7 @@ class TUAH():
                     last_level = self.level_list[-1]
                     # iterate through level_list to get to new last context
                     for level in self.level_list:
+
                         # progress through static child
                         if back_context['context'].get(level):
                             back_context = back_context['context'][level]
@@ -752,32 +753,9 @@ class TUAH():
 
                     self.update_context(back_context, self.level_list)
 
-            # if entry is a child, switch contexts
-            elif entry in self.context.get('context', {}).keys():
-                self.update_context(self.context['context'][entry], self.level_list + [entry.strip()])
-
-            # check if entry is an action
-            elif entry in self.context.get('actions', {}).keys():
-                run_func = self.context['actions'][entry].get('run_func')
-                # if has a run_func assigned, have handler run it
-                if run_func:
-                    self.level_list.append(entry)
-                    results = self.handler_func(self.handler, run_func, level_list=self.level_list)
-                    self.handle_output(results)
-
+            # handle non-global single-word entry
             else:
-                # if entry is variable then enter its context
-                var_name = ""
-                for k,v in self.context.get('context', {}).items():
-                    if v.get('is_variable', {}):
-                        var_name = k
-
-                if var_name:
-                    self.update_context(self.context['context'][var_name], self.level_list + [entry])
-
-                # unhandled entries
-                else:
-                    self.print_error(f"unhandled entry: {entry}")
+                self.complete_cmd([entry.strip()], run=True)
 
         # handle multi-word entry
         else:
