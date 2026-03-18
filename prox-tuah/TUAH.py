@@ -39,7 +39,15 @@ class TUAH():
         }
         self.level_list = [] # list of keys to get to context
         self.prompt = "main# " # displayed prompt text
-        self.welcome = "Welcome to prox-tuah. Enter commands, '?' for help, or 'quit' to exit application.\n"
+        logo = r"""
+                           _               _     
+  _ __  _ __ _____  __    | |_ _   _  __ _| |__  
+ | '_ \| '__/ _ \ \/ /____| __| | | |/ _` | '_ \ 
+ | |_) | | | (_) >  <_____| |_| |_| | (_| | | | |
+ | .__/|_|  \___/_/\_\     \__|\__,_|\__,_|_| |_|
+ |_|
+        """
+        self.welcome = f"{logo}\nWelcome to prox-tuah. Enter commands, '?' for help, or 'quit' to exit application.\n"
         self.typed_text = "" # last text string typed into the prompt (even if 'enter' not pressed)
         self.entry = "" # last text string entered into the prompt
         self.session = PromptSession() # The prompt session
