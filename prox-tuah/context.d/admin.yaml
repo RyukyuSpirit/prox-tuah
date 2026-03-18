@@ -3,7 +3,7 @@ admin:
   can_get: false
   context:
     vm:
-      description: "VM context"
+      description: "All VMs"
       actions:
         show:
           description: "Show all VMs"
@@ -15,7 +15,23 @@ admin:
       context:
         vmid:
           is_variable: True
-          description: "Enter specific VM's context"
+          description: "Specific VM"
+          context:
+            status:
+              description: "VM power status"
+              actions:
+                show:
+                  description: Show VM power status
+                  run_func: show_vm_status
+                shutdown:
+                  description: Shutdown VM (clean)
+                  run_func: change_vm_status
+                start:
+                  description: Start VM
+                  run_func: change_vm_status
+                stop:
+                  description: Stop VM (immediate)
+                  run_func: change_vm_status
           actions:
             show:
               description: "Show VM configuration"

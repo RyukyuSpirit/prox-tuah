@@ -321,7 +321,7 @@ class TUAH():
                     else:
                         # if no matches found, break
                         if not action_context:
-                            print(f'  No commands found starting with "{text}":')
+                            self.print_error(f'No commands found starting with "{text}"', severity="INFO")
                         run = False
                         completed_commands.append(text)
                         self.typed_text = " ".join(completed_commands)

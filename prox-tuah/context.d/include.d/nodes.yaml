@@ -129,22 +129,9 @@ node_name:
                 get:
                   description: "Get VM configuration"
                   run_func: "get"
-#                post:
-#                  description: "Set VM options (asynchronous)"
-#                  run_func: "post"
-#                  params:
-#                    acpi:
-#                      description: Enable/disable ACPI
-              params:
-                acpi:
-                  type: "boolean"
-                  description: "Enable/disable ACPI"
-                affinity:
-                  type: "string"
-                  description: "List of host cores used to execute guest processes, for example: 0,5,8-11"
-                agent:
-                  type: "string"
-                  description: "Enable/disable communication with the QEMU Guest Agent and its properties"
-                memory:
-                  type: "string"
-                  description: "Memory properties"
+                post:
+                  description: "Set VM options (asynchronous)"
+                  run_func: "post"
+                  params:
+                    acpi:
+                      description: Enable/disable ACPI

@@ -102,6 +102,53 @@ class ProxmoxHandler(ProxmoxAPI):
 
 ### TUAH HANDLER FUNCS BELOW THIS LINE ###
 
+    def show_vm_status(self, level_list=[], params=[]):
+        """
+        Show vm's power status
+        """
+        vmid = self._get_vmid(level_list)
+        node = self._get_vmid_node(vmid)
+
+        try:
+            status = self.nodes(node).qemu(vmid).status.current.get().get("status")
+            output = {"status": status}
+        except Exception as e:
+            output = f"ERROR: Unable to get status of '{vmid}' on '{node}': {e}"
+
+        return output
+
+    def change_vm_status(self, level_list=[], params=[]):
+        """
+        Change vm's power status
+        """
+        vmid = self._get_vmid(level_list)
+        node = self._get_vmid_node(vmid)
+        new_status = level_list[-1]
+
+        if new_status in ["reboot", "reset", "resume", "shutdown", "start", "stop", "suspend"]:
+            try:
+                match new_status:
+                    case "reboot":
+                        output = self.nodes(node).qemu(vmid).status.reboot.create()
+                    case "reset":
+                        output = self.nodes(node).qemu(vmid).status.reset.create()
+                    case "resume":
+                        output = self.nodes(node).qemu(vmid).status.resume.create()
+                    case "shutdown":
+                        output = self.nodes(node).qemu(vmid).status.shutdown.create()
+                    case "start":
+                        output = self.nodes(node).qemu(vmid).status.start.create()
+                    case "stop":
+                        output = self.nodes(node).qemu(vmid).status.stop.create()
+                    case "suspend":
+                        output = self.nodes(node).qemu(vmid).status.suspend.create()
+            except Exception as e:
+                output = f"ERROR: Unable to change power state of '{vmid}' on '{node}': {e}"
+        else:
+            output = f"ERROR: Unknown status {new_status}"
+
+        return output
+
     def clone_vm(self, level_list=[], params=[]):
         """
         Clones a vm with requested params
@@ -268,8 +315,9 @@ class ProxmoxHandler(ProxmoxAPI):
         """
         Executes api get call
         """
-        # strip api/get from level_list
-        level_list.remove('api')
+        # strip api/get from level_list, if present
+        if "api" in level_list:
+            level_list.remove('api')
         level_list.remove('get')
 
         # consolidate endpoints for string-notation call
