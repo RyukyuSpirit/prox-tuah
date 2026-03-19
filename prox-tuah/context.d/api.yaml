@@ -26,6 +26,8 @@ api:
               !inc context.d/include.d/node_disks.yaml
             firewall:
               !inc context.d/include.d/node_firewall.yaml
+            hardware:
+              !inc context.d/include.d/node_hardware.yaml
             qemu:
               !inc context.d/include.d/node_qemu.yaml
     pools:
