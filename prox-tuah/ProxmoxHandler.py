@@ -376,3 +376,25 @@ class ProxmoxHandler(ProxmoxAPI):
                 results = (f"Error: failed to PUT '{endpoint}' with no params ({e})")
 
         return results
+
+    def delete(self, level_list=[], params=[]):
+        """
+        Executes api delete call where endpoint is derived from level_list and params from params
+        """
+
+        # get endpoint for string-notation call
+        endpoint = "/".join(self.get_endpoint_list(level_list))
+
+        # attempt api call
+        try:
+            if params:
+                results = eval(f"self('{endpoint}').delete({','.join(params)})")
+            else:
+                results = eval(f"self('{endpoint}').delete()")
+        except Exception as e:
+            if params:
+                results = (f"Error: failed to delete '{endpoint}' with params '{params}' ({e})")
+            else:
+                results = (f"Error: failed to delete '{endpoint}' with no params ({e})")
+
+        return results

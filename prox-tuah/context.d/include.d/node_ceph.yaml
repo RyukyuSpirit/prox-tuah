@@ -1,0 +1,324 @@
+description: Node Ceph context
+actions:
+  get:
+    description: Get node ceph directory index
+context:
+  cfg:
+    description: Ceph configuration
+    actions:
+      get:
+        description: Get Ceph Configuration directory index
+    context:
+      db:
+        description:  Ceph configuration database
+        actions:
+          get:
+            description: Get the Ceph configuration database
+      raw:
+        description:  Ceph configuration file
+        actions:
+          get:
+            description: Get the Ceph configuration file
+      value:
+        description:  Ceph configurated values
+        actions:
+          get:
+            description: Get the Ceph configured values from either the config file or config DB
+            params:
+              config-keys:
+                description: "List of section and config key items ([<section>:<config_key>])"
+  fs:
+    description: Ceph FS
+    actions:
+      get:
+        description: Get Ceph FS directory index
+    context:
+      name:
+        is_variable: True
+        description: The ceph filesystem name
+        actions:
+          post:
+            description: Create a Ceph filesystem
+            params:
+              add-storage:
+                description: Configure the created CephFS as storage for this cluster
+              pg_name:
+                description: Number of placement groups for the backing data pool. The metadata pool will use a quarter of this.
+  mds:
+    description: Ceph MDS
+    actions:
+      get:
+        description: Get Ceph MDS directory index
+    context:
+      name:
+        is_variable: True
+        description: Ceph Metadata Server (MDS) Name
+        actions:
+          post:
+            description: Create Ceph Metadata Server (MDS)
+            params:
+              hotstandby:
+                description: "Determines whether or not a ceph-mds daemon should poll and replay the log of an active MDS (BOOL: <0|1>)"
+          delete:
+            description: Destroy Ceph Metadata Server (MDS)
+  mgr:
+    description: Ceph manager
+    actions:
+      get:
+        description: Get Ceph Manager directory index
+    context:
+      id:
+        is_variable: True
+        description: Ceph manager ID
+        actions:
+          post:
+            description: Create Ceph manager
+          delete:
+            description: Destroy Ceph manager
+  mon:
+    description: Ceph monitor
+    actions:
+      get:
+        description: Get Ceph monitor list
+    context:
+      monid:
+        is_variable: True
+        description: Ceph monitor ID
+        actions:
+          post:
+            description: Create Ceph monitor and manager
+            params:
+              mon-address:
+                description: Overwrites autodetected monitor IP address(es). Must be in the public network(s) of Ceph.
+          delete:
+            description: Destroy Ceph monitor and manager
+  osd:
+    description: Ceph OSD
+    actions:
+      get:
+        description: Get Ceph OSD list
+      post:
+        description: Create Ceph OSD
+        params:
+          dev:
+            required: True
+            description: Block device name
+          crush-device-class:
+            description: Set the device class of the OSD in crush
+          db_dev:
+            description: Block device name for block.db
+          db_dev_size:
+            description: Size of block.db
+          encrypted:
+            description: "Enables encryption of the OSD (BOOL: <0|1>)"
+          osds-per-device:
+            description: OSD services per physical device
+          wal_dev:
+            description: Block device name for block.wal
+          wal_dev_size:
+            description: Size of block.wal
+    context:
+      osdid:
+        is_variable: True
+        description: Ceph OSD ID
+        actions:
+          get:
+            description: Get OSD index
+          delete:
+            description: Destroy OSD
+            params:
+              cleanup:
+                description: "Whether or not to remove partition table entries (BOOL: <0|1>)"
+        context:
+          in:
+            description: Ceph OSD in
+            actions:
+              post:
+                description: Perform 'in' on this OSD ID
+          lv_info:
+            description: Ceph OSD volume details
+            actions:
+              get:
+                description: Get OSD volume details
+                params:
+                  type:
+                    description: OSD device type (<block|db|wal>)
+          metadata:
+            description: Ceph OSD details
+            actions:
+              get:
+                description: Get Ceph OSD details
+          out:
+            description: Ceph OSD out
+            actions:
+              post:
+                description: Perform 'out' on this OSD ID
+          scrub:
+            description: Ceph OSD scrub
+            actions:
+              post:
+                description: Instruct the OSD to scrub
+                params:
+                  deep:
+                    description: "Whether or not to instruct a deep scrub (BOOL: <0|1>)"
+  pool:
+    description: Ceph pools
+    actions:
+      get:
+        description: List all pools and their settings
+      post:
+        description: Create Ceph pool
+        params:
+          name:
+            required: True
+            description: The name of the pool
+          add_storages:
+            description: Configure VM and CT storage using the new pool (<0|1>)
+          application:
+            description: The application of the pool (<rbd|cephfs|rgw>)
+          crush_rule:
+            description: The rule to use for mapping object placement in the cluster
+          erasure-coding:
+            description: Create an erasure coded pool for RBD with an accompanying replicated pool for metadata storage
+          min-size:
+            description: Minimum number of replicas per object (<1-7>)
+          pg_autoscale_mode:
+            description: The automatic PG scaling mode of the pool (<on|off|warn>)
+          pg_num:
+            description: Number of placement groups (<1-32768>)
+          pg_num_min:
+            description: Minimum number of placement groups(<-N-32768>)
+          size:
+            description: Number of replicas per object (<1-7>)
+          target_size:
+            description: The estimated target size of the pool for the PG autoscaler
+          target_size_ratio:
+            description:  The estimated target ratio of the pool for the PG autoscaler
+    context:
+      name:
+        is_variable: True
+        description: Ceph pool name
+        actions:
+          get:
+            description: Get pool index
+          put:
+            description: Change pool settings
+            params:
+              application:
+                description: The application of the pool (<rbd|cephfs|rgw>)
+              crush_rule:
+                description: The rule to use for mapping object placement in the cluster
+              min-size:
+                description: Minimum number of replicas per object (<1-7>)
+              pg_autoscale_mode:
+                description: The automatic PG scaling mode of the pool (<on|off|warn>)
+              pg_num:
+                description: Number of placement groups (<1-32768>)
+              pg_num_min:
+                description: Minimum number of placement groups(<-N-32768>)
+              size:
+                description: Number of replicas per object (<1-7>)
+              target_size:
+                description: The estimated target size of the pool for the PG autoscaler
+              target_size_ratio:
+                description:  The estimated target ratio of the pool for the PG autoscaler
+          delete:
+            description: Destroy pool
+            params:
+              force:
+                description: "whether or not to destroy pool, even if in use (<0|1>)"
+              remove_ecprofile:
+                description: "whether or not to remove the erasure code profile (<0|1>)"
+              remove_storages:
+                description: "whether or not to remove all pveceph-managed storages configured for this pool (<0|1>)"
+        context:
+          status:
+            description: Ceph pool status
+            actions:
+              get:
+                description: Get the current pool status
+                params:
+                  verbose:
+                    description: whether or not to display additional data (<0|1>)
+  cmd-safety:
+    description: Command safety check
+    actions:
+      get:
+        description: Heuristical check if it is safe to perform an actions
+        params:
+          action:
+            required: True
+            description: Action to check (<stop|destroy>)
+          id:
+            required: True
+            description: ID of the service
+          service:
+            required: True
+            description: Service type (<osd|mon|mds>)
+  crush:
+    description: Ceph OSD crush
+    actions:
+      get:
+        description: Get OSD crush map
+  init:
+    description: Initialize Ceph configuration
+    actions:
+      post:
+        description: Create initial Ceph default configuration and setup symlinks
+        params:
+          cluster-network:
+            description: Declare a separate cluster network
+          disable_cephx:
+            description: Whether or not to disable cephx authentication (<0|1>)
+          min_size:
+            description: Minimum number of available replicas per object to allow I/O
+          network:
+            description: Specific network to use for all Ceph related traffic
+          pg_bits:
+            description: Placement group bits, used to specify the default number of placement groups (<6-14>)
+          size:
+            description: Targeted number of replicas per object (<1-7>)
+  log:
+    description: Ceph log
+    actions:
+      get:
+        description: Read ceph log
+        params:
+          limit:
+            description: Limit (<0-N>)
+          start:
+            description: Start (<0-N>)
+  restart:
+    description: Ceph service restart
+    actions:
+      post:
+        description: Restart ceph services
+        params:
+          service:
+            description: Ceph service name
+  rules:
+    description: Ceph rules
+    actions:
+      get:
+        description: List Ceph rules
+  start:
+    description: Ceph service start
+    actions:
+      post:
+        description: Start Ceph services
+        params:
+          service:
+            description: Ceph service name
+  status:
+    description: Ceph service status
+    actions:
+      get:
+        description: Get Ceph status
+  stop:
+    description: Ceph service stop
+    actions:
+      post:
+        description: Stop Ceph services
+        params:
+          service:
+            description: Ceph service name
