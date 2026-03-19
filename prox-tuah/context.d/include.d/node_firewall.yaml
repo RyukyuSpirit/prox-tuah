@@ -1,0 +1,154 @@
+description: Node firewall
+actions:
+  get:
+    description: Get node firewall directory index
+context:
+  rules:
+    description: Node firewall rules
+    actions:
+      get:
+        description: List rules
+      post:
+        description: Create new rule
+        params:
+          action:
+            required: True
+            description: Rule action
+          type:
+            required: True
+            description: Rule type
+          comment:
+            description: Descriptive comment
+          dest:
+            description: Packet destination address
+          digest:
+            description: Prevent changes if current configuration file has a different digest
+          dport:
+            description: TCP/UDP destination port.
+          enable:
+            description: Flag to enable/disable a rule (<0-N>)
+          icmp-type:
+            description: Specify icmp-type
+          iface:
+            description: Network interface name
+          log:
+            description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+          macro:
+            description: Use predefined standard macro
+          pos:
+            description: Update rule at position (<0-N>)
+          proto:
+            description: IP protocol
+          source:
+            description: Packet source address
+          sport:
+            description: TCP/UDP source port
+    context:
+      pos:
+        is_variable: True
+        description: Specific rule at position
+        actions:
+          get:
+            description: Gets single rule data
+          put:
+            description: Modify rule data
+            params:
+              action:
+                description: Rule action
+              comment:
+                description: Descriptive comment
+              delete:
+                description: A list of settings you want to delete
+              dest:
+                description: Packet destination address
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              dport:
+                description: TCP/UDP destination port.
+              enable:
+                description: Flag to enable/disable a rule (<0-N>)
+              icmp-type:
+                description: Specify icmp-type
+              iface:
+                description: Network interface name
+              log:
+                description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+              macro:
+                description: Use predefined standard macro
+              moveto:
+                description: Move rule to new position. Other arguments are ignored.
+              proto:
+                description: IP protocol
+              source:
+                description: Packet source address
+              sport:
+                description: TCP/UDP source port
+              type:
+                description: Rule type
+          delete:
+            description: Delete rule
+            params:
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              pos:
+                description: Update rule at position
+  log:
+    description: Node firewall log
+    actions:
+      get:
+        description: Read firewall log
+        params:
+          limit:
+            description: Limit logs (<0-N>)
+          since:
+            description: Display log since this UNIX epoch (<0-N>)
+          start:
+            description: Start log at (<0-N>)
+          until:
+            description: Display log until this UNIX epoch (<0-N>)
+  options:
+    description: Node firewall options
+    actions:
+      get:
+        description: Get host firewall options
+      put:
+        description: Set firewall options
+        params:
+          delete:
+            description: A list of settings you want to delete
+          digest:
+            description: Prevent changes if current configuration file has a different digest
+          enable:
+            description: Whether or not to enable host firewall rules (<0|1>)
+          log_level_forward:
+            description: Log level for forwarded traffic (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+          log_level_in:
+            description: Log level for incoming traffic (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+          log_level_in:
+            description: Log level for outgoing traffic (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+          log_nf_conntrack:
+            description: Whether or not to enable logging of conntrack information (<0|1>)
+          ndp:
+            description: Whether or not to enable Neighbor Discovery Protocol (<0|1>)
+          nf_conntrack_allow_invalid:
+            description: Whether or not to allow invalid packets on connection tracking
+          nf_conntrack_helpers:
+            description: Enable conntrack helpers for specific protocols
+          nf_conntrack_max:
+            description: Maximum umber of tracked connections (<32768-N>)
+          nf_conntrack_tcp_timeout_established:
+            description: Conntrack established timeout (<7875-N>)
+          nf_conntrack_tcp_timeout_syn_recv:
+            description: Conntrack syn recv timeout (<30-60>)
+          nftables:
+            description: Whether or not to enable nftables based firewall (<0|1>)
+          nosmurfs:
+            description: Whether or not to enable SMURFS filter (<0-1>)
+          protection_synflood:
+            description: Whether or not to enable synflood protection
+          protection_synflood_burst:
+            description: Synflood protection rate burst by ip src
+          protection_synflood_rate:
+            description: Synflood protection rate syn/sec by ip src
+          smurf_log_level:
+            description: Log level for SMURFS filter (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
