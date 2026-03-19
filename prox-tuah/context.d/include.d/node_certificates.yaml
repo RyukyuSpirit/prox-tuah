@@ -1,0 +1,51 @@
+description: Node certificates 
+actions:
+  get:
+    description: Get node certificates index
+context:
+  acme:
+    description: ACME certificates 
+    actions:
+      get:
+        description: Get ACME certificates index
+    context:
+      certificate:
+        description: ACME certificate
+        actions:
+          post:
+            description: Order a new certificate from ACME-compatible CA
+            params:
+              force:
+                description: Whether or not to overwrite existing custom certificate (<0|1>)
+          put:
+            description: Renew existing certificate from CA
+            params:
+              force:
+                description: Whether or not to renew, even if expiry is more than 30 days away (<0|1>)
+          delete:
+            description: Revoke existing certificate from CA
+  custom:
+    description: Custom certificates
+    actions:
+      post:
+        description: Upload or update custom certificate chain and key
+        params:
+          certificates:
+            required: True
+            description: PEM encoded certificate (chain)
+          force:
+            description: Whether or not to overwrite existing custom or ACME certificate files (<0|1>)
+          key:
+            description: PEM encoded private key
+          restart:
+            description: Whether or not to restart pveproxy (<0|1>)
+      delete:
+        description: Delete custom certificate chain and key
+        params:
+          restart:
+            description: Whether or not to restart pveproxy (<0|1>)
+  info:
+    description: Node certificate info
+    actions:
+      get:
+        description: Get information about node's certificates
