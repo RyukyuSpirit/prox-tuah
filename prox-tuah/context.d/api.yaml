@@ -22,6 +22,8 @@ api:
               !inc context.d/include.d/node_ceph.yaml
             certificates:
               !inc context.d/include.d/node_certificates.yaml
+            disks:
+              !inc context.d/include.d/node_disks.yaml
             qemu:
               !inc context.d/include.d/node_qemu.yaml
     pools:

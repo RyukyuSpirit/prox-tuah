@@ -1,0 +1,172 @@
+description: Node disks
+actions:
+  get:
+    description: Get node disks index
+context:
+  directory:
+    description: PVE managed directory storage
+    actions:
+      get:
+        description: Get PVE managed directory storage list
+      post:
+        description: Create a filesystem on an unused disk. Will be mounted under '/mnt/pve/<name>'
+        params:
+          device:
+            required: True
+            description: The block device you want to create the filesystem on
+          name:
+            required: True
+            description: The storage identifier
+          add_storage:
+            description: Whether or not configure storage using the directory (<0|1>)
+          filesystem:
+            description: The desired filesystem (<ext4|xfs>)
+    context:
+      name:
+        is_variable: true
+        description: Specific directory storage
+        actions:
+          delete:
+            description: Unmounts the storage and removes the mount unit
+            params:
+              cleanup-config:
+                description: Whether or not to mark associated storage as not available on this node anymore or removes them from the configuration (if configured for this node only) (<0|1>)
+              cleanup-disks:
+                description: Whether or not to also wipe disk so it can be repurposed (<0|1>)
+  lvm:
+    description: Node LVM
+    actions:
+      get:
+        description: List LVM volume groups
+      post:
+        description: Create an LVM volume groups
+        params:
+          device:
+            required: True
+            description: The block device you want to craete the volume group on
+          name:
+            required: True
+            description: The storage identifier
+          add_storage:
+            description: Whether or not to configure storage using the volume group
+    context:
+      name:
+        description: Specific LVM volume group
+        actions:
+          delete:
+            description: Remove an LVM volume group
+            params:
+              cleanup-config:
+                description: Whether or not to mark associated storage as not available on this node anymore or removes them from the configuration (if configured for this node only) (<0|1>)
+              cleanup-disks:
+                description: Whether or not to also wipe disk so it can be repurposed (<0|1>)
+  lvmthin:
+    description: Node LVM thinpools
+    actions:
+      get:
+        description: List LVM thinpools
+      post:
+        description: Create LVM thinpools
+        params:
+          device:
+            required: True
+            description: The block device you want to create the thinpool on
+          name:
+            required: True
+            description: The storage identifier
+          add_storage:
+            description: Whether or not to configure storage using the thinpool
+    context:
+      name:
+        is_variable: True
+        description: Specific LVM thinpool
+        actions:
+          delete:
+            description: Remove an LVM thinpool
+            params:
+              volume-group:
+                required: True
+                description: The storage identifier
+              cleanup-config:
+                description: Whether or not to mark associated storage as not available on this node anymore or removes them from the configuration (if configured for this node only) (<0|1>)
+              cleanup-disks:
+                description: Whether or not to also wipe disk so it can be repurposed (<0|1>)
+  zfs:
+    description: Node ZFS pools
+    actions:
+      get:
+        description: List ZFS pools
+      post:
+        description: Create a ZFS pool
+        params:
+          devices:
+            required: True
+            description: The block devices you want to create the zpool on
+          name:
+            required: True
+            description: The storage identifier
+          raidlevel:
+            required: True
+            description: RAID level to use (<single|mirror|raid10|raidz|raidz2|raidz3|draid|draid2|draid3>)
+          add_storage:
+            description: Whether or not to configure storage using the zpool
+          ashift:
+            description: Pool sector size exponent (<9-16>)
+          compression:
+            description: The compression algorithm to use (<on|off|gzip|lz4|lzjb|zle|zstd>)
+          draid-config:
+            description: draid configuration
+    context:
+      name:
+        is_variable: True
+        description: Specific ZFS pool
+        actions:
+          get:
+            description: Get details about a zpool
+          delete:
+            description: Destroy a ZFS pool
+            params:
+              cleanup-config:
+                description: Whether or not to mark associated storage as not available on this node anymore or removes them from the configuration (if configured for this node only) (<0|1>)
+              cleanup-disks:
+                description: Whether or not to also wipe disk so it can be repurposed (<0|1>)
+  initgpt:
+    description: GPT initialization
+    actions:
+      post:
+        description: Initialize disk with GPT
+        params:
+          disk:
+            required: True
+            description: Block device name
+          uuid:
+            description: UUID for the GPT table
+  list:
+    description: Local disks
+    actions:
+      get:
+        description: List local disks
+        params:
+          include-partitions:
+            description: Whether or not to include partitions (<0|1>)
+          skipsmart:
+            description: Whether or not to skip checks (<0|1>)
+          type:
+            description: Only list specific types of disks (<unused|journal_disks>)
+  smart:
+    description: Disk SMART health
+    actions:
+      get:
+        description: Get SMART healt of a disk
+        params:
+          healthonly:
+            description: Whether or not to only return the health status (<0|1>)
+  wipedisk:
+    description: Disk wiping
+    actions:
+      put:
+        description: Wipe a disk or partition
+        params:
+          disk:
+            required: True
+            description: Block device name
