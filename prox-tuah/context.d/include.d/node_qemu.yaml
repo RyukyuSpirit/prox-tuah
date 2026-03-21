@@ -1,9 +1,18 @@
-description: "Enter QEMU VM's context"
-return_type: "list"
+description: Node QEMU (VM)
 actions:
   get:
-    description: "Get VMs"
-    run_func: get
+    description: "Get Virtual Machine index"
+    params:
+      full:
+        description: Determine the full status of active VMs (<0|1>)
+  post:
+    description: Create or restore a virtual machine
+    params:
+      vmid:
+        required: True
+        description: The ID of the VM
+      acpi:
+        description: Enable ACPI (<0|1>)
 context:
   vmid:
     description: "Enter specific VM's context"
