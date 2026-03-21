@@ -328,8 +328,11 @@ class ProxmoxHandler(ProxmoxAPI):
                 results = eval(f"self('{endpoint}').get({','.join(params)})")
             else:
                 results = eval(f"self('{endpoint}').get()")
-        except:
-            results = (f"Error: failed to GET: {endpoint}")
+        except Exception as e:
+            if params:
+                results = (f"Error: failed to GET '{endpoint}' with params '{params}' ({e})")
+            else:
+                results = (f"Error: failed to GET '{endpoint}' with no params ({e})")
 
         return results
 

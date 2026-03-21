@@ -30,6 +30,8 @@ api:
               !inc context.d/include.d/node_hardware.yaml
             lxc:
               !inc context.d/include.d/node_lxc.yaml
+            network:
+              !inc context.d/include.d/node_network.yaml
             qemu:
               !inc context.d/include.d/node_qemu.yaml
     pools:
