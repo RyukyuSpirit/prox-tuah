@@ -83,7 +83,7 @@ class ProxmoxHandler(ProxmoxAPI):
         Returns a string-notation formatted endpoint string of commands list
         """
         # strip unrelated items from list
-        for c in ['api', 'get', 'post', 'put']:
+        for c in ['api', 'get', 'post', 'put', 'delete']:
             if c in commands:
                 commands.remove(c)
         return commands

@@ -189,9 +189,6 @@ context:
                 actions:
                   get:
                     description: List ipset content
-                    params:
-                      name:
-                        description: IPSet name
                   post:
                     description: Add IP or network to ipset
                     params:

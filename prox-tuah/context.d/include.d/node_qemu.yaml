@@ -13,128 +13,1185 @@ actions:
         description: The ID of the VM
       acpi:
         description: Enable ACPI (<0|1>)
+      affinity:
+        description: List of host cores used to execute guest processes (ex. '0,5,8-11')
+      agent:
+        description: Enable communication with the QEMU Guest Agent and its properties
+      allow-ksm:
+        description: Allow memory pages of this guest to be merged via KSM, Kernel Samepage Merging (<0,1>)
+      amd-sev:
+        description: Secure Encrypted Virtualization (SEV) features by AMD CPUs
+      arch:
+        description: Virtual processor architecture (<x86_64|aarch64>)
+      archive:
+        description: The backup archive
+      args:
+        description: Arbitratry arguments passed to kvm
+      audio0:
+        description: Configure a audio device, useful in combination with QXL/Spice
+      autostart:
+        description: Automatic restart after crash (<0|1>)
+      balloon:
+        description: Amount of target RAM for the VM in MiB, or 0 to disable
+      bios:
+        description: Select BIOS implementation
+      boot:
+        description: Specify guest boot order
+      bootdisk:
+        description: Enable booting from specified disk
+      bwlimit:
+        description: Override I/O bandwidth limit, in KiB/s
+      cdrom:
+        description: This is an alias for option -ide2
+      cicustom:
+        description: "cloud-init: Specify custom files to replace the automatically generated ones at start"
+      cipassword:
+        description: "cloud-init: Password to assign the user"
+      citype:
+        description: "cloud-init: Specifies the cloud-init configuration format"
+      ciupgrade:
+        description: "cloud-init: Do an automatic package upgrade after the first boot (<0|1>)"
+      ciuser:
+        description: "cloud-init: User name to change ssh keys and password for instead of the image's configured default user"
+      cpu:
+        description: Emulated CPU type
+      cpulimit:
+        description: Limit of CPU usage (<0-128>)
+      description:
+        description: Description for the VM
+      efidisk0:
+        description: Configure a disk for storing EFI vars
+      force:
+        description: Allow to overwrite existing VM (<0|1>)
+      freeze:
+        description: Freeze CPU at startup (<0|1>)
+      ha-managed:
+        description: Add the VM as a HA resource after it is created
+      hookscript:
+        description: Script that will be executed during various steps in the VM's lifetime
+#      hostpciN:
+#        description: Map host PCI devices into guest
+      hotplug:
+        description: Selectively enable hotplug features
+      hugepages:
+        description: Enables hugepages memory (<any|2|1024>)
+#      ideN:
+#        description: User volume as IDE hard disk or CD-ROM
+      import-working-storage:
+        description: A file-based storage with 'images' content-type enabled, which is used as an intermediary extraction storage during import
+      intel-tdx:
+        description: Trusted Domain Extension (TDX) features by Intel CPUs
+#      ipconfigN:
+#        description: "cloud-init: Specify IP addresses and gateways for the corresponding interface"
+      ivshmem:
+        description: Inter-VM shared memory
+      keephugepages:
+        description: Prevent hugepages from being deleted after VM shutdown to be used for subsequent starts (<0|1>)
+      keyboard:
+        description: Keyboard layout for the VNC server
+      kvm:
+        description: Enable KVM hardware virtualization (<0|1>)
+      live-restore:
+        description: Start the VM immediately while importing or restoring in the background (<0|1>)
+      localtime:
+        description: Set the real time clock to local time (<0|1>)
+      lock:
+        description: "Lock/unlock the VM"
+      machine:
+        description: Specify the QEMU machine
+      memory:
+        description: Memory properties
+      migrate_downtime:
+        description: Set maximum tolerated downtime (in seconds) for migrations
+      migrate_speed:
+        description: Set maximum speed (in MB/s) for migrations, or '0' for no limit
+      name:
+        description: Set a name for the VM
+      nameserver:
+        description: "cloud-init: Sets DNS server IP address for VM"
+#      netN:
+#        description: Specify network devices
+      numa:
+        description: Enable NUMA (<0|1>)
+#      numaN:
+#        description: NUMA topology
+      onboot:
+        description: Specifies whether a VM will be started during system bootup (<0|1>)
+      ostype:
+        description: Specify guest operating system
+#      parallelN:
+#        description: Map host paralel devices
+      pool:
+        description: Add the VM to the specified pool
+      protection:
+        description: Sets the protection flag of the VM (<0|1>)
+      reboot:
+        description: Allow reboot (<0|1>)
+      rng0:
+        description: Configure a VirtIO-based random number generator
+#      sataN:
+#        description: Use volume as SATA hard disk or CD-ROM
+#      scsiN:
+#        description: Use volume as SCSI hard disk or CD-ROM
+      scsihw:
+        description: SCSI controller model
+      searchdomain:
+        description: "cloud-init: Sets DNS search domains for VM"
+#      serialN:
+#        description: Create a serial device inside the VM
+      shares:
+        description: Amount of memory shares for auto-ballooning
+      smbios1:
+        description: Specify SMBIOS type 1 fields
+      smp:
+        description: The number of CPUs, use option 'sockets' instead
+      sockets:
+        description: The number of CPU sockets
+      spice_enhancements:
+        description: Configure additional enhancements for SPICE
+      sshkeys:
+        description: "cloud-init: Setup publi SSH keys (one key per line, OpenSSH format)"
+      start:
+        description: Start VM after is is created successfully
+      startdate:
+        description: Set the initial date of the real time clock
+      startup:
+        description: Startup and shudown behavior
+      storage:
+        description: Default storage
+      tablet:
+        description: Enable the USB table device (<0|1>)
+      tags:
+        description: Tags of the VM
+      tdf:
+        description: Enable time drift fix (<0|1>)
+      template:
+        description: Enable template (<0|1>)
+      tpmstate0:
+        description: Configure a disk for storing TPM state
+      unique:
+        description: Assign a unique random ethernet address
+#      unusedN:
+#        description: Reference to unused volumes
+#      usbN:
+#        description: Configure a USB device
+      vcpus:
+        description: Number of hotplugged vcpus
+      vga:
+        description: Configure the VGA harware
+#      virtioN:
+#        description: Use volume as VIRTIO hard disk
+#      virtiofsN:
+#        description: Configuration for sharing a directory between host and guest using Virtio-fs
+      vmgenid:
+        description: The VM generation ID (vmgenid) device exposes a 128-bit integer value identifier to the guest OS
+      vmstatestorage:
+        description: "Default storage for VM state volumes/files"
+      watchdog:
+        description: Create a virtual harware watchdog device
 context:
   vmid:
-    description: "Enter specific VM's context"
+    description: "Specific QEMU VM"
     is_variable: true
-    return_type: "list"
+    actions:
+      get:
+        description: Get VM directory index
+      delete:
+        description: Destroy VM and all used/owned volumes
+        params:
+          destroy-unreferenced-disks:
+            description: Destroy all disks not referenced in the config but with a matchind VMID from all enabled storages (<0|1>)
+          purge:
+            description: Remove VMID from configurations, like backup/replication jobs and HA (<0|1>)
+          skiplock:
+            description: Ignore locks (<0|1>)
     context:
       agent:
-        description: "QEMU Guest Agent Command Index"
+        description: QEMU Guest Agent
         actions:
           get:
-            description: "Get QEMU Guest Agent Command list"
-            run_func: "get"
+            description: Get QEMU Guest Agent command index
+          post:
+            description: Execute QEMU Guest Agent commands
+            params:
+              command:
+                required: True
+                description: The QGA command
+        context:
+          exec:
+            description: QGA exec command
+            actions:
+              post:
+                description: Executes the given command in the vm via the guest-agent and returns an object with pid
+                params:
+                  command:
+                    required: True
+                    description: The command as a list of progam and arguments
+                  input-data:
+                    description: Data to pass as 'input-data' to the guest
+          exec-status:
+            description: QGA exec status
+            actions:
+              get:
+                description: Gets the status of the given pid stared by the guest-agent
+                params:
+                  pid:
+                    required: True
+                    description: The PID to query
+          file-read:
+            description: QGA file-read
+            actions:
+              get:
+                description: Reads the given file via guest agent, up to 16777216 bytes
+                params:
+                  file:
+                    required: True
+                    description: The path to the file
+          file-write:
+            description: QGA file-write
+            actions:
+              post:
+                description: Write the given file via guest agent
+                params:
+                  content:
+                    required: True
+                    description: The content to write into the file
+                  file:
+                    required: True
+                    description: The path to the file
+                  encode:
+                    description: Encode content as base64 (<0|1>)
+          fsfreeze-freeze:
+            description: QGA fsfreeze-freeze
+            actions:
+              post:
+                description: Execute fsfreeze-freeze
+          fsfreeze-status:
+            description: QGA fsfreeze-status
+            actions:
+              post:
+                description: Execute fsfreeze-status
+          fsfreeze-thaw:
+            description: QGA fsfreeze-thaw
+            actions:
+              post:
+                description: Execute fsfreeze-thaw
+          fstrim:
+            description: QGA fstrim
+            actions:
+              post:
+              description: Execute fstrim
+          get-fsinfo:
+            description: QGA get-fsinfo
+            actions:
+              get:
+                description: Execute get-fsinfo
+          get-host-name:
+            description: QGA get-host-name
+            actions:
+              get:
+                description: Execute get-host-name
+          get-memory-block-info:
+            description: QGA get-memory-block-info
+            actions:
+              get:
+                description: Execute get-memory-block-info
+          get-memory-blocks:
+            description: QGA get-memory-blocks
+            actions:
+              get:
+                description: Execute get-memory-blocks
+          get-osinfo:
+            description: QGA get-osinfo
+            actions:
+              get:
+                description: Execute get-osinfo
+          get-time:
+            description: QGA get-time
+            actions:
+              get:
+                description: Execute get-time
+          get-timezone:
+            description: QGA get-timezone
+            actions:
+              get:
+                description: Execute get-timezone
+          get-users:
+            description: QGA get-users
+            actions:
+              get:
+                description: Execute get-users
+          get-vcpus:
+            description: QGA get-vcpus
+            actions:
+              get:
+                description: Execute get-vcpus
+          info:
+            description: QGA info
+            actions:
+              get:
+                description: Execute info
+          network-get-interface:
+            description: QGA network-get-interface
+            actions:
+              get:
+                description: Execute network-get-interface
+          ping:
+            description: QGA ping
+            actions:
+              post:
+                description: Execute ping
+          set-user-password:
+            description: QGA set-user-password
+            actions:
+              post:
+                description: Sets the password for the given user to the given password
+                params:
+                  password:
+                    required: True
+                    description: The new password
+                  username:
+                    required: True
+                    description: The user to set the password for
+                  crypted:
+                    description: The password has alrady been passed through crypt() (<0|1>)
+          shutdown:
+            description: QGA shutdown
+            actions:
+              post:
+                description: Execute shutdown
+          suspend-disk:
+            description: QGA suspend-disk
+            actions:
+              post:
+                description: Execute suspend-disk
+          suspend-hybrid:
+            description: QGA suspend-hybrid
+            actions:
+              post:
+                description: Execute suspend-hybrid
+          suspend-ram:
+            description: QGA suspend-ram
+            actions:
+              post:
+                description: Execute suspend-ram
+      cloudinit:
+        description: QEMU cloud-init
+        actions:
+          get:
+            description: Get the cloudinit configuration with both current and pending values
+          put:
+            description: Regenerate and change cloudinit config drive
+        context:
+          dump:
+            description: Cloud-init dump
+            actions:
+              get:
+                description: Get automatically generated cloudinit config
+                params:
+                  type:
+                    required: True
+                    description: Config type (<user|network|meta>)
+      firewall:
+        description: VM firewall
+        actions:
+          get:
+            description: Get VM firewall directory index
+        context:
+          aliases:
+            description: VM firewall aliases
+            actions:
+              get:
+                description: List aliases
+              post:
+                description: Create IP or network alias
+                params:
+                  cidr:
+                    required: True
+                    description: Network/IP specification in CIDR format
+                  name:
+                    required: True
+                    description: Alias name
+                  comment:
+                    description: Comment
+            context:
+              name:
+                description: Specific VM firewall alias
+                actions:
+                  get:
+                    description: Read alias
+                  put:
+                    description: Update IP or network alias
+                    params:
+                      cidr:
+                        required: True
+                        description: Network/IP specification in CIDR format
+                      name:
+                        required: True
+                        description: Alias name
+                      comment:
+                        description: Comment
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+                      rename:
+                        description: Rename an existing alias
+                  delete:
+                    description: Remove IP or network alias
+                    params:
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+          ipset:
+            description: VM firewall ipsets
+            actions:
+              get:
+                description: List ipsets
+              post:
+                description: Create new ipset
+                params:
+                  name:
+                    required: True
+                    description: IPSet name
+                  comment:
+                    description: Comment
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  rename:
+                    description: Rename an existing ipset
+            context:
+              name:
+                is_variable: True
+                description: Specific VM firewall ipset
+                actions:
+                  get:
+                    description: List ipset content
+                  post:
+                    description: Add IP or network to ipset
+                    params:
+                      cidr:
+                        required: True
+                        description: Network/IP specification in CIDR format
+                      comment:
+                        description: Comment
+                      nomatch:
+                        description: No match (<0|1>)
+                  delete:
+                    description: Delete ipset
+                    params:
+                      force:
+                        description: Delete all members of the ipset, if any (<0|1>)
+                context:
+                  cidr:
+                    description: Specific VM firewall ipset CIDR
+                    actions:
+                      get:
+                        description: Read IP or network settings from ipset
+                      put:
+                        description: Update IP or network settings
+                        params:
+                          comment:
+                            description: Comment
+                          digest:
+                            description: Prevent changes if current configuration file has a diffrent digest
+                          nomatch:
+                            description: No match (<0|1>)
+                      delete:
+                        description: Remove IP or network from ipset
+                        params:
+                          digest:
+                            description: Prevent changes if current configuration file has a diffrent digest
+          rules:
+            description: VM firewall rules
+            actions:
+              get:
+                description: List rules
+              post:
+                description: Create new rule
+                params:
+                  action:
+                    required: True
+                    description: Rule action
+                  type:
+                    required: True
+                    description: Rule type
+                  comment:
+                    description: Descriptive comment
+                  dest:
+                    description: Packet destination address
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  dport:
+                    description: TCP/UDP destination port
+                  enable:
+                    description: Flag to enable/disable a rule (<0-N>)
+                  icmp-type:
+                    description: Specify icmp-type
+                  iface:
+                    description: Network interface name
+                  log:
+                    description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                  macro:
+                    description: Use predefined standard macro
+                  pos:
+                    description: Update rule at position (<0-N>)
+                  proto:
+                    description: IP protocol
+                  source:
+                    description: Packet source address
+                  sport:
+                    description: TCP/UDP source port
+            context:
+              pos:
+                is_variable: True
+                description: Specific VM firewall at position
+                actions:
+                  get:
+                    description: Get single rule data
+                  put:
+                    description: Modify rule data
+                    params:
+                      action:
+                        description: Rule action
+                      comment:
+                        description: Descriptive comment
+                      delete:
+                        description: A list of settings you want to delete
+                      dest:
+                        description: Packet destination address
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+                      dport:
+                        description: TCP/UDP destination port
+                      enable:
+                        description: Flag to enable/disable a rule (<0-N>)
+                      icmp-type:
+                        description: Specify icmp-type
+                      iface:
+                        description: Network interface name
+                      log:
+                        description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                      macro:
+                        description: Use predefined standard macro
+                      moveto:
+                        description: Move rule to new postion. Other arguments are ignored.
+                      pos:
+                        description: Update rule at position (<0-N>)
+                      proto:
+                        description: IP protocol
+                      source:
+                        description: Packet source address
+                      sport:
+                        description: TCP/UDP source port
+                      type:
+                        description: Rule type
+                  delete:
+                    description: Delete rule
+                    params:
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+          log:
+            description: VM firewall log
+            actions:
+              get:
+                description: Read firewall log
+                params:
+                  limit:
+                    description: Limit logs (<0-N>)
+                  since:
+                    description: Display log since this UNIX epoch (<0-N>)
+                  start:
+                    description: Start log at (<0-N>)
+                  until:
+                    description: Display log until this UNIX epoch (<0-N>)
+          options:
+            description: VM firewall options
+            actions:
+              get:
+                description: Get firewall options
+              put:
+                description: Set firewall options
+                params:
+                  delete:
+                    description: A list of settings you want to delete
+                  dhcp:
+                    description: Enable DHCP (<0|1>)
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  enable:
+                    description: Whether or not to enable host firewall rules (<0|1>)
+                  ipfilter:
+                    description: Enable default IP filters (<0|1>)
+                  log_level_in:
+                    description: Log level for incoming traffic (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                  log_level_out:
+                    description: Log level for outgoing traffic (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                  macfilter:
+                    description: Enable MAC address filter
+                  ndp:
+                    description: Whether or not to enable Neighbor Discovery Protocol (<0|1>)
+                  policy_in:
+                    description: Input policy (<ACCEPT|REJECT|DROP>)
+                  policy_out:
+                    description: Output policy (<ACCEPT|REJECT|DROP>)
+                  radv:
+                    description: Allow sending Router Advertisement (<0|1>)
+          refs:
+            description: VM firewall ipset/alias references
+            actions:
+              get:
+                description: List possible ipset/alias references
+                params:
+                  type:
+                    description: Only list refrences of specific type (<alias|ipset>)
+      snapshot:
+        description: VM snapshots
+        actions:
+          get:
+            description: List all snapshots
+          post:
+            description: Snapshot a virtual machine
+            params:
+              snapname:
+                required: True
+                description: The name of the snapshot
+              description:
+                description: A textual description or comment
+              vmstate:
+                description: Save the vmstate (<0|1>)
+        context:
+          snapname:
+            is_variable: True
+            description: Specific VM snapshot
+            actions:
+              get:
+                description: Get snapshot
+              delete:
+                description: Delete VM snapshot
+                params:
+                  force:
+                    description: Force removal from config file, even if removing disk snapshots fails (<0|1>)
+            context:
+              config:
+                description: Snapshot configuration
+                actions:
+                  get:
+                    description: Get snapshot configuration
+                  put:
+                    description: Update snapshot metadata
+                    params:
+                      description:
+                        description: A textual description or comment
+              rollback:
+                description: Snapshot rollback
+                actions:
+                  post:
+                    description: Rollback VM state to specified snapshot
+                    params:
+                      start:
+                        description: Start virtual machine after rolling back successfully (<0|1>)
+      status:
+        description: VM status
+        actions:
+          get:
+            description: Get VM status directory index
+        context:
+          current:
+            description: VM current status
+            actions:
+              get:
+                description: Get VM status
+          reboot:
+            description: VM reboot
+            actions:
+              post:
+                description: Reboot the VM by shutting it down, and starting it again. Applies pending changes.
+                params:
+                  timeout:
+                    description: Wait maximal timeout seconds for the shutdown
+          reset:
+            description: VM reset
+            actions:
+              post:
+                description: Reset VM
+                params:
+                  skiplock:
+                    description: Ignore locks (<0|1>)
+          resume:
+            description: VM resume
+            actions:
+              post:
+                description: Resume VM
+                params:
+                  nocheck:
+                    description: No check (<0|1>)
+                  skiplock:
+                    description: Ignore locks (<0|1>)
+          shutdown:
+            description: VM shutdown
+            actions:
+              post:
+                description: Shutdown VM. This will send an ACPI event for the guest OS, which should then proceed to a clean shutdown
+                params:
+                  forceStop:
+                    description: Make sure the VM stops (<0|1>)
+                  keepActive:
+                    description: Do not deactivate storage volumes (<0|1>)
+                  skiplock:
+                    description: Ignore locks (<0|1>)
+                  timeout:
+                    description: Wait maximal timeout seconds for the shutdown
+          start:
+            description: VM start
+            actions:
+              post:
+                description: Start VM
+                params:
+                  force-cpu:
+                    description: Override QEMU's -cpu argument with the given string
+                  machine:
+                    description: Specify the QEMU machine
+                  migratedfrom:
+                    description: The cluster node name
+                  migration_network:
+                    description: CIDR of the (sub) network that is used for migration
+                  migration_type:
+                    description: Migration type (<secure|insecure>)
+                  nets-host-mtu:
+                    description: List of VirtIO netowrk devices and their effective host_mtu setting according to the QEMU object model on the source side of the migration
+                  skiplock:
+                    description: Ignore locks (<0|1>)
+                  stateuri:
+                    description: Some command save/restore state from this location
+                  targetstorage:
+                    description: Mapping from source to target storages
+                  timeout:
+                    description: Wait maximal timeout seconds
+                  with-conntrack-state:
+                    description: Migrate conntrack entries for running VMs (<0|1>)
+          stop:
+            description: VM stop
+            actions:
+              post:
+                description: Stop virtual machine. The qemu process will exit immediately. This is akin to pulling the power plug of a running computer and may damage the VM data.
+                params:
+                  keepActive:
+                    description: Do not deactivate storage volumes (<0|1>)
+                  migratedfrom:
+                    description: The cluster node name
+                  overrule-shutdown:
+                    description: Try to abort active 'qmshutdown' tasks beforre stopping (<0|1>)
+                  skiplock:
+                    description: Ignore locks (<0|1>)
+                  timeout:
+                    description: Wait maximal timeout seconds
+          suspend:
+            description: VM suspend
+            actions:
+              post:
+                description: Suspend VM
+                params:
+                  skiplock:
+                    description: Ignore locks (<0|1>)
+                  statestorage:
+                    description: The storage for the VM state
+                  todisk:
+                    description: Suspend the VM to disk (<0|1>)
       clone:
-        description: "Create a copy of virtual machine/template"
+        description: VM clone
         actions:
           post:
-            description: "Create a copy of virtual machine/template"
-            run_func: "post"
+            description: Create a copy of virtual machine/template
             params:
               newid:
-                description: "VMID for the clone"
+                description: VMID for the clone
                 required: True
               bwlimit:
                 description: "Override I/O bandwidth limit (in KiB/s)"
               description:
-                description: "Description for the new VM"
+                description: Description for the new VM
               format:
-                description: "Target format for file storage (raw|qcow2|vmdk). Only valid for full clone"
+                description: Target format for file storage (raw|qcow2|vmdk)
               full:
-                description: "Create a full copy of all disks. Default for normal VMs, fallback for templates"
+                description: Create a full copy of all disks (<0|1>)
               name:
-                description: "Set a name for the new VM"
+                description: Set a name for the new VM
               pool:
-                description: "Add the new VM to the specified pool"
+                description: Add the new VM to the specified pool
               snapname:
-                description: "The name of the snapshot"
+                description: The name of the snapshot
               storage:
-                description: "Target storage for full clone"
+                description: Target storage for full clone
               target:
-                description: "Target node. Only allowed if the original VM is on the shared storage"
-      cloudinit:
-        description: "Cloudinit configuration"
-        actions:
-          get:
-            description: "Get cloudinit configuration"
-            run_func: "get"
-      firewall:
-        description: "Firewall context"
-        actions:
-          get:
-            description: "Get Firewall directory index"
-            run_func: "get"
-      snapshot:
-        description: "QEMU Snapshots"
-        actions:
-          get:
-            description: "List all snapshots"
-            run_func: "get"
-      status:
-        description: "Enter VM status context"
-        actions:
-          get:
-            description: "Get VM status"
-            run_func: "get"
-        context:
-          current:
-            description: "Current VM status"
-            actions:
-              get:
-                description: "Get current VM status"
-                run_func: "get"
-          reboot:
-            description: "Reboot VM"
-            actions:
-              post:
-                description: "Reboot the VM by shutting it down, and starting it again. Applies pending changes."
-                run_func: "post"
-          reset:
-            description: "Reset VM"
-            actions:
-              post:
-                description: "Reset VM"
-                run_func: "post"
-          resume:
-            description: "Resume VM"
-            actions:
-              post:
-                description: "Resume VM"
-                run_func: "post"
-          shutdown:
-            description: "Shutdown VM. This will send an ACPI event for the guest OS, which should then proceed to a clean shutdown"
-            actions:
-              post:
-                description: "Shutdown VM. This will send an ACPI event for the guest OS, which should then proceed to a clean shutdown"
-                run_func: "post"
-          start:
-            description: "Start VM"
-            actions:
-              post:
-                description: "Start VM"
-                run_func: "post"
-          stop:
-            description: "Stop virtual machine. The qemu process will exit immediately. This is akin to pulling the power plug of a running computer and may damage the VM data."
-            actions:
-              post:
-                description: "Stop virtual machine. The qemu process will exit immediately. This is akin to pulling the power plug of a running computer and may damage the VM data."
-                run_func: "post"
-          suspend:
-            description: "Suspend VM"
-            actions:
-              post:
-                description: "Suspend VM"
-                run_func: "post"
+                description: Target node
       config:
-        description: "VM configuration"
+        description: VM configuration
         actions:
           get:
-            description: "Get VM configuration"
-            run_func: "get"
+            description: Get VM configuration
+            params:
+              current:
+                description: Get current values, instead of pending values (<0|1>)
+              snapshot:
+                description: Fetch config values from given snapshot
           post:
-            description: "Set VM options (asynchronous)"
-            run_func: "post"
+            description: Set VM options (asynchronous)
             params:
               acpi:
-                description: Enable/disable ACPI
+                description: Enable ACPI (<0|1>)
+              affinity:
+                description: List of host cores used to execute guest processes (ex. '0,5,8-11')
+              agent:
+                description: Enable communication with the QEMU Guest Agent and its properties
+              allow-ksm:
+                description: Allow memory pages of this guest to be merged via KSM, Kernel Samepage Merging (<0,1>)
+              amd-sev:
+                description: Secure Encrypted Virtualization (SEV) features by AMD CPUs
+              arch:
+                description: Virtual processor architecture (<x86_64|aarch64>)
+              args:
+                description: Arbitratry arguments passed to kvm
+              audio0:
+                description: Configure a audio device, useful in combination with QXL/Spice
+              autostart:
+                description: Automatic restart after crash (<0|1>)
+              background_delay:
+                description: Time to wait for the task to finish
+              balloon:
+                description: Amount of target RAM for the VM in MiB, or 0 to disable
+              bios:
+                description: Select BIOS implementation
+              boot:
+                description: Specify guest boot order
+              bootdisk:
+                description: Enable booting from specified disk
+              cdrom:
+                description: This is an alias for option -ide2
+              cicustom:
+                description: "cloud-init: Specify custom files to replace the automatically generated ones at start"
+              cipassword:
+                description: "cloud-init: Password to assign the user"
+              citype:
+                description: "cloud-init: Specifies the cloud-init configuration format"
+              ciupgrade:
+                description: "cloud-init: Do an automatic package upgrade after the first boot (<0|1>)"
+              ciuser:
+                description: "cloud-init: User name to change ssh keys and password for instead of the image's configured default user"
+              cores:
+                description: "The number of cores per socket"
+              cpu:
+                description: Emulated CPU type
+              cpulimit:
+                description: Limit of CPU usage (<0-128>)
+              cpuunits:
+                description: CPU weight for a VM
+              delete:
+                description: A list of settings you want to delete
+              description:
+                description: Description for the VM
+              digest:
+                description: Prevent changes if current configuration file has different SHA1 digest
+              efidisk0:
+                description: Configure a disk for storing EFI vars
+              force:
+                description: Allow to overwrite existing VM (<0|1>)
+              freeze:
+                description: Freeze CPU at startup (<0|1>)
+              hookscript:
+                description: Script that will be executed during various steps in the VM's lifetime
+        #      hostpciN:
+        #        description: Map host PCI devices into guest
+              hotplug:
+                description: Selectively enable hotplug features
+              hugepages:
+                description: Enables hugepages memory (<any|2|1024>)
+        #      ideN:
+        #        description: User volume as IDE hard disk or CD-ROM
+              import-working-storage:
+                description: A file-based storage with 'images' content-type enabled, which is used as an intermediary extraction storage during import
+              intel-tdx:
+                description: Trusted Domain Extension (TDX) features by Intel CPUs
+        #      ipconfigN:
+        #        description: "cloud-init: Specify IP addresses and gateways for the corresponding interface"
+              ivshmem:
+                description: Inter-VM shared memory
+              keephugepages:
+                description: Prevent hugepages from being deleted after VM shutdown to be used for subsequent starts (<0|1>)
+              keyboard:
+                description: Keyboard layout for the VNC server
+              kvm:
+                description: Enable KVM hardware virtualization (<0|1>)
+              localtime:
+                description: Set the real time clock to local time (<0|1>)
+              lock:
+                description: "Lock/unlock the VM"
+              machine:
+                description: Specify the QEMU machine
+              memory:
+                description: Memory properties
+              migrate_downtime:
+                description: Set maximum tolerated downtime (in seconds) for migrations
+              migrate_speed:
+                description: Set maximum speed (in MB/s) for migrations, or '0' for no limit
+              name:
+                description: Set a name for the VM
+              nameserver:
+                description: "cloud-init: Sets DNS server IP address for VM"
+        #      netN:
+        #        description: Specify network devices
+              numa:
+                description: Enable NUMA (<0|1>)
+        #      numaN:
+        #        description: NUMA topology
+              onboot:
+                description: Specifies whether a VM will be started during system bootup (<0|1>)
+              ostype:
+                description: Specify guest operating system
+        #      parallelN:
+        #        description: Map host paralel devices
+              protection:
+                description: Sets the protection flag of the VM (<0|1>)
+              reboot:
+                description: Allow reboot (<0|1>)
+              revert:
+                description: Revert a pending change
+              rng0:
+                description: Configure a VirtIO-based random number generator
+        #      sataN:
+        #        description: Use volume as SATA hard disk or CD-ROM
+        #      scsiN:
+        #        description: Use volume as SCSI hard disk or CD-ROM
+              scsihw:
+                description: SCSI controller model
+              searchdomain:
+                description: "cloud-init: Sets DNS search domains for VM"
+        #      serialN:
+        #        description: Create a serial device inside the VM
+              shares:
+                description: Amount of memory shares for auto-ballooning
+              skiplock:
+                description: Ignore locks (<0|1>)
+              smbios1:
+                description: Specify SMBIOS type 1 fields
+              smp:
+                description: The number of CPUs, use option 'sockets' instead
+              sockets:
+                description: The number of CPU sockets
+              spice_enhancements:
+                description: Configure additional enhancements for SPICE
+              sshkeys:
+                description: "cloud-init: Setup publi SSH keys (one key per line, OpenSSH format)"
+              startdate:
+                description: Set the initial date of the real time clock
+              startup:
+                description: Startup and shudown behavior
+              tablet:
+                description: Enable the USB table device (<0|1>)
+              tags:
+                description: Tags of the VM
+              tdf:
+                description: Enable time drift fix (<0|1>)
+              template:
+                description: Enable template (<0|1>)
+              tpmstate0:
+                description: Configure a disk for storing TPM state
+        #      unusedN:
+        #        description: Reference to unused volumes
+        #      usbN:
+        #        description: Configure a USB device
+              vcpus:
+                description: Number of hotplugged vcpus
+              vga:
+                description: Configure the VGA harware
+        #      virtioN:
+        #        description: Use volume as VIRTIO hard disk
+        #      virtiofsN:
+        #        description: Configuration for sharing a directory between host and guest using Virtio-fs
+              vmgenid:
+                description: The VM generation ID (vmgenid) device exposes a 128-bit integer value identifier to the guest OS
+              vmstatestorage:
+                description: "Default storage for VM state volumes/files"
+              watchdog:
+                description: Create a virtual harware watchdog device
+          put:
+            description: Set VM options (synchronous)
+            params:
+              acpi:
+                description: Enable ACPI (<0|1>)
+              affinity:
+                description: List of host cores used to execute guest processes (ex. '0,5,8-11')
+              agent:
+                description: Enable communication with the QEMU Guest Agent and its properties
+              allow-ksm:
+                description: Allow memory pages of this guest to be merged via KSM, Kernel Samepage Merging (<0,1>)
+              amd-sev:
+                description: Secure Encrypted Virtualization (SEV) features by AMD CPUs
+              arch:
+                description: Virtual processor architecture (<x86_64|aarch64>)
+              args:
+                description: Arbitratry arguments passed to kvm
+              audio0:
+                description: Configure a audio device, useful in combination with QXL/Spice
+              autostart:
+                description: Automatic restart after crash (<0|1>)
+              balloon:
+                description: Amount of target RAM for the VM in MiB, or 0 to disable
+              bios:
+                description: Select BIOS implementation
+              boot:
+                description: Specify guest boot order
+              bootdisk:
+                description: Enable booting from specified disk
+              cdrom:
+                description: This is an alias for option -ide2
+              cicustom:
+                description: "cloud-init: Specify custom files to replace the automatically generated ones at start"
+              cipassword:
+                description: "cloud-init: Password to assign the user"
+              citype:
+                description: "cloud-init: Specifies the cloud-init configuration format"
+              ciupgrade:
+                description: "cloud-init: Do an automatic package upgrade after the first boot (<0|1>)"
+              ciuser:
+                description: "cloud-init: User name to change ssh keys and password for instead of the image's configured default user"
+              cores:
+                description: "The number of cores per socket"
+              cpu:
+                description: Emulated CPU type
+              cpulimit:
+                description: Limit of CPU usage (<0-128>)
+              cpuunits:
+                description: CPU weight for a VM
+              delete:
+                description: A list of settings you want to delete
+              description:
+                description: Description for the VM
+              digest:
+                description: Prevent changes if current configuration file has different SHA1 digest
+              efidisk0:
+                description: Configure a disk for storing EFI vars
+              force:
+                description: Allow to overwrite existing VM (<0|1>)
+              freeze:
+                description: Freeze CPU at startup (<0|1>)
+              hookscript:
+                description: Script that will be executed during various steps in the VM's lifetime
+        #      hostpciN:
+        #        description: Map host PCI devices into guest
+              hotplug:
+                description: Selectively enable hotplug features
+              hugepages:
+                description: Enables hugepages memory (<any|2|1024>)
+        #      ideN:
+        #        description: User volume as IDE hard disk or CD-ROM
+              intel-tdx:
+                description: Trusted Domain Extension (TDX) features by Intel CPUs
+        #      ipconfigN:
+        #        description: "cloud-init: Specify IP addresses and gateways for the corresponding interface"
+              ivshmem:
+                description: Inter-VM shared memory
+              keephugepages:
+                description: Prevent hugepages from being deleted after VM shutdown to be used for subsequent starts (<0|1>)
+              keyboard:
+                description: Keyboard layout for the VNC server
+              kvm:
+                description: Enable KVM hardware virtualization (<0|1>)
+              localtime:
+                description: Set the real time clock to local time (<0|1>)
+              lock:
+                description: "Lock/unlock the VM"
+              machine:
+                description: Specify the QEMU machine
+              memory:
+                description: Memory properties
+              migrate_downtime:
+                description: Set maximum tolerated downtime (in seconds) for migrations
+              migrate_speed:
+                description: Set maximum speed (in MB/s) for migrations, or '0' for no limit
+              name:
+                description: Set a name for the VM
+              nameserver:
+                description: "cloud-init: Sets DNS server IP address for VM"
+        #      netN:
+        #        description: Specify network devices
+              numa:
+                description: Enable NUMA (<0|1>)
+        #      numaN:
+        #        description: NUMA topology
+              onboot:
+                description: Specifies whether a VM will be started during system bootup (<0|1>)
+              ostype:
+                description: Specify guest operating system
+        #      parallelN:
+        #        description: Map host paralel devices
+              protection:
+                description: Sets the protection flag of the VM (<0|1>)
+              reboot:
+                description: Allow reboot (<0|1>)
+              revert:
+                description: Revert a pending change (<0|1>)
+              rng0:
+                description: Configure a VirtIO-based random number generator
+        #      sataN:
+        #        description: Use volume as SATA hard disk or CD-ROM
+        #      scsiN:
+        #        description: Use volume as SCSI hard disk or CD-ROM
+              scsihw:
+                description: SCSI controller model
+              searchdomain:
+                description: "cloud-init: Sets DNS search domains for VM"
+        #      serialN:
+        #        description: Create a serial device inside the VM
+              shares:
+                description: Amount of memory shares for auto-ballooning
+              skiplock:
+                description: Ignore locks (<0|1>)
+              smbios1:
+                description: Specify SMBIOS type 1 fields
+              smp:
+                description: The number of CPUs, use option 'sockets' instead
+              sockets:
+                description: The number of CPU sockets
+              spice_enhancements:
+                description: Configure additional enhancements for SPICE
+              sshkeys:
+                description: "cloud-init: Setup publi SSH keys (one key per line, OpenSSH format)"
+              startdate:
+                description: Set the initial date of the real time clock
+              startup:
+                description: Startup and shudown behavior
+              tablet:
+                description: Enable the USB table device (<0|1>)
+              tags:
+                description: Tags of the VM
+              tdf:
+                description: Enable time drift fix (<0|1>)
+              template:
+                description: Enable template (<0|1>)
+              tpmstate0:
+                description: Configure a disk for storing TPM state
+        #      unusedN:
+        #        description: Reference to unused volumes
+        #      usbN:
+        #        description: Configure a USB device
+              vcpus:
+                description: Number of hotplugged vcpus
+              vga:
+                description: Configure the VGA harware
+        #      virtioN:
+        #        description: Use volume as VIRTIO hard disk
+        #      virtiofsN:
+        #        description: Configuration for sharing a directory between host and guest using Virtio-fs
+              vmgenid:
+                description: The VM generation ID (vmgenid) device exposes a 128-bit integer value identifier to the guest OS
+              vmstatestorage:
+                description: "Default storage for VM state volumes/files"
+              watchdog:
+                description: Create a virtual harware watchdog device
+      dbus-vmstate:
+        description: VM dbus-vmstate
+        actions:
+          post:
+            description: Control the dbus-vmstate helper for the virtual machine
+            params:
+              action:
+                required: True
+                description: Action to perform on the DBus VMState helper
