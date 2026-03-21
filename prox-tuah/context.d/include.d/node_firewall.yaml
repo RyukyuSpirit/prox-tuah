@@ -24,7 +24,7 @@ context:
           digest:
             description: Prevent changes if current configuration file has a different digest
           dport:
-            description: TCP/UDP destination port.
+            description: TCP/UDP destination port
           enable:
             description: Flag to enable/disable a rule (<0-N>)
           icmp-type:
@@ -64,7 +64,7 @@ context:
               digest:
                 description: Prevent changes if current configuration file has a different digest
               dport:
-                description: TCP/UDP destination port.
+                description: TCP/UDP destination port
               enable:
                 description: Flag to enable/disable a rule (<0-N>)
               icmp-type:
@@ -124,7 +124,7 @@ context:
             description: Log level for forwarded traffic (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
           log_level_in:
             description: Log level for incoming traffic (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
-          log_level_in:
+          log_level_out:
             description: Log level for outgoing traffic (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
           log_nf_conntrack:
             description: Whether or not to enable logging of conntrack information (<0|1>)

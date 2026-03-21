@@ -1,0 +1,788 @@
+description: Node LXC (Linux containers)
+actions:
+  get:
+    description: Get LXC container index
+  post:
+    description: Create or restore a container
+    params:
+      ostemplate:
+        required: True
+        description: The OS template or backup file
+      vmid:
+        required: True
+        description: The ID of the VM
+      arch:
+        description: OS architecture type (<amd64|i386|arm64|armhf|riscv32|riscv64>)
+      bwlimit:
+        description: Override I/O bandwidth limit (in KiB/s)
+      cmode:
+        description: Console mode (<shell|console|tty>)
+      console:
+        description: Whether to attach a console device (/dev/console) to the container (<0|1>)
+      cpulimit:
+        description: Limit of CPU usage
+      cpuunits:
+        description: CPU weight for a container
+      debug:
+        description: Whether or not to be more verbose (<0|1>)
+      description:
+        description: Description for the container
+#      # To be implemented, currently doesn't support variablized kwarg
+#      devN:
+#        is_variable: True
+#        description: Device to pass through to the container
+      entrypoint:
+        description: Command to run as init, optionally with arguments
+      env:
+        description: The container runtime environment as NUL-separated list. Replaces any lxc.environment.runtime entries in the config.
+      features:
+        description: Allow containers access to advanced features
+      force:
+        description: Whether or not to allow overwriting existing container (<0|1>)
+      ha-managed:
+        description: Whether or not to add the CT as a HA resource after it is created (<0|1>)
+      hookscript:
+        description: Script that will be executed during various steps in the containers lifetime
+      hostname:
+        description: Set a hostname for the container
+      ignore-unpack-errors:
+        description: Whether or not to ignore errors when extracting the template.
+      lock:
+        description: Lock/unlock the container
+      memory:
+        description: Amount of RAM for the container (in MB)
+#      mpN:
+#        is_variable: True
+#        description: Use volume as container mount point
+      nameserver:
+        description: Sets DNS server IP address for the container
+#      netN:
+#        is_variable: True
+#        description: Specifies netowrk interfaces for the container
+      onboot:
+        description: Whether or not a container will be started during system boot (<0|1>)
+      ostype:
+        description: OS type
+      password:
+        description: Sets root password inside container
+      pool:
+        description: Add the VM to the specified pool
+      protection:
+        description: Whether or not to set the protection flag of the container (<0|1>)
+      restore:
+        description: Whether or not to mark this as a restore task (<0|1>)
+      rootfs:
+        description: User volume as container root
+      searchdomain:
+        description: Sets DNS search domains for a containner
+      ssh-public-keys:
+        description: Setup public SSH keys (one key per line, OpenSSH format)
+      start:
+        description: Whether or not to start the CT after its creation finished successfully
+      startup:
+        description: Startup and shutdown behavior
+      storage:
+        description: Default storage
+      swap:
+        description: Amount of SWAP for the container in MB
+      tags:
+        description: Tags of the container
+      template:
+        description: Enable template (<0|1>)
+      timezone:
+        description: Time zone to use in the container
+      tty:
+        description: Specify the number of tty available to the container (<0-6>)
+      unique:
+        description: Whether or not to assign a unique random ethernet address (<0|1>)
+      unprivileged:
+        description: Whether or not the container runs as unprivileged user (<0|1>)
+#      unusedN:
+#        is_variable: True
+#        description: Reference to unused volumes
+context:
+  vmid:
+    is_variable: True
+    description: Specific LXC
+    actions:
+      get:
+        description: Get LXC directory index
+      delete:
+        description: Destroy the container (also delete all uses file)
+        params:
+          destroy-unreferenced-disks:
+            description: Destroy all disks with the VMID from all enabled storages which are not referenced in the config (<0|1>)
+          force:
+            description: Force destroy, even if running (<0|1>)
+          purge:
+            description: Remove container from all related configurations (<0|1>)
+    context:
+      firewall:
+        description: LXC firewall
+        actions:
+          get:
+            description: Get LXC firewall directory index
+        context:
+          aliases:
+            description: LXC firewall aliases
+            actions:
+              get:
+                description: Get aliases
+              post:
+                description: Create IP or network alias
+                params:
+                  cidr:
+                    required: True
+                    description: Network/IP specification in CIDR format
+                  name:
+                    required: True
+                    description: Alias name
+                  comment:
+                    description: Comment
+            context:
+              name:
+                description: Specific LXC firewall alias
+                actions:
+                  get:
+                    description: Read alias
+                  put:
+                    description: Update IP or network alias
+                    params:
+                      cidr:
+                        required: True
+                        description: Network/IP specification in CIDR format
+                      name:
+                        required: True
+                        description: Alias name
+                      comment:
+                        description: Comment
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+                      rename:
+                        description: Rename an existing alias
+                  delete:
+                    description: Remove IP or network alias
+                    params:
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+          ipset:
+            description: LXC firewall ipsets
+            actions:
+              get:
+                description: List ipsets
+              post:
+                description: Create new ipset
+                params:
+                  name:
+                    required: True
+                    description: IPSet name
+                  comment:
+                    description: Comment
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  rename:
+                    description: Rename an existing ipset
+            context:
+              name:
+                is_variable: True
+                description: Specific LXC firewall ipset
+                actions:
+                  get:
+                    description: List ipset content
+                    params:
+                      name:
+                        description: IPSet name
+                  post:
+                    description: Add IP or network to ipset
+                    params:
+                      cidr:
+                        required: True
+                        description: Network/IP specification in CIDR format
+                      comment:
+                        description: Comment
+                      nomatch:
+                        description: No match (<0|1>)
+                  delete:
+                    description: Delete ipset
+                    params:
+                      force:
+                        description: Delete all members of the ipset, if any (<0|1>)
+                context:
+                  cidr:
+                    description: Specific LXC firewall ipset CIDR
+                    actions:
+                      get:
+                        description: Read IP or network settings from ipset
+                      put:
+                        description: Update IP or network settings
+                        params:
+                          comment:
+                            description: Comment
+                          digest:
+                            description: Prevent changes if current configuration file has a diffrent digest
+                          nomatch:
+                            description: No match (<0|1>)
+                      delete:
+                        description: Remove IP or network from ipset
+                        params:
+                          digest:
+                            description: Prevent changes if current configuration file has a diffrent digest
+          rules:
+            description: LXC firewall rules
+            actions:
+              get:
+                description: List rules
+              post:
+                description: Create new rule
+                params:
+                  action:
+                    required: True
+                    description: Rule action
+                  type:
+                    required: True
+                    description: Rule type
+                  comment:
+                    description: Descriptive comment
+                  dest:
+                    description: Packet destination address
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  dport:
+                    description: TCP/UDP destination port
+                  enable:
+                    description: Flag to enable/disable a rule (<0-N>)
+                  icmp-type:
+                    description: Specify icmp-type
+                  iface:
+                    description: Network interface name
+                  log:
+                    description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                  macro:
+                    description: Use predefined standard macro
+                  pos:
+                    description: Update rule at position (<0-N>)
+                  proto:
+                    description: IP protocol
+                  source:
+                    description: Packet source address
+                  sport:
+                    description: TCP/UDP source port
+            context:
+              pos:
+                is_variable: True
+                description: Specific LXC firewall at position
+                actions:
+                  get:
+                    description: Get single rule data
+                  put:
+                    description: Modify rule data
+                    params:
+                      action:
+                        description: Rule action
+                      comment:
+                        description: Descriptive comment
+                      delete:
+                        description: A list of settings you want to delete
+                      dest:
+                        description: Packet destination address
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+                      dport:
+                        description: TCP/UDP destination port
+                      enable:
+                        description: Flag to enable/disable a rule (<0-N>)
+                      icmp-type:
+                        description: Specify icmp-type
+                      iface:
+                        description: Network interface name
+                      log:
+                        description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                      macro:
+                        description: Use predefined standard macro
+                      moveto:
+                        description: Move rule to new postion. Other arguments are ignored.
+                      pos:
+                        description: Update rule at position (<0-N>)
+                      proto:
+                        description: IP protocol
+                      source:
+                        description: Packet source address
+                      sport:
+                        description: TCP/UDP source port
+                      type:
+                        description: Rule type
+                  delete:
+                    description: Delete rule
+                    params:
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+          log:
+            description: LXC firewall log
+            actions:
+              get:
+                description: Read firewall log
+                params:
+                  limit:
+                    description: Limit logs (<0-N>)
+                  since:
+                    description: Display log since this UNIX epoch (<0-N>)
+                  start:
+                    description: Start log at (<0-N>)
+                  until:
+                    description: Display log until this UNIX epoch (<0-N>)
+          options:
+            description: LXC firewall options
+            actions:
+              get:
+                description: Get firewall options
+              put:
+                description: Set firewall options
+                params:
+                  delete:
+                    description: A list of settings you want to delete
+                  dhcp:
+                    description: Enable DHCP (<0|1>)
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  enable:
+                    description: Whether or not to enable host firewall rules (<0|1>)
+                  ipfilter:
+                    description: Enable default IP filters (<0|1>)
+                  log_level_in:
+                    description: Log level for incoming traffic (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                  log_level_out:
+                    description: Log level for outgoing traffic (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                  ndp:
+                    description: Whether or not to enable Neighbor Discovery Protocol (<0|1>)
+                  policy_in:
+                    description: Input policy (<ACCEPT|REJECT|DROP>)
+                  policy_out:
+                    description: Output policy (<ACCEPT|REJECT|DROP>)
+                  radv:
+                    description: Allow sending Router Advertisement (<0|1>)
+          refs:
+            description: LXC firewall ipset/alias references
+            actions:
+              get:
+                description: List possible ipset/alias references
+                params:
+                  type:
+                    description: Only list refrences of specific type (<alias|ipset>)
+      snapshot:
+        description: LXC snapshots
+        actions:
+          get:
+            description: List all snapshots
+          post:
+            description: Snapshot a container
+            params:
+              snapname:
+                required: True
+                description: The name of the snapshot
+              description:
+                description: A textual description or comment
+        context:
+          snapname:
+            is_variable: True
+            description: Specific LXC snapshot
+            actions:
+              get:
+                description: Get snapshot
+              delete:
+                description: Delete LXC snapshot
+                params:
+                  force:
+                    description: Force removal from config file, even if removing disk snapshots fails (<0|1>)
+            context:
+              config:
+                description: Snapshot configuration
+                actions:
+                  get:
+                    description: Get snapshot configuration
+                  put:
+                    description: Update snapshot metadata
+                    params:
+                      description:
+                        description: A textual description or comment
+              rollback:
+                description: Snapshot rollback
+                actions:
+                  post:
+                    description: Rollback LXC state to specified snapshot
+                    params:
+                      start:
+                        description: Start container after rolling back successfully (<0|1>)
+      status:
+        description: "Enter LXC status context"
+        actions:
+          get:
+            description: "Get LXC status"
+        context:
+          current:
+            description: "Current LXC status"
+            actions:
+              get:
+                description: "Get current container status"
+          reboot:
+            description: "Reboot LXC"
+            actions:
+              post:
+                description: Reboot the container by shutting it down, and starting it again. Applies pending changes.
+                params:
+                  timeout:
+                    description: Wait maximale timeout seconds for the shutdown
+          resume:
+            description: "Resume LXC"
+            actions:
+              post:
+                description: "Resume the container"
+          shutdown:
+            description: "Shutdown LXC"
+            actions:
+              post:
+                description: Shutdown the container. This will trigger a clean shutdown of the container.
+                params:
+                  forceStop:
+                    description: Make sure the container stops (<0|1>)
+                  timeout:
+                    description: Wait maximal timeout seconds
+          start:
+            description: "Start LXC"
+            actions:
+              post:
+                description: "Start the container"
+                params:
+                  debug:
+                    description: Enable very verbose debug log-level on start (<0|1>)
+                  skiplock:
+                    description: Ignore locks (<0|1>)
+          stop:
+            description: "Stop LXC"
+            actions:
+              post:
+                description: "Stop the container. This will abruptly stop all processes running in the container"
+                params:
+                  overrule-shutdown:
+                    description: Try to abort active 'vzshutdown' tasks before stopping (<0|1>)
+                  skiplock:
+                    description: Ignore locks (<0|1>)
+          suspend:
+            description: "Suspend LXC"
+            actions:
+              post:
+                description: "Suspend the container"
+      clone:
+        description: LXC clone
+        actions:
+          post:
+            description: Create a container clone/copy
+            params:
+              newid:
+                description: "VMID for the clone"
+                required: True
+              bwlimit:
+                description: "Override I/O bandwidth limit (in KiB/s)"
+              description:
+                description: "Description for the new CT"
+              full:
+                description: "Create a full copy of all disks. Default for normal CTs, fallback for templates. (<0|1>)"
+              hostname:
+                description: "Set a hostname for the new CT"
+              pool:
+                description: "Add the new CT to the specified pool"
+              snapname:
+                description: "The name of the snapshot"
+              storage:
+                description: "Target storage for full clone"
+              target:
+                description: "Target node. Only allowed if the original CT is on the shared storage"
+      config:
+        description: "LXC configuration"
+        actions:
+          get:
+            description: "Get container configuration"
+            params:
+              current:
+                description: Get current values instead of pending values (<0|1>)
+              snapshot:
+                description: Fetch config values from given snapshot
+          post:
+            description: "Set container options"
+            params:
+              arch:
+                description: OS architecture type (<amd64|i386|arm64|armhf|riscv32|riscv64>)
+              cmode:
+                description: Console mode (<shell|console|tty>)
+              console:
+                description: Attach a console device (/dev/console) to the container (<0|1>)
+              cores:
+                description: The number of cores assigned to the container (<1-8192>)
+              cpulimit:
+                description: Limit of CPU usage (<1-8192>)
+              cpuunits:
+                description: CPU weight for a container
+              debug:
+                description: Whether or not to be more verbose (<0|1>)
+              delete:
+                description: A list of settings you want to delete
+              description:
+                description: Description for the container
+        #      # To be implemented, currently doesn't support variablized kwarg
+        #      devN:
+        #        is_variable: True
+        #        description: Device to pass through to the container
+              digest:
+                description: Prevents changes if current configuration file has a different SHA1 digest
+              entrypoint:
+                description: Command to run as init, optionally with arguments
+              env:
+                description: The container runtime environment as NUL-separated list. Replaces any lxc.environment.runtime entries in the config.
+              features:
+                description: Allow containers access to advanced features
+              hookscript:
+                description: Script that will be executed during various steps in the containers lifetime
+              hostname:
+                description: Set a hostname for the container
+                description: Whether or not to ignore errors when extracting the template.
+              lock:
+                description: Lock/unlock the container
+              memory:
+                description: Amount of RAM for the container (in MB)
+        #      mpN:
+        #        is_variable: True
+        #        description: Use volume as container mount point
+              nameserver:
+                description: Sets DNS server IP address for the container
+        #      netN:
+        #        is_variable: True
+        #        description: Specifies netowrk interfaces for the container
+              onboot:
+                description: Whether or not a container will be started during system boot (<0|1>)
+              ostype:
+                description: OS type
+              protection:
+                description: Whether or not to set the protection flag of the container (<0|1>)
+              revert:
+                description: Revert a pending change
+              rootfs:
+                description: User volume as container root
+              searchdomain:
+                description: Sets DNS search domains for a container
+              startup:
+                description: Startup and shutdown behavior
+              swap:
+                description: Amount of SWAP for the container in MB
+              tags:
+                description: Tags of the container
+              template:
+                description: Enable template (<0|1>)
+              timezone:
+                description: Time zone to use in the container
+              tty:
+                description: Specify the number of tty available to the container (<0-6>)
+              unprivileged:
+                description: Whether or not the container runs as unprivileged user (<0|1>)
+        #      unusedN:
+        #        is_variable: True
+        #        description: Reference to unused volumes
+      feature:
+        description: LXC features
+        actions:
+          get:
+            description: Check if feature for container is available
+            params:
+              feature:
+                required: True
+                description: Feature to check
+              snapname:
+                description: The name of the snapshot
+      interfaces:
+        description: LXC interfaces
+        actions:
+          get:
+            description: Get IP addresses of the container's interface
+      migrate:
+        description: LXC migration
+        actions:
+          get:
+            description: Get preconditions for migration
+            params:
+              target:
+                description: Target node
+          post:
+            description: Migrate the container to another node
+            params:
+              target:
+                required: True
+                description: Target node
+              bwlimit:
+                description: Override I/O bandwidth limit (in KiB/s)
+              online:
+                description: Use online/live migration (<0|1>)
+              restart:
+                description: Use restart migration (<0|1>)
+              target-storage:
+                description: Mapping from source to target storages
+              timeout:
+                description: Timeout in seconds for shutdown for restart migration
+      move_volume:
+        description: LXC move rootfs-/mp-volume
+        actions:
+          post:
+            description: Move a rootfs-/mp-volume to a different storage or to a different container
+            params:
+              volume:
+                required: True
+                description: Volume which will be moved
+              bwlimit:
+                description: Override I/O bandwidth limit (in KiB/s)
+              delete:
+                description: Delete the original volume after successful copy (<0|1>)
+              digest:
+                description: Prevent changes if current configuration file has differen SHA1 digest
+              storage:
+                description: Target storage
+              target-digest:
+                description: Prevent changes if current configuration of the target container has a different SHA1 digest
+              target-vmid:
+                description: The ID of the CT
+              target-volume:
+                description: The config key the volume will be moved to
+              timeout:
+                description: Timeout in seconds for shutdown for restart migration
+      mtunnel:
+        description: LXC migration tunnel
+        actions:
+          post:
+            description: Migration tunnel endpoint - only for internal use by CT migration
+            params:
+              bridges:
+                description: List of network bridges to check availibility
+              storages:
+                description: List of storages to check permission and availability
+      mtunnelwebsocket:
+        description: LXC migration tunnel websocket
+        actions:
+          get:
+            description: Migration tunnel endpoint for websocket upgrade - only for internal use by CT migration
+            params:
+              socket:
+                required: True
+                description: Unix socket to forward to
+              ticket:
+                required: True
+                description: Ticket return by initial 'mtunnel' API call, or retrieved via 'ticket' tunnel command
+      pending:
+        description: LXC configuration, including pending changes
+        actions:
+          get:
+            description: Get container conifuration, including pending changes
+      remote_migrate:
+        description: LXC remote migration
+        actions:
+          post:
+            description: Migrate the container to another cluster
+            params:
+              target-bridge:
+                required: True
+                description: Mapping from source to target bridges
+              target-endpoint:
+                required: True
+                description: Remote target endpoint
+              target-storage:
+                required: True
+                description: Mapping from source to target storages
+              bwlimit:
+                description: Override I/O bandwidth limit (in KiB/s)
+              delete:
+                description: Delete the original volume after successful migration (<0|1>)
+              online:
+                description: Use online/live migration (<0|1>)
+              restart:
+                description: Use restart migration (<0|1>)
+              target-vmid:
+                description: The ID of the CT
+              timeout:
+                description: Timeout in seconds for shutdown for restart migration
+      resize:
+        description: LXC mount point resize
+        actions:
+          put:
+            description: Resize a container mount point
+            params:
+              disk:
+                required: True
+                description: The disk you want to resize
+              size:
+                required: True
+                description: The new size
+              digest:
+                description: Prevent changes if current configuration file has different SHA1 digest
+      rrd:
+        description: LXC RRD statistics (PNG)
+        actions:
+          get:
+            description: Read container RRD statisics (returns PNG)
+            params:
+              ds:
+                required: True
+                description: The list of datasources you want to display
+              timeframe:
+                required: True
+                description: Specify the time frame you are interested in (<hour|day|week|month|year>)
+              cf:
+                description: The RRD consolidation function
+      rrddata:
+        description: LXC RRD statistics (data)
+        actions:
+          get:
+            description: Read container RRD statistics
+            params:
+              ds:
+                required: True
+                description: The list of datasources you want to display
+              timeframe:
+                required: True
+                description: Specify the time frame you are interested in (<hour|day|week|month|year>)
+              cf:
+                description: The RRD consolidation function
+      spiceproxy:
+        description: LXC SPICE proxy
+        actions:
+          post:
+            description: Returns a SPICE configuration to connect to the container
+            params:
+              proxy:
+                description: SPICE proxy server
+      template:
+        description: LXC template
+        actions:
+          post:
+            description: Create a template
+      termproxy:
+        description: LXC terminal proxy
+        actions:
+          post:
+            description: Creates a TCP proxy connection
+      vncproxy:
+        description: LXC VNC proxy
+        actions:
+          post:
+            description: Creates a TCP VNC proxy connection
+            params:
+              height:
+                description: Sets the height of the console in pixels (<16-2160>)
+              websocket:
+                description: Use websocket instead of standard VNC (<0-1>)
+              width:
+                description: Sets the width of the console in pixels (<16-4096>)
+      vncwebsocket:
+        description: LXC VNC websocket
+        actions:
+          get:
+            description: Opens a websocket for VNC traffic
+            params:
+              port:
+                description: Port number returned by previous vncproxy call
+              vncticket:
+                description: Ticket from previous call to vncproxy
