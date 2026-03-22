@@ -1195,3 +1195,233 @@ context:
               action:
                 required: True
                 description: Action to perform on the DBus VMState helper
+      feature:
+        description: VM features
+        actions:
+          get:
+            description: Check if feature for virtual machine is available
+            params:
+              feature:
+                required: True
+                description: Feature to check
+              snapname:
+                description: The name of the snapshot
+      migrate:
+        description: VM migration
+        actions:
+          get:
+            description: Get preconditions for migration
+            params:
+              target:
+                description: Target node
+          post:
+            description: Migrate virtual machine
+            params:
+              target:
+                required: True
+                description: Target node
+              bwlimit:
+                description: Override I/O bandwidth limit (in KiB/s)
+              force:
+                description: Allow to migrate VMs which use local devices (<0|1>)
+              migration_network:
+                description: CIDR of the (sub) ntework that is used for migration
+              migration_type:
+                description: Migration type (<secure|insecure>)
+              online:
+                description: Use online/live migration (<0|1>)
+              targetstorage:
+                description: Mapping from source to target storages
+              with-conntrack-state:
+                description: Whether to migrate conntrack entries for running VMs
+              with-local-disks:
+                description: Enable live storage migration for local disk (<0|1>)
+      monitor:
+        description: VM (QEMU) monitor
+        actions:
+          post:
+            description: Execute QEMU monitor commands
+            params:
+              command:
+                required: True
+                description: The monitor command
+      move_disk:
+        description: VM move disk
+        actions:
+          post:
+            disk:
+              required: True
+              description: The disk you want to move
+            bwlimit:
+              description: Override I/O bandwidth limit (in KiB/s)
+            delete:
+              description: Delete the original volume after successful copy (<0|1>)
+            digest:
+              description: Prevent changes if current configuration file has differen SHA1 digest
+            format:
+              description: Target format (<raw|qcow2|vmdk>)
+            storage:
+              description: Target storage
+            target-digest:
+              description: Prevent changes if current configuration of the target container has a different SHA1 digest
+            target-vmid:
+              description: The ID of the VM
+      mtunnel:
+        description: VM migration tunnel
+        actions:
+          post:
+            description: Migration tunnel endpoint - only for internal use by VM migration
+            params:
+              bridges:
+                description: List of network bridges to check availibility
+              storages:
+                description: List of storages to check permission and availability
+      mtunnelwebsocket:
+        description: VM migration tunnel websocket
+        actions:
+          get:
+            description: Migration tunnel endpoint for websocket upgrade - only for internal use by VM migration
+            params:
+              socket:
+                required: True
+                description: Unix socket to forward to
+              ticket:
+                required: True
+                description: Ticket return by initial 'mtunnel' API call, or retrieved via 'ticket' tunnel command
+      pending:
+        description: VM configuration with both current and pending changes
+        actions:
+          get:
+            description: Get virtual machine configuration with both current and pending changes
+      remote_migrate:
+        description: VM remote migration
+        actions:
+          post:
+            description: Migrate the virtual machine to another cluster
+            params:
+              target-bridge:
+                required: True
+                description: Mapping from source to target bridges
+              target-endpoint:
+                required: True
+                description: Remote target endpoint
+              target-storage:
+                required: True
+                description: Mapping from source to target storages
+              bwlimit:
+                description: Override I/O bandwidth limit (in KiB/s)
+              delete:
+                description: Delete the original volume after successful migration (<0|1>)
+              online:
+                description: Use online/live migration (<0|1>)
+              target-vmid:
+                description: The ID of the VM
+      resize:
+        description: VM mount point resize
+        actions:
+          put:
+            description: Extend volume size
+            params:
+              disk:
+                required: True
+                description: The disk you want to resize
+              size:
+                required: True
+                description: The new size
+              digest:
+                description: Prevent changes if current configuration file has different SHA1 digest
+              skiplock:
+                description: Ignore locks (<0|1>)
+      rrd:
+        description: VM RRD statistics (PNG)
+        actions:
+          get:
+            description: Read VM RRD statisics (returns PNG)
+            params:
+              ds:
+                required: True
+                description: The list of datasources you want to display
+              timeframe:
+                required: True
+                description: Specify the time frame you are interested in (<hour|day|week|month|year>)
+              cf:
+                description: The RRD consolidation function
+      rrddata:
+        description: VM RRD statistics (data)
+        actions:
+          get:
+            description: Read VM RRD statistics
+            params:
+              timeframe:
+                required: True
+                description: Specify the time frame you are interested in (<hour|day|week|month|year>)
+              cf:
+                description: The RRD consolidation function (<AVERAGE|MAX>)
+      sendkey:
+        description: VM sendkey
+        actions:
+          put:
+            description: Send key event to virtual machine
+            params:
+              key:
+                required: True
+                description: The key (qemu monitor encoding)
+              skiplock:
+                description: Ignore locks (<0|1>)
+      spiceproxy:
+        description: VM SPICE proxy
+        actions:
+          post:
+            description: Returns a SPICE configuration to connect to the container
+            params:
+              proxy:
+                description: SPICE proxy server
+      template:
+        description: VM template
+        actions:
+          post:
+            description: Create a template
+            params:
+              disk:
+                description: If you want to convert only 1 disk to base image
+      termproxy:
+        description: VM terminal proxy
+        actions:
+          post:
+            description: Creates a TCP proxy connection
+            params:
+              serial:
+                description: Opens a serial terminal (<serial0|serial1|serial2|serial3>)
+      unlink:
+        description: VM unlink disk images
+        actions:
+          put:
+            description: Unlink/delete disk images
+            params:
+              idlist:
+                required: True
+                description: A list of disk IDs you want to delete
+              force:
+                description: Force physical removal (<0|1>)
+      vncproxy:
+        description: VM VNC proxy
+        actions:
+          post:
+            description: Creates a TCP VNC proxy connection
+            params:
+              generate-password:
+                description: Generates a random password to be used as ticket instead of the API ticket
+              websocket:
+                description: Prepare for websocket upgrade (<0|1>)
+      vncwebsocket:
+        description: VM VNC websocket
+        actions:
+          get:
+            description: Opens a websocket for VNC traffic
+            params:
+              port:
+                required: True
+                description: Port number returned by previous vncproxy call
+              vncticket:
+                required: True
+                description: Ticket from previous call to vncproxy
