@@ -69,20 +69,23 @@ actions:
         description: Add the VM as a HA resource after it is created
       hookscript:
         description: Script that will be executed during various steps in the VM's lifetime
-#      hostpciN:
-#        description: Map host PCI devices into guest
+      hostpci:
+        is_part_var: True
+        description: Map host PCI devices into guest
       hotplug:
         description: Selectively enable hotplug features
       hugepages:
         description: Enables hugepages memory (<any|2|1024>)
-#      ideN:
-#        description: User volume as IDE hard disk or CD-ROM
+      ide:
+        is_part_var: True
+        description: User volume as IDE hard disk or CD-ROM
       import-working-storage:
         description: A file-based storage with 'images' content-type enabled, which is used as an intermediary extraction storage during import
       intel-tdx:
         description: Trusted Domain Extension (TDX) features by Intel CPUs
-#      ipconfigN:
-#        description: "cloud-init: Specify IP addresses and gateways for the corresponding interface"
+      ipconfig:
+        is_part_var: True
+        description: "cloud-init: Specify IP addresses and gateways for the corresponding interface"
       ivshmem:
         description: Inter-VM shared memory
       keephugepages:
@@ -109,18 +112,22 @@ actions:
         description: Set a name for the VM
       nameserver:
         description: "cloud-init: Sets DNS server IP address for VM"
-#      netN:
-#        description: Specify network devices
+      net:
+        description: Specify network devices
+        is_part_var: True
+        var_suffix: "num"
       numa:
         description: Enable NUMA (<0|1>)
-#      numaN:
-#        description: NUMA topology
+      numa:
+        is_part_var: True
+        description: NUMA topology
       onboot:
         description: Specifies whether a VM will be started during system bootup (<0|1>)
       ostype:
         description: Specify guest operating system
-#      parallelN:
-#        description: Map host paralel devices
+      parallel:
+        is_part_var: True
+        description: Map host parallel devices
       pool:
         description: Add the VM to the specified pool
       protection:
@@ -129,16 +136,19 @@ actions:
         description: Allow reboot (<0|1>)
       rng0:
         description: Configure a VirtIO-based random number generator
-#      sataN:
-#        description: Use volume as SATA hard disk or CD-ROM
-#      scsiN:
-#        description: Use volume as SCSI hard disk or CD-ROM
+      sata:
+        is_part_var: True
+        description: Use volume as SATA hard disk or CD-ROM
+      scsi:
+        is_part_var: True
+        description: Use volume as SCSI hard disk or CD-ROM
       scsihw:
         description: SCSI controller model
       searchdomain:
         description: "cloud-init: Sets DNS search domains for VM"
-#      serialN:
-#        description: Create a serial device inside the VM
+      serial:
+        is_part_var: True
+        description: Create a serial device inside the VM
       shares:
         description: Amount of memory shares for auto-ballooning
       smbios1:
@@ -171,18 +181,22 @@ actions:
         description: Configure a disk for storing TPM state
       unique:
         description: Assign a unique random ethernet address
-#      unusedN:
-#        description: Reference to unused volumes
-#      usbN:
-#        description: Configure a USB device
+      unused:
+        is_part_var: True
+        description: Reference to unused volumes
+      usb:
+        is_part_var: True
+        description: Configure a USB device
       vcpus:
         description: Number of hotplugged vcpus
       vga:
         description: Configure the VGA harware
-#      virtioN:
-#        description: Use volume as VIRTIO hard disk
-#      virtiofsN:
-#        description: Configuration for sharing a directory between host and guest using Virtio-fs
+      virtio:
+        is_part_var: True
+        description: Use volume as VIRTIO hard disk
+      virtiofs:
+        is_part_var: True
+        description: Configuration for sharing a directory between host and guest using Virtio-fs
       vmgenid:
         description: The VM generation ID (vmgenid) device exposes a 128-bit integer value identifier to the guest OS
       vmstatestorage:
@@ -897,20 +911,23 @@ context:
                 description: Freeze CPU at startup (<0|1>)
               hookscript:
                 description: Script that will be executed during various steps in the VM's lifetime
-        #      hostpciN:
-        #        description: Map host PCI devices into guest
+              hostpci:
+                is_part_var: True
+                description: Map host PCI devices into guest
               hotplug:
                 description: Selectively enable hotplug features
               hugepages:
                 description: Enables hugepages memory (<any|2|1024>)
-        #      ideN:
-        #        description: User volume as IDE hard disk or CD-ROM
+              ide:
+                is_part_var: True
+                description: User volume as IDE hard disk or CD-ROM
               import-working-storage:
                 description: A file-based storage with 'images' content-type enabled, which is used as an intermediary extraction storage during import
               intel-tdx:
                 description: Trusted Domain Extension (TDX) features by Intel CPUs
-        #      ipconfigN:
-        #        description: "cloud-init: Specify IP addresses and gateways for the corresponding interface"
+              ipconfig:
+                is_part_var: True
+                description: "cloud-init: Specify IP addresses and gateways for the corresponding interface"
               ivshmem:
                 description: Inter-VM shared memory
               keephugepages:
@@ -935,18 +952,21 @@ context:
                 description: Set a name for the VM
               nameserver:
                 description: "cloud-init: Sets DNS server IP address for VM"
-        #      netN:
-        #        description: Specify network devices
+              net:
+                is_part_var: True
+                description: Specify network devices
               numa:
                 description: Enable NUMA (<0|1>)
-        #      numaN:
-        #        description: NUMA topology
+              numa:
+                is_part_var: True
+                description: NUMA topology
               onboot:
                 description: Specifies whether a VM will be started during system bootup (<0|1>)
               ostype:
                 description: Specify guest operating system
-        #      parallelN:
-        #        description: Map host paralel devices
+              parallel:
+                is_part_var: True
+                description: Map host paralel devices
               protection:
                 description: Sets the protection flag of the VM (<0|1>)
               reboot:
@@ -955,16 +975,19 @@ context:
                 description: Revert a pending change
               rng0:
                 description: Configure a VirtIO-based random number generator
-        #      sataN:
-        #        description: Use volume as SATA hard disk or CD-ROM
-        #      scsiN:
-        #        description: Use volume as SCSI hard disk or CD-ROM
+              sata:
+                is_part_var: True
+                description: Use volume as SATA hard disk or CD-ROM
+              scsi:
+                is_part_var: True
+                description: Use volume as SCSI hard disk or CD-ROM
               scsihw:
                 description: SCSI controller model
               searchdomain:
                 description: "cloud-init: Sets DNS search domains for VM"
-        #      serialN:
-        #        description: Create a serial device inside the VM
+              serial:
+                is_part_var: True
+                description: Create a serial device inside the VM
               shares:
                 description: Amount of memory shares for auto-ballooning
               skiplock:
@@ -993,18 +1016,22 @@ context:
                 description: Enable template (<0|1>)
               tpmstate0:
                 description: Configure a disk for storing TPM state
-        #      unusedN:
-        #        description: Reference to unused volumes
-        #      usbN:
-        #        description: Configure a USB device
+              unused:
+                is_part_var: True
+                description: Reference to unused volumes
+              usb:
+                is_part_var: True
+                description: Configure a USB device
               vcpus:
                 description: Number of hotplugged vcpus
               vga:
                 description: Configure the VGA harware
-        #      virtioN:
-        #        description: Use volume as VIRTIO hard disk
-        #      virtiofsN:
-        #        description: Configuration for sharing a directory between host and guest using Virtio-fs
+              virtio:
+                is_part_var: True
+                description: Use volume as VIRTIO hard disk
+              virtiofs:
+                is_part_var: True
+                description: Configuration for sharing a directory between host and guest using Virtio-fs
               vmgenid:
                 description: The VM generation ID (vmgenid) device exposes a 128-bit integer value identifier to the guest OS
               vmstatestorage:
@@ -1074,18 +1101,21 @@ context:
                 description: Freeze CPU at startup (<0|1>)
               hookscript:
                 description: Script that will be executed during various steps in the VM's lifetime
-        #      hostpciN:
-        #        description: Map host PCI devices into guest
+              hostpci:
+                is_part_var: True
+                description: Map host PCI devices into guest
               hotplug:
                 description: Selectively enable hotplug features
               hugepages:
                 description: Enables hugepages memory (<any|2|1024>)
-        #      ideN:
-        #        description: User volume as IDE hard disk or CD-ROM
+              ide:
+                is_part_var: True
+                description: User volume as IDE hard disk or CD-ROM
               intel-tdx:
                 description: Trusted Domain Extension (TDX) features by Intel CPUs
-        #      ipconfigN:
-        #        description: "cloud-init: Specify IP addresses and gateways for the corresponding interface"
+              ipconfig:
+                is_part_var: True
+                description: "cloud-init: Specify IP addresses and gateways for the corresponding interface"
               ivshmem:
                 description: Inter-VM shared memory
               keephugepages:
@@ -1110,18 +1140,21 @@ context:
                 description: Set a name for the VM
               nameserver:
                 description: "cloud-init: Sets DNS server IP address for VM"
-        #      netN:
-        #        description: Specify network devices
+              net:
+                is_part_var: True
+                description: Specify network devices
               numa:
                 description: Enable NUMA (<0|1>)
-        #      numaN:
-        #        description: NUMA topology
+              numa:
+                is_part_var: True
+                description: NUMA topology
               onboot:
                 description: Specifies whether a VM will be started during system bootup (<0|1>)
               ostype:
                 description: Specify guest operating system
-        #      parallelN:
-        #        description: Map host paralel devices
+              parallel:
+                is_part_var: True
+                description: Map host paralel devices
               protection:
                 description: Sets the protection flag of the VM (<0|1>)
               reboot:
@@ -1130,16 +1163,19 @@ context:
                 description: Revert a pending change (<0|1>)
               rng0:
                 description: Configure a VirtIO-based random number generator
-        #      sataN:
-        #        description: Use volume as SATA hard disk or CD-ROM
-        #      scsiN:
-        #        description: Use volume as SCSI hard disk or CD-ROM
+              sata:
+                is_part_var: True
+                description: Use volume as SATA hard disk or CD-ROM
+              scsi:
+                is_part_var: True
+                description: Use volume as SCSI hard disk or CD-ROM
               scsihw:
                 description: SCSI controller model
               searchdomain:
                 description: "cloud-init: Sets DNS search domains for VM"
-        #      serialN:
-        #        description: Create a serial device inside the VM
+              serial:
+                is_part_var: True
+                description: Create a serial device inside the VM
               shares:
                 description: Amount of memory shares for auto-ballooning
               skiplock:
@@ -1168,18 +1204,22 @@ context:
                 description: Enable template (<0|1>)
               tpmstate0:
                 description: Configure a disk for storing TPM state
-        #      unusedN:
-        #        description: Reference to unused volumes
-        #      usbN:
-        #        description: Configure a USB device
+              unused:
+                is_part_var: True
+                description: Reference to unused volumes
+              usb:
+                is_part_var: True
+                description: Configure a USB device
               vcpus:
                 description: Number of hotplugged vcpus
               vga:
                 description: Configure the VGA harware
-        #      virtioN:
-        #        description: Use volume as VIRTIO hard disk
-        #      virtiofsN:
-        #        description: Configuration for sharing a directory between host and guest using Virtio-fs
+              virtio:
+                is_part_var: True
+                description: Use volume as VIRTIO hard disk
+              virtiofs:
+                is_part_var: True
+                description: Configuration for sharing a directory between host and guest using Virtio-fs
               vmgenid:
                 description: The VM generation ID (vmgenid) device exposes a 128-bit integer value identifier to the guest OS
               vmstatestorage:

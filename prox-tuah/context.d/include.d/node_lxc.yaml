@@ -27,10 +27,9 @@ actions:
         description: Whether or not to be more verbose (<0|1>)
       description:
         description: Description for the container
-#      # To be implemented, currently doesn't support variablized kwarg
-#      devN:
-#        is_variable: True
-#        description: Device to pass through to the container
+      dev:
+        is_part_var: True
+        description: Device to pass through to the container
       entrypoint:
         description: Command to run as init, optionally with arguments
       env:
@@ -51,14 +50,14 @@ actions:
         description: Lock/unlock the container
       memory:
         description: Amount of RAM for the container (in MB)
-#      mpN:
-#        is_variable: True
-#        description: Use volume as container mount point
+      mp:
+        is_part_var: True
+        description: Use volume as container mount point
       nameserver:
         description: Sets DNS server IP address for the container
-#      netN:
-#        is_variable: True
-#        description: Specifies netowrk interfaces for the container
+      net:
+        is_part_var: True
+        description: Specifies netowrk interfaces for the container
       onboot:
         description: Whether or not a container will be started during system boot (<0|1>)
       ostype:
@@ -97,12 +96,12 @@ actions:
         description: Whether or not to assign a unique random ethernet address (<0|1>)
       unprivileged:
         description: Whether or not the container runs as unprivileged user (<0|1>)
-#      unusedN:
-#        is_variable: True
-#        description: Reference to unused volumes
+      unused:
+        is_part_var: True
+        description: Reference to unused volumes
 context:
   vmid:
-    is_variable: True
+    is_var: True
     description: Specific LXC
     actions:
       get:
@@ -184,7 +183,7 @@ context:
                     description: Rename an existing ipset
             context:
               name:
-                is_variable: True
+                is_var: True
                 description: Specific LXC firewall ipset
                 actions:
                   get:
@@ -266,7 +265,7 @@ context:
                     description: TCP/UDP source port
             context:
               pos:
-                is_variable: True
+                is_var: True
                 description: Specific LXC firewall at position
                 actions:
                   get:
@@ -380,7 +379,7 @@ context:
                 description: A textual description or comment
         context:
           snapname:
-            is_variable: True
+            is_var: True
             description: Specific LXC snapshot
             actions:
               get:
@@ -524,10 +523,9 @@ context:
                 description: A list of settings you want to delete
               description:
                 description: Description for the container
-        #      # To be implemented, currently doesn't support variablized kwarg
-        #      devN:
-        #        is_variable: True
-        #        description: Device to pass through to the container
+              dev:
+                is_part_var: True
+                description: Device to pass through to the container
               digest:
                 description: Prevents changes if current configuration file has a different SHA1 digest
               entrypoint:
@@ -545,14 +543,14 @@ context:
                 description: Lock/unlock the container
               memory:
                 description: Amount of RAM for the container (in MB)
-        #      mpN:
-        #        is_variable: True
-        #        description: Use volume as container mount point
+              mp:
+                is_part_var: True
+                description: Use volume as container mount point
               nameserver:
                 description: Sets DNS server IP address for the container
-        #      netN:
-        #        is_variable: True
-        #        description: Specifies netowrk interfaces for the container
+              net:
+                is_part_var: True
+                description: Specifies netowrk interfaces for the container
               onboot:
                 description: Whether or not a container will be started during system boot (<0|1>)
               ostype:
@@ -579,9 +577,9 @@ context:
                 description: Specify the number of tty available to the container (<0-6>)
               unprivileged:
                 description: Whether or not the container runs as unprivileged user (<0|1>)
-        #      unusedN:
-        #        is_variable: True
-        #        description: Reference to unused volumes
+              unused:
+                is_part_var: True
+                description: Reference to unused volumes
       feature:
         description: LXC features
         actions:

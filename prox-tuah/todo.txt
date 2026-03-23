@@ -6,15 +6,17 @@
     - storage
     - version
 
-- allow partial var params (ex. net<N>)
-
 - allow standard args or flags (non-kwarg)
 
 - mark 'required' params in help
 
+- add quote wrapping for string kwarg values without quotes (current fails unless quotes are explicitly around the values)
+
 - special 'doc' hotkey/param for api contexts to open related web-page from pve API site
 
 - function to display api commands in HTTP/CLI form rather than execute them (ex. dry-run)
+
+- add output sorting
 
 - 'top' global cmd to return to top or to execute from any sub-context
 

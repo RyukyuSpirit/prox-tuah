@@ -266,12 +266,22 @@ class TUAH():
                         gathering_string = True
                         continue
 
+                    params = action_context.get("params", {})
+
                     # if kwarg is defined in params, accept it
-                    if action_context.get("params", {}).get(k_name):
+                    if k_name in params.keys():
                         has_params = True
                         running_params_list.append(text)
                         completed_commands.append(text)
                         self.typed_text = " ".join(completed_commands)
+
+                    # if kwarg is a defined partial variable, accept it
+                    elif any(k_name.startswith(k) and params.get(k, {}).get("is_part_var") for k in params.keys()):
+                        has_params = True
+                        running_params_list.append(text)
+                        completed_commands.append(text)
+                        self.typed_text = " ".join(completed_commands)
+
                     # if kwarg is undefined, notify and break
                     else:
                         self.print_error(f'No params found starting with "{text}":')
@@ -285,7 +295,14 @@ class TUAH():
                     # if unambiguous or exact param match found, autocomplete
                     if len(matches) == 1 or any(text == m["name"] for m in matches):
                         # get completed_kwarg which includes the '='
-                        completed_kwarg = f"{matches[0]['name']}="
+                        match = matches[0]['name']
+                        # complete exact match
+                        if action_context['params'].get(match):
+                            completed_kwarg = f"{match}="
+                        # complete unambiguous partial match
+                        else:
+                            varless_match = match.split("<")[0]
+                            completed_kwarg = f"{varless_match}"
                         completed_commands.append(completed_kwarg)
                         self.typed_text = " ".join(completed_commands)
                         leave_space = False
