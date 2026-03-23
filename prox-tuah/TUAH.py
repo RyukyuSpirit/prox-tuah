@@ -116,22 +116,27 @@ class TUAH():
 
         for k,v in context.get('context',{}).items():
             # add dict to matches of match and it's description
-            if text in k:
+            if k.startswith(text):
                 matches.append({"name": k, "description": v.get("description")})
 
         for k,v in context.get("actions",{}).items():
             # add dict to matches of match and it's description
-            if text in k:
+            if k.startswith(text):
                 matches.append({"name": k, "description": v.get("description")})
 
         for k,v in context.get("params",{}).items():
             # add dict to matches of match and it's description
-            if text in k and not v.get("is_variable"):
-                matches.append({"name": k, "description": v.get("description")})
+            if k.startswith(text) and not v.get("is_var"):
+                # if partial variable, format name w/ var suffix
+                if v.get("is_part_var"):
+                    matches.append({"name": f'{k}<{v.get("var_suffix", "N")}>', "description": v.get("description")})
+                # otherwise, add kwarg name as is
+                else:
+                    matches.append({"name": k, "description": v.get("description")})
 
         for k,v in context.get("pipe_params",{}).items():
             # add dict to matches of match and it's description
-            if text in k:
+            if k.startswith(text):
                 matches.append({"name": k, "description": v.get("description")})
 
         return matches
