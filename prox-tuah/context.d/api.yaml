@@ -11,7 +11,7 @@ api:
       context:
         node_name:
           description: "Enter specific node's context"
-          is_variable: true
+          is_var: true
           type: "string"
           context:
             apt:

@@ -151,7 +151,7 @@ class TUAH():
 
         for k,v in params.items():
             if v.get('required'):
-                if v.get('is_variable'):
+                if v.get('is_var'):
                     req_params.append(f"{k}_VAR")
                 else:
                     req_params.append(k)
@@ -227,7 +227,7 @@ class TUAH():
                 # check if this is a variable param
                 p_var_name = ""
                 for k,v in action_context.get('params', {}).items():
-                    if v.get('is_variable', {}):
+                    if v.get('is_var', {}):
                         p_var_name = k
 
                 # if gathering string, check for end quotes
@@ -342,7 +342,7 @@ class TUAH():
                     # check if this is a variable context
                     c_var_name = ""
                     for k,v in running_context.get('context', {}).items():
-                        if v.get('is_variable', {}):
+                        if v.get('is_var', {}):
                             c_var_name = k
 
                     # accept variable context and print help
@@ -459,7 +459,7 @@ class TUAH():
                 if k == "context":
                     for ck,cv in v.items():
                         if cv.get("description"):
-                            if cv.get("is_variable"):
+                            if cv.get("is_var"):
                                 help["context"].update({f'<{ck}>': cv.get("description")})
                             else:
                                 help["context"].update({ck: cv.get("description")})
@@ -470,8 +470,11 @@ class TUAH():
                 elif k == "params":
                     for ck,cv in v.items():
                         if cv.get("description"):
-                            if cv.get("is_variable"):
+                            if cv.get("is_var"):
                                 help["params"].update({f'<{ck}>': cv.get("description")})
+                            elif cv.get("is_part_var"):
+                                var_suffix = cv.get("var_suffix", "N")
+                                help["params"].update({f'{ck}<{var_suffix}>': cv.get("description")})
                             else:
                                 help["params"].update({f'{ck}=': cv.get("description")})
                 elif k == "pipe_params":
@@ -776,7 +779,7 @@ class TUAH():
                             # if entry is variable then enter its context
                             var_name = ""
                             for k,v in back_context.get('context', {}).items():
-                                if v.get('is_variable', {}):
+                                if v.get('is_var', {}):
                                     var_name = k
 
                             if var_name:

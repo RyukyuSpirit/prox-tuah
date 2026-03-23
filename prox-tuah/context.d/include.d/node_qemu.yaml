@@ -192,7 +192,7 @@ actions:
 context:
   vmid:
     description: "Specific QEMU VM"
-    is_variable: true
+    is_var: true
     actions:
       get:
         description: Get VM directory index
@@ -459,7 +459,7 @@ context:
                     description: Rename an existing ipset
             context:
               name:
-                is_variable: True
+                is_var: True
                 description: Specific VM firewall ipset
                 actions:
                   get:
@@ -541,7 +541,7 @@ context:
                     description: TCP/UDP source port
             context:
               pos:
-                is_variable: True
+                is_var: True
                 description: Specific VM firewall at position
                 actions:
                   get:
@@ -659,7 +659,7 @@ context:
                 description: Save the vmstate (<0|1>)
         context:
           snapname:
-            is_variable: True
+            is_var: True
             description: Specific VM snapshot
             actions:
               get:

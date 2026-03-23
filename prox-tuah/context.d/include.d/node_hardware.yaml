@@ -15,7 +15,7 @@ context:
             description: Whether or not to print additional information (<0|1>)
     context:
       pci-id-or-mapping:
-        is_variable: True
+        is_var: True
         description: PCI ID/mapping
         actions:
           get:

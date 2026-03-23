@@ -45,7 +45,7 @@ context:
             description: TCP/UDP source port
     context:
       pos:
-        is_variable: True
+        is_var: True
         description: Specific rule at position
         actions:
           get:

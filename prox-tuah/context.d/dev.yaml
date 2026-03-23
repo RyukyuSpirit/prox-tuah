@@ -7,7 +7,7 @@ dev:
       run_func: run_func
       params:
         func_call:
-          is_variable: True
+          is_var: True
           required: True
           description: "Function to call (ex. myFunc(arg1,kwarg1=value) )"
     rawdog:
@@ -15,6 +15,6 @@ dev:
       run_func: rawdog
       params:
         raw_cmd:
-          is_variable: True
+          is_var: True
           required: True
           description: "Raw command to run (ex. self('version').get() )"

@@ -75,7 +75,7 @@ actions:
     description: Revert network configuration changes
 context:
   iface:
-    is_variable: True
+    is_var: True
     description: Network interface configuration
     actions:
       get:

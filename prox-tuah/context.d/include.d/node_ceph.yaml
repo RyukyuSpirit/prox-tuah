@@ -34,7 +34,7 @@ context:
         description: Get Ceph FS directory index
     context:
       name:
-        is_variable: True
+        is_var: True
         description: The ceph filesystem name
         actions:
           post:
@@ -51,7 +51,7 @@ context:
         description: Get Ceph MDS directory index
     context:
       name:
-        is_variable: True
+        is_var: True
         description: Ceph Metadata Server (MDS) Name
         actions:
           post:
@@ -68,7 +68,7 @@ context:
         description: Get Ceph Manager directory index
     context:
       id:
-        is_variable: True
+        is_var: True
         description: Ceph manager ID
         actions:
           post:
@@ -82,7 +82,7 @@ context:
         description: Get Ceph monitor list
     context:
       monid:
-        is_variable: True
+        is_var: True
         description: Ceph monitor ID
         actions:
           post:
@@ -119,7 +119,7 @@ context:
             description: Size of block.wal
     context:
       osdid:
-        is_variable: True
+        is_var: True
         description: Ceph OSD ID
         actions:
           get:
@@ -196,7 +196,7 @@ context:
             description:  The estimated target ratio of the pool for the PG autoscaler
     context:
       name:
-        is_variable: True
+        is_var: True
         description: Ceph pool name
         actions:
           get:

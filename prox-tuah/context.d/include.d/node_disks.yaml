@@ -23,7 +23,7 @@ context:
             description: The desired filesystem (<ext4|xfs>)
     context:
       name:
-        is_variable: true
+        is_var: true
         description: Specific directory storage
         actions:
           delete:
@@ -78,7 +78,7 @@ context:
             description: Whether or not to configure storage using the thinpool
     context:
       name:
-        is_variable: True
+        is_var: True
         description: Specific LVM thinpool
         actions:
           delete:
@@ -118,7 +118,7 @@ context:
             description: draid configuration
     context:
       name:
-        is_variable: True
+        is_var: True
         description: Specific ZFS pool
         actions:
           get:

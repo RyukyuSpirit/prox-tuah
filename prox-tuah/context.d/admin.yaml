@@ -10,11 +10,11 @@ admin:
           run_func: show_vms
           params:
             scope:
-              is_variable: True
+              is_var: True
               description: "(brief|detail|config) Amount of info to return per VM (Options: brief|detail|config)"
       context:
         vmid:
-          is_variable: True
+          is_var: True
           description: "Specific VM"
           context:
             status:
@@ -38,7 +38,7 @@ admin:
               run_func: show_vm
               params:
                 scope:
-                  is_variable: True
+                  is_var: True
                   description: "(brief|detail|config) Type of information about the VM to return"
             connect:
               description: "Connect to VM (Default: SPICE)"
