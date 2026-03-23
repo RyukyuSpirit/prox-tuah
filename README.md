@@ -3,10 +3,10 @@
 prox-tuah is a text user interface to Proxmox Virtual Environment. There are multiple contexts with functions including accessing/displaying/managing PVE resources and walking/executing PVE API endpoints. The interface behaves similar to network device CLIs (Cisco/Aruba) with tab completion and context-specific help menus for reference.
 
 Contexts include:
-- user: view/access/power-control VMs
-- admin: user^ + /add/edit/delete VMs
-- api: walk/execute API endpoints
-- dev: interace with handler/API directly
+- user: Simple user operations on VMs/CTs (display, power-control, access)
+- admin: Administrative operations on all PVE resources (create, edit, delete)
+- api: Exploration and execution of PVE API endpoints
+- dev: Direct interaction with prox-tuah handler and PVE API
 
 ## Reference:
 - PVE API Docs: https://pve.proxmox.com/pve-docs/api-viewer/
