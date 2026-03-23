@@ -164,6 +164,7 @@ class TUAH():
         is_same = False
         has_params = False
         is_piped = False
+        gathering_string = False
         action_context = None
         do_print_help = False
         out_modifiers = {} # output modifiers
@@ -172,6 +173,7 @@ class TUAH():
         running_context = self.context
         running_level_list = self.level_list.copy()
         running_params_list = []
+        running_string = ""
 
         # process each text in command line
         for text in commands:
@@ -223,6 +225,19 @@ class TUAH():
                     if v.get('is_variable', {}):
                         p_var_name = k
 
+                # if gathering string, check for end quotes
+                if gathering_string:
+                    running_string += f" {text}"
+
+                    # if ending, replace current string with the extended string
+                    if text.endswith('"'):
+                        text = running_string
+                        gathering_string = False
+                        running_string = ""
+                    # or add to running string and continue
+                    else:
+                        continue
+
                 # if text is a pipe, begin collecting output modifiers
                 if text == "|":
                     # only continue w/ output modifiers if typed command is an action
@@ -239,7 +254,13 @@ class TUAH():
 
                 # accept if kwarg param
                 elif "=" in text:
-                    k_name = text.split("=")[0]
+                    k_name, eq, value = text.partition("=")
+                    # if value starts with quotes, begin collecting string
+                    if value.startswith('"') and not value.endswith('"'):
+                        running_string += text
+                        gathering_string = True
+                        continue
+
                     # if kwarg is defined in params, accept it
                     if action_context.get("params", {}).get(k_name):
                         has_params = True
