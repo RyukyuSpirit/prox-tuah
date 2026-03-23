@@ -120,17 +120,17 @@ class TUAH():
                 matches.append({"name": k, "description": v.get("description")})
 
         for k,v in context.get("actions",{}).items():
-            # add dict to matches of match and it"s description
+            # add dict to matches of match and it's description
             if text in k:
                 matches.append({"name": k, "description": v.get("description")})
 
         for k,v in context.get("params",{}).items():
-            # add dict to matches of match and it"s description
+            # add dict to matches of match and it's description
             if text in k and not v.get("is_variable"):
                 matches.append({"name": k, "description": v.get("description")})
 
         for k,v in context.get("pipe_params",{}).items():
-            # add dict to matches of match and it"s description
+            # add dict to matches of match and it's description
             if text in k:
                 matches.append({"name": k, "description": v.get("description")})
 
@@ -191,8 +191,8 @@ class TUAH():
                 else:
                     matches = self._get_matches(text, self.pipe_context)
 
-                    # if unambiguous param match found, autocomplete
-                    if len(matches) == 1:
+                    # if unambiguous or exact param match found, autocomplete
+                    if len(matches) == 1 or any(text == m["name"] for m in matches):
                         # get completed_param which includes the '='
                         completed_param = f"{matches[0]['name']}="
                         completed_commands.append(completed_param)
@@ -256,8 +256,8 @@ class TUAH():
                     # get kwarg key matches in running_context
                     matches = self._get_matches(text, action_context)
 
-                    # if unambiguous kwarg key match found, autocomplete
-                    if len(matches) == 1:
+                    # if unambiguous or exact param match found, autocomplete
+                    if len(matches) == 1 or any(text == m["name"] for m in matches):
                         # get completed_kwarg which includes the '='
                         completed_kwarg = f"{matches[0]['name']}="
                         completed_commands.append(completed_kwarg)
@@ -272,6 +272,7 @@ class TUAH():
                         completed_commands.append(text)
                         self.typed_text = " ".join(completed_commands)
                         is_ambiguous = True
+                        leave_space = False
                         break
 
                     # if no matches found, notify and break
@@ -286,8 +287,8 @@ class TUAH():
                 # get matches in running_context
                 matches = self._get_matches(text, running_context)
 
-                # if unambiguous match found, proceed to checking next level
-                if len(matches) == 1:
+                # if unambiguous or exact param match found, autocomplete
+                if len(matches) == 1 or any(text == m["name"] for m in matches):
                     completed_word = matches[0]['name']
                     completed_commands.append(completed_word)
                     if running_context.get('context', {}).get(completed_word):
@@ -398,7 +399,6 @@ class TUAH():
             # add space after typed_text if unambiguous
             if leave_space:
                 self.typed_text += " "
-
 
     def tabbed(self):
         commands = self.typed_text.split()
