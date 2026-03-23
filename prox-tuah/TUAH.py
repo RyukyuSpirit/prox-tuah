@@ -484,7 +484,7 @@ class TUAH():
         if self.context == self.full_context:
             self.prompt = "main# "
         else:
-            self.prompt = f"{self.context.get('prompt', '>'.join(self.level_list))}# "
+            self.prompt = f"{self.context.get('prompt', '/'.join(self.level_list))}# "
 
     def handle_events(self):
         """
