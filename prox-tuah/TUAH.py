@@ -498,14 +498,23 @@ class TUAH():
                         # format field according to var type
                         if cv.get("description"):
                             if cv.get("is_var"):
-                                help["params"].update({f'<{ck}>': cv.get("description")})
+                                key = '<{ck}>'
                             elif cv.get("is_part_var"):
                                 var_suffix = cv.get("var_suffix", "N")
-                                help["params"].update({f'{ck}<{var_suffix}>': cv.get("description")})
+                                key = f'{ck}<{var_suffix}>'
                             elif cv.get("is_fixed"):
-                                help["params"].update({f'{ck}': cv.get("description")})
+                                key = ck
                             else:
-                                help["params"].update({f'{ck}=': cv.get("description")})
+                                key = f'{ck}='
+
+                            # add prefix if required
+                            if cv.get("required"):
+                                description = f"[REQ] {cv.get('description', ck)}"
+                            else:
+                                description = cv.get("description", ck)
+
+                            help["params"].update({key: description})
+
                 elif k == "pipe_params":
                     for ck,cv in v.items():
                         if cv.get("description"):

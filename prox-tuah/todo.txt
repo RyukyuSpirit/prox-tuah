@@ -6,8 +6,6 @@
     - storage
     - version
 
-- mark 'required' params in help
-
 - add quote wrapping for string kwarg values without quotes (current fails unless quotes are explicitly around the values)
 
 - special 'doc' hotkey/param for api contexts to open related web-page from pve API site
