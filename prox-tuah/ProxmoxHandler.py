@@ -1,6 +1,7 @@
 import yaml
 import re
 import subprocess
+import webbrowser
 from proxmoxer import ProxmoxAPI
 from pprint import pprint
 from pathlib import Path
@@ -11,6 +12,7 @@ class ProxmoxHandler(ProxmoxAPI):
     """
     def __init__(self, config_path='config.yaml', **kwargs):
         self.config = self.load_config(config_path)
+        self.api_doc_root = "https://pve.proxmox.com/pve-docs/api-viewer/index.html#/"
 
         super().__init__(self.config['server'], user=f'{self.config["user"]}@{self.config["realm"]}', password=self.config['password'], verify_ssl=self.config.get('verify_ssl', False), **kwargs)
 
@@ -86,6 +88,38 @@ class ProxmoxHandler(ProxmoxAPI):
         for c in ['api', 'get', 'post', 'put', 'delete']:
             if c in commands:
                 commands.remove(c)
+        return commands
+
+    def _get_docs_endpoint_list(self, commands):
+        """
+        Returns a string-notation formatted endpoint string of commands list
+        """
+        # Dict map of variable parents to variable name
+        var_map = {
+            "aliases": "name",
+            "ipset": "name",
+            "nodes": "node",
+            "qemu": "vmid",
+            "rules": "pos",
+            "snapshot": "snapname",
+        }
+        # strip unrelated items from list
+        for c in ['api', 'get', 'post', 'put', 'delete', 'docs']:
+            if c in commands:
+                commands.remove(c)
+
+        # substition loop skip control
+        skip_next = False
+
+        # perform substitutions at levels that are vars in API
+        print(f"initial list is: {commands}")
+        for i, level in enumerate(commands):
+            if skip_next:
+                skip_next = False
+            else:
+                if level in var_map.keys() and i+1 < len(commands):
+                    commands[i+1] = f"{{{var_map[level]}}}"
+        print("final list is: {commands}")
         return commands
 
     def _get_vmid(self, level_list):
@@ -399,5 +433,24 @@ class ProxmoxHandler(ProxmoxAPI):
                 results = (f"Error: failed to delete '{endpoint}' with params '{params}' ({e})")
             else:
                 results = (f"Error: failed to delete '{endpoint}' with no params ({e})")
+
+        return results
+
+    def docs(self, level_list=[], params=[]):
+        """
+        Opens web browser to PVE API documentation of specified endpoint
+        """
+
+        # get endpoint for string-notation call
+        endpoint = "/".join(self._get_docs_endpoint_list(level_list))
+
+        f_url = self.api_doc_root + endpoint
+
+        # attempt api call
+        try:
+            webbrowser.open(f_url)
+            results = f"Opening web browser to PVE API endpoint documentation: {f_url}"
+        except Exception as e:
+            results = (f"Error: Unable to open web browser to docs at '{endpoint}' - ({e})")
 
         return results

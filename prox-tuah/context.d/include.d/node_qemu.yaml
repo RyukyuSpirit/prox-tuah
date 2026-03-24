@@ -1,5 +1,7 @@
 description: Node QEMU (VM)
 actions:
+  docs:
+    description: Get PVE API docs for this endpoint
   get:
     description: "Get Virtual Machine index"
     params:
@@ -208,6 +210,8 @@ context:
     description: "Specific QEMU VM"
     is_var: true
     actions:
+      docs:
+        description: Get PVE API docs for this endpoint
       get:
         description: Get VM directory index
       delete:
@@ -223,6 +227,8 @@ context:
       agent:
         description: QEMU Guest Agent
         actions:
+          docs:
+            description: Get PVE API docs for this endpoint
           get:
             description: Get QEMU Guest Agent command index
           post:
@@ -235,6 +241,8 @@ context:
           exec:
             description: QGA exec command
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Executes the given command in the vm via the guest-agent and returns an object with pid
                 params:
@@ -246,6 +254,8 @@ context:
           exec-status:
             description: QGA exec status
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Gets the status of the given pid stared by the guest-agent
                 params:
@@ -255,6 +265,8 @@ context:
           file-read:
             description: QGA file-read
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Reads the given file via guest agent, up to 16777216 bytes
                 params:
@@ -264,6 +276,8 @@ context:
           file-write:
             description: QGA file-write
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Write the given file via guest agent
                 params:
@@ -278,86 +292,120 @@ context:
           fsfreeze-freeze:
             description: QGA fsfreeze-freeze
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Execute fsfreeze-freeze
           fsfreeze-status:
             description: QGA fsfreeze-status
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Execute fsfreeze-status
           fsfreeze-thaw:
             description: QGA fsfreeze-thaw
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Execute fsfreeze-thaw
           fstrim:
             description: QGA fstrim
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
               description: Execute fstrim
           get-fsinfo:
             description: QGA get-fsinfo
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute get-fsinfo
           get-host-name:
             description: QGA get-host-name
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute get-host-name
           get-memory-block-info:
             description: QGA get-memory-block-info
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute get-memory-block-info
           get-memory-blocks:
             description: QGA get-memory-blocks
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute get-memory-blocks
           get-osinfo:
             description: QGA get-osinfo
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute get-osinfo
           get-time:
             description: QGA get-time
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute get-time
           get-timezone:
             description: QGA get-timezone
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute get-timezone
           get-users:
             description: QGA get-users
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute get-users
           get-vcpus:
             description: QGA get-vcpus
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute get-vcpus
           info:
             description: QGA info
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute info
           network-get-interface:
             description: QGA network-get-interface
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Execute network-get-interface
           ping:
             description: QGA ping
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Execute ping
           set-user-password:
             description: QGA set-user-password
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Sets the password for the given user to the given password
                 params:
@@ -372,26 +420,36 @@ context:
           shutdown:
             description: QGA shutdown
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Execute shutdown
           suspend-disk:
             description: QGA suspend-disk
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Execute suspend-disk
           suspend-hybrid:
             description: QGA suspend-hybrid
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Execute suspend-hybrid
           suspend-ram:
             description: QGA suspend-ram
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               post:
                 description: Execute suspend-ram
       cloudinit:
         description: QEMU cloud-init
         actions:
+          docs:
+            description: Get PVE API docs for this endpoint
           get:
             description: Get the cloudinit configuration with both current and pending values
           put:
@@ -400,6 +458,8 @@ context:
           dump:
             description: Cloud-init dump
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Get automatically generated cloudinit config
                 params:
@@ -409,12 +469,16 @@ context:
       firewall:
         description: VM firewall
         actions:
+          docs:
+            description: Get PVE API docs for this endpoint
           get:
             description: Get VM firewall directory index
         context:
           aliases:
             description: VM firewall aliases
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: List aliases
               post:
@@ -432,6 +496,8 @@ context:
               name:
                 description: Specific VM firewall alias
                 actions:
+                  docs:
+                    description: Get PVE API docs for this endpoint
                   get:
                     description: Read alias
                   put:
@@ -457,6 +523,8 @@ context:
           ipset:
             description: VM firewall ipsets
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: List ipsets
               post:
@@ -476,6 +544,8 @@ context:
                 is_var: True
                 description: Specific VM firewall ipset
                 actions:
+                  docs:
+                    description: Get PVE API docs for this endpoint
                   get:
                     description: List ipset content
                   post:
@@ -497,6 +567,8 @@ context:
                   cidr:
                     description: Specific VM firewall ipset CIDR
                     actions:
+                      docs:
+                        description: Get PVE API docs for this endpoint
                       get:
                         description: Read IP or network settings from ipset
                       put:
@@ -516,6 +588,8 @@ context:
           rules:
             description: VM firewall rules
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: List rules
               post:
@@ -558,6 +632,8 @@ context:
                 is_var: True
                 description: Specific VM firewall at position
                 actions:
+                  docs:
+                    description: Get PVE API docs for this endpoint
                   get:
                     description: Get single rule data
                   put:
@@ -605,6 +681,8 @@ context:
           log:
             description: VM firewall log
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Read firewall log
                 params:
@@ -619,6 +697,8 @@ context:
           options:
             description: VM firewall options
             actions:
+              docs:
+                description: Get PVE API docs for this endpoint
               get:
                 description: Get firewall options
               put:
