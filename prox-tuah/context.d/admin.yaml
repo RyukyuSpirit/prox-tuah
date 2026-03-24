@@ -9,9 +9,13 @@ admin:
           description: "Show all VMs"
           run_func: show_vms
           params:
-            scope:
-              is_var: True
-              description: "(brief|detail|config) Amount of info to return per VM (Options: brief|detail|config)"
+            brief:
+              is_fixed: True
+              description: "Show minimal information"
+            detail:
+              is_fixed: True
+              description: "Show detailed information"
+
       context:
         vmid:
           is_var: True

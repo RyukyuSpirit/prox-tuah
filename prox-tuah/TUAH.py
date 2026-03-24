@@ -40,9 +40,9 @@ class TUAH():
         self.level_list = [] # list of keys to get to context
         self.prompt = "main# " # displayed prompt text
         logo = r"""
-                           _               _     
-  _ __  _ __ _____  __    | |_ _   _  __ _| |__  
- | '_ \| '__/ _ \ \/ /____| __| | | |/ _` | '_ \ 
+                           _               _
+  _ __  _ __ _____  __    | |_ _   _  __ _| |__
+ | '_ \| '__/ _ \ \/ /____| __| | | |/ _` | '_ \
  | |_) | | | (_) >  <_____| |_| |_| | (_| | | | |
  | .__/|_|  \___/_/\_\     \__|\__,_|\__,_|_| |_|
  |_|
@@ -224,11 +224,14 @@ class TUAH():
             # if action was found, collect params
             elif action_context:
 
-                # check if this is a variable param
+                # check if this is a fixed or variable param
                 p_var_name = ""
+                p_fixed_name = ""
                 for k,v in action_context.get('params', {}).items():
-                    if v.get('is_var', {}):
+                    if v.get('is_var'):
                         p_var_name = k
+                    if v.get('is_fixed'):
+                        p_fixed_name = k
 
                 # if gathering string, check for end quotes
                 if gathering_string:
@@ -252,6 +255,12 @@ class TUAH():
 
                 # accept if var arg param
                 elif p_var_name:
+                    has_params = True
+                    running_params_list.append(text)
+                    completed_commands.append(text)
+                    self.typed_text = " ".join(completed_commands)
+                # accept if fixed arg param
+                elif p_fixed_name:
                     has_params = True
                     running_params_list.append(text)
                     completed_commands.append(text)
@@ -486,12 +495,15 @@ class TUAH():
                             help["actions"].update({ck: cv.get("description")})
                 elif k == "params":
                     for ck,cv in v.items():
+                        # format field according to var type
                         if cv.get("description"):
                             if cv.get("is_var"):
                                 help["params"].update({f'<{ck}>': cv.get("description")})
                             elif cv.get("is_part_var"):
                                 var_suffix = cv.get("var_suffix", "N")
                                 help["params"].update({f'{ck}<{var_suffix}>': cv.get("description")})
+                            elif cv.get("is_fixed"):
+                                help["params"].update({f'{ck}': cv.get("description")})
                             else:
                                 help["params"].update({f'{ck}=': cv.get("description")})
                 elif k == "pipe_params":
