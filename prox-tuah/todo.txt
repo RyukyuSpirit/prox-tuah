@@ -6,8 +6,6 @@
     - storage
     - version
 
-- allow standard args or flags (non-kwarg)
-
 - mark 'required' params in help
 
 - add quote wrapping for string kwarg values without quotes (current fails unless quotes are explicitly around the values)
@@ -27,3 +25,9 @@
     - Terminal
 
 - Context entry validation (handler func that returns true if sub-context can be entered)
+
+- run commands non-interactively from command line
+    - flag to run single command from command line (-c, etc)
+    - flag to run commands in a file from command line (-f, etc)
+
+- Interactive login (if username/password not in configuration)
