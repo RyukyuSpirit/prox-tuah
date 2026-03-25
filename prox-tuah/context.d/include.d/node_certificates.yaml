@@ -1,17 +1,25 @@
 description: Node certificates 
 actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
   get:
     description: Get node certificates index
 context:
   acme:
     description: ACME certificates 
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get ACME certificates index
     context:
       certificate:
         description: ACME certificate
         actions:
+          delete:
+            description: Revoke existing certificate from CA
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Order a new certificate from ACME-compatible CA
             params:
@@ -22,11 +30,16 @@ context:
             params:
               force:
                 description: Whether or not to renew, even if expiry is more than 30 days away (<0|1>)
-          delete:
-            description: Revoke existing certificate from CA
   custom:
     description: Custom certificates
     actions:
+      delete:
+        description: Delete custom certificate chain and key
+        params:
+          restart:
+            description: Whether or not to restart pveproxy (<0|1>)
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       post:
         description: Upload or update custom certificate chain and key
         params:
@@ -39,13 +52,10 @@ context:
             description: PEM encoded private key
           restart:
             description: Whether or not to restart pveproxy (<0|1>)
-      delete:
-        description: Delete custom certificate chain and key
-        params:
-          restart:
-            description: Whether or not to restart pveproxy (<0|1>)
   info:
     description: Node certificate info
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get information about node's certificates

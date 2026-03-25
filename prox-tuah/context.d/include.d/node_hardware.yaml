@@ -1,11 +1,15 @@
 description: Node hardware
 actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
   get:
     description: Get index of hardware types
 context:
   pci:
     description: Node PCI hardware
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: List local PCI devices
         params:
@@ -18,16 +22,22 @@ context:
         is_var: True
         description: PCI ID/mapping
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Get index of available PCI methods
         context:
           mdev:
             description: Mediated device types
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: List mediated device types for given PCI device
   usb:
     description: Node USB hardware
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: List local USB devices

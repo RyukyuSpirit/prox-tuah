@@ -78,6 +78,8 @@ context:
     is_var: True
     description: Network interface configuration
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Read network device configuration
       put:

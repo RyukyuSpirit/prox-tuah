@@ -1,11 +1,15 @@
 description: Node firewall
 actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
   get:
     description: Get node firewall directory index
 context:
   rules:
     description: Node firewall rules
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: List rules
       post:
@@ -48,6 +52,8 @@ context:
         is_var: True
         description: Specific rule at position
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Gets single rule data
           put:
@@ -95,6 +101,8 @@ context:
   log:
     description: Node firewall log
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Read firewall log
         params:
@@ -109,6 +117,8 @@ context:
   options:
     description: Node firewall options
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get host firewall options
       put:

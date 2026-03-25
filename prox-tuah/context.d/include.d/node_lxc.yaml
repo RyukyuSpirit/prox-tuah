@@ -1,5 +1,7 @@
 description: Node LXC (Linux containers)
 actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
   get:
     description: Get LXC container index
   post:
@@ -104,6 +106,8 @@ context:
     is_var: True
     description: Specific LXC
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get LXC directory index
       delete:
@@ -119,12 +123,16 @@ context:
       firewall:
         description: LXC firewall
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Get LXC firewall directory index
         context:
           aliases:
             description: LXC firewall aliases
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: Get aliases
               post:
@@ -142,6 +150,8 @@ context:
               name:
                 description: Specific LXC firewall alias
                 actions:
+                  docs:
+                    description: Open PVE API docs for this endpoint in web browser
                   get:
                     description: Read alias
                   put:
@@ -167,6 +177,8 @@ context:
           ipset:
             description: LXC firewall ipsets
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: List ipsets
               post:
@@ -186,6 +198,8 @@ context:
                 is_var: True
                 description: Specific LXC firewall ipset
                 actions:
+                  docs:
+                    description: Open PVE API docs for this endpoint in web browser
                   get:
                     description: List ipset content
                   post:
@@ -207,6 +221,8 @@ context:
                   cidr:
                     description: Specific LXC firewall ipset CIDR
                     actions:
+                      docs:
+                        description: Open PVE API docs for this endpoint in web browser
                       get:
                         description: Read IP or network settings from ipset
                       put:
@@ -226,6 +242,8 @@ context:
           rules:
             description: LXC firewall rules
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: List rules
               post:
@@ -268,6 +286,8 @@ context:
                 is_var: True
                 description: Specific LXC firewall at position
                 actions:
+                  docs:
+                    description: Open PVE API docs for this endpoint in web browser
                   get:
                     description: Get single rule data
                   put:
@@ -315,6 +335,8 @@ context:
           log:
             description: LXC firewall log
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: Read firewall log
                 params:
@@ -329,6 +351,8 @@ context:
           options:
             description: LXC firewall options
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: Get firewall options
               put:
@@ -359,6 +383,8 @@ context:
           refs:
             description: LXC firewall ipset/alias references
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: List possible ipset/alias references
                 params:
@@ -367,6 +393,8 @@ context:
       snapshot:
         description: LXC snapshots
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: List all snapshots
           post:
@@ -382,6 +410,8 @@ context:
             is_var: True
             description: Specific LXC snapshot
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: Get snapshot
               delete:
@@ -393,6 +423,8 @@ context:
               config:
                 description: Snapshot configuration
                 actions:
+                  docs:
+                    description: Open PVE API docs for this endpoint in web browser
                   get:
                     description: Get snapshot configuration
                   put:
@@ -403,6 +435,8 @@ context:
               rollback:
                 description: Snapshot rollback
                 actions:
+                  docs:
+                    description: Open PVE API docs for this endpoint in web browser
                   post:
                     description: Rollback LXC state to specified snapshot
                     params:
@@ -411,17 +445,23 @@ context:
       status:
         description: "Enter LXC status context"
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: "Get LXC status"
         context:
           current:
             description: "Current LXC status"
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: "Get current container status"
           reboot:
             description: "Reboot LXC"
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               post:
                 description: Reboot the container by shutting it down, and starting it again. Applies pending changes.
                 params:
@@ -430,11 +470,15 @@ context:
           resume:
             description: "Resume LXC"
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               post:
                 description: "Resume the container"
           shutdown:
             description: "Shutdown LXC"
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               post:
                 description: Shutdown the container. This will trigger a clean shutdown of the container.
                 params:
@@ -445,6 +489,8 @@ context:
           start:
             description: "Start LXC"
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               post:
                 description: "Start the container"
                 params:
@@ -455,6 +501,8 @@ context:
           stop:
             description: "Stop LXC"
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               post:
                 description: "Stop the container. This will abruptly stop all processes running in the container"
                 params:
@@ -465,11 +513,15 @@ context:
           suspend:
             description: "Suspend LXC"
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               post:
                 description: "Suspend the container"
       clone:
         description: LXC clone
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Create a container clone/copy
             params:
@@ -495,6 +547,8 @@ context:
       config:
         description: "LXC configuration"
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: "Get container configuration"
             params:
@@ -583,6 +637,8 @@ context:
       feature:
         description: LXC features
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Check if feature for container is available
             params:
@@ -594,11 +650,15 @@ context:
       interfaces:
         description: LXC interfaces
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Get IP addresses of the container's interface
       migrate:
         description: LXC migration
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Get preconditions for migration
             params:
@@ -623,6 +683,8 @@ context:
       move_volume:
         description: LXC move rootfs-/mp-volume
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Move a rootfs-/mp-volume to a different storage or to a different container
             params:
@@ -648,6 +710,8 @@ context:
       mtunnel:
         description: LXC migration tunnel
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Migration tunnel endpoint - only for internal use by CT migration
             params:
@@ -658,6 +722,8 @@ context:
       mtunnelwebsocket:
         description: LXC migration tunnel websocket
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Migration tunnel endpoint for websocket upgrade - only for internal use by CT migration
             params:
@@ -670,11 +736,15 @@ context:
       pending:
         description: LXC configuration, including pending changes
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Get container conifuration, including pending changes
       remote_migrate:
         description: LXC remote migration
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Migrate the container to another cluster
             params:
@@ -702,6 +772,8 @@ context:
       resize:
         description: LXC mount point resize
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           put:
             description: Resize a container mount point
             params:
@@ -716,6 +788,8 @@ context:
       rrd:
         description: LXC RRD statistics (PNG)
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Read container RRD statisics (returns PNG)
             params:
@@ -730,6 +804,8 @@ context:
       rrddata:
         description: LXC RRD statistics (data)
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Read container RRD statistics
             params:
@@ -744,6 +820,8 @@ context:
       spiceproxy:
         description: LXC SPICE proxy
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Returns a SPICE configuration to connect to the container
             params:
@@ -752,16 +830,22 @@ context:
       template:
         description: LXC template
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Create a template
       termproxy:
         description: LXC terminal proxy
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Creates a TCP proxy connection
       vncproxy:
         description: LXC VNC proxy
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Creates a TCP VNC proxy connection
             params:
@@ -774,6 +858,8 @@ context:
       vncwebsocket:
         description: LXC VNC websocket
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Opens a websocket for VNC traffic
             params:

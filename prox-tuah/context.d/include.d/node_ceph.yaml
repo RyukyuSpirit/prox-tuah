@@ -1,27 +1,37 @@
 description: Node Ceph context
 actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
   get:
     description: Get node ceph directory index
 context:
   cfg:
     description: Ceph configuration
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get Ceph Configuration directory index
     context:
       db:
         description:  Ceph configuration database
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Get the Ceph configuration database
       raw:
         description:  Ceph configuration file
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Get the Ceph configuration file
       value:
         description:  Ceph configurated values
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Get the Ceph configured values from either the config file or config DB
             params:
@@ -30,6 +40,8 @@ context:
   fs:
     description: Ceph FS
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get Ceph FS directory index
     context:
@@ -37,6 +49,8 @@ context:
         is_var: True
         description: The ceph filesystem name
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Create a Ceph filesystem
             params:
@@ -47,6 +61,8 @@ context:
   mds:
     description: Ceph MDS
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get Ceph MDS directory index
     context:
@@ -54,16 +70,20 @@ context:
         is_var: True
         description: Ceph Metadata Server (MDS) Name
         actions:
+          delete:
+            description: Destroy Ceph Metadata Server (MDS)
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Create Ceph Metadata Server (MDS)
             params:
               hotstandby:
                 description: "Determines whether or not a ceph-mds daemon should poll and replay the log of an active MDS (BOOL: <0|1>)"
-          delete:
-            description: Destroy Ceph Metadata Server (MDS)
   mgr:
     description: Ceph manager
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get Ceph Manager directory index
     context:
@@ -71,6 +91,8 @@ context:
         is_var: True
         description: Ceph manager ID
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Create Ceph manager
           delete:
@@ -78,6 +100,8 @@ context:
   mon:
     description: Ceph monitor
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get Ceph monitor list
     context:
@@ -85,6 +109,8 @@ context:
         is_var: True
         description: Ceph monitor ID
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           post:
             description: Create Ceph monitor and manager
             params:
@@ -95,6 +121,8 @@ context:
   osd:
     description: Ceph OSD
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get Ceph OSD list
       post:
@@ -122,22 +150,28 @@ context:
         is_var: True
         description: Ceph OSD ID
         actions:
-          get:
-            description: Get OSD index
           delete:
             description: Destroy OSD
             params:
               cleanup:
                 description: "Whether or not to remove partition table entries (BOOL: <0|1>)"
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get OSD index
         context:
           in:
             description: Ceph OSD in
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               post:
                 description: Perform 'in' on this OSD ID
           lv_info:
             description: Ceph OSD volume details
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: Get OSD volume details
                 params:
@@ -146,16 +180,22 @@ context:
           metadata:
             description: Ceph OSD details
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: Get Ceph OSD details
           out:
             description: Ceph OSD out
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               post:
                 description: Perform 'out' on this OSD ID
           scrub:
             description: Ceph OSD scrub
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               post:
                 description: Instruct the OSD to scrub
                 params:
@@ -164,6 +204,8 @@ context:
   pool:
     description: Ceph pools
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: List all pools and their settings
       post:
@@ -199,6 +241,8 @@ context:
         is_var: True
         description: Ceph pool name
         actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
           get:
             description: Get pool index
           put:
@@ -235,6 +279,8 @@ context:
           status:
             description: Ceph pool status
             actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
               get:
                 description: Get the current pool status
                 params:
@@ -243,6 +289,8 @@ context:
   cmd-safety:
     description: Command safety check
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Heuristical check if it is safe to perform an actions
         params:
@@ -258,11 +306,15 @@ context:
   crush:
     description: Ceph OSD crush
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get OSD crush map
   init:
     description: Initialize Ceph configuration
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       post:
         description: Create initial Ceph default configuration and setup symlinks
         params:
@@ -281,6 +333,8 @@ context:
   log:
     description: Ceph log
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Read ceph log
         params:
@@ -291,6 +345,8 @@ context:
   restart:
     description: Ceph service restart
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       post:
         description: Restart ceph services
         params:
@@ -299,11 +355,15 @@ context:
   rules:
     description: Ceph rules
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: List Ceph rules
   start:
     description: Ceph service start
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       post:
         description: Start Ceph services
         params:
@@ -312,11 +372,15 @@ context:
   status:
     description: Ceph service status
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get Ceph status
   stop:
     description: Ceph service stop
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       post:
         description: Stop Ceph services
         params:

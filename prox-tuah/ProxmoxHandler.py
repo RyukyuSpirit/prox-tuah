@@ -97,11 +97,26 @@ class ProxmoxHandler(ProxmoxAPI):
         # Dict map of variable parents to variable name
         var_map = {
             "aliases": "name",
+            "directory": "name",
+            "fs": "name",
             "ipset": "name",
+            "lvmthin": "name",
+            "lxc": "vmid",
+            "mds": "name",
+            "mgr": "name",
+            "mon": "monid",
+            "osd": "osdid",
+            "network": "iface",
             "nodes": "node",
+            "pci": "pci-id-or-mapping",
+            "pool": "name",
+            "pools": "poolid",
             "qemu": "vmid",
             "rules": "pos",
+            "services": "service",
             "snapshot": "snapname",
+            "storage": "storage",
+            "zfs": "name",
         }
         # strip unrelated items from list
         for c in ['api', 'get', 'post', 'put', 'delete', 'docs']:
@@ -112,14 +127,13 @@ class ProxmoxHandler(ProxmoxAPI):
         skip_next = False
 
         # perform substitutions at levels that are vars in API
-        print(f"initial list is: {commands}")
         for i, level in enumerate(commands):
             if skip_next:
                 skip_next = False
             else:
                 if level in var_map.keys() and i+1 < len(commands):
                     commands[i+1] = f"{{{var_map[level]}}}"
-        print("final list is: {commands}")
+                    skip_next = True
         return commands
 
     def _get_vmid(self, level_list):

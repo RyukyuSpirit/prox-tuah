@@ -1,11 +1,15 @@
 description: Enter APT context
 actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
   get:
     description: Get directory index for APT (Advanced Package Tool)
 context:
   changelog:
     description: APT changelog context
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get package changelogs
         params:
@@ -15,6 +19,8 @@ context:
   repositories:
     description: APT repository context
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get APT repository information
       post:
@@ -41,6 +47,8 @@ context:
   update:
     description: Node updates context
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: List available updates
       post:
@@ -48,5 +56,7 @@ context:
   versions:
     description: Package version context
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get package information for important Proxmox packages

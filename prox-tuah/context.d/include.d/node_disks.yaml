@@ -1,11 +1,15 @@
 description: Node disks
 actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
   get:
     description: Get node disks index
 context:
   directory:
     description: PVE managed directory storage
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get PVE managed directory storage list
       post:
@@ -33,9 +37,13 @@ context:
                 description: Whether or not to mark associated storage as not available on this node anymore or removes them from the configuration (if configured for this node only) (<0|1>)
               cleanup-disks:
                 description: Whether or not to also wipe disk so it can be repurposed (<0|1>)
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
   lvm:
     description: Node LVM
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: List LVM volume groups
       post:
@@ -60,9 +68,13 @@ context:
                 description: Whether or not to mark associated storage as not available on this node anymore or removes them from the configuration (if configured for this node only) (<0|1>)
               cleanup-disks:
                 description: Whether or not to also wipe disk so it can be repurposed (<0|1>)
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
   lvmthin:
     description: Node LVM thinpools
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: List LVM thinpools
       post:
@@ -91,9 +103,13 @@ context:
                 description: Whether or not to mark associated storage as not available on this node anymore or removes them from the configuration (if configured for this node only) (<0|1>)
               cleanup-disks:
                 description: Whether or not to also wipe disk so it can be repurposed (<0|1>)
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
   zfs:
     description: Node ZFS pools
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: List ZFS pools
       post:
@@ -130,9 +146,13 @@ context:
                 description: Whether or not to mark associated storage as not available on this node anymore or removes them from the configuration (if configured for this node only) (<0|1>)
               cleanup-disks:
                 description: Whether or not to also wipe disk so it can be repurposed (<0|1>)
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
   initgpt:
     description: GPT initialization
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       post:
         description: Initialize disk with GPT
         params:
@@ -144,6 +164,8 @@ context:
   list:
     description: Local disks
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: List local disks
         params:
@@ -156,6 +178,8 @@ context:
   smart:
     description: Disk SMART health
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       get:
         description: Get SMART healt of a disk
         params:
@@ -164,6 +188,8 @@ context:
   wipedisk:
     description: Disk wiping
     actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
       put:
         description: Wipe a disk or partition
         params:
