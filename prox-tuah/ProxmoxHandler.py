@@ -112,6 +112,7 @@ class ProxmoxHandler(ProxmoxAPI):
             "pool": "name",
             "pools": "poolid",
             "qemu": "vmid",
+            "replication": "id",
             "rules": "pos",
             "services": "service",
             "snapshot": "snapname",

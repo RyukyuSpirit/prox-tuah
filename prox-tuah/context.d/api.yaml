@@ -34,6 +34,8 @@ api:
               !inc context.d/include.d/node_network.yaml
             qemu:
               !inc context.d/include.d/node_qemu.yaml
+            replication:
+              !inc context.d/include.d/node_replication.yaml
     pools:
       description: "Enter pools context"
     storage:

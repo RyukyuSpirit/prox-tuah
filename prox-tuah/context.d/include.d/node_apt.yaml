@@ -1,4 +1,4 @@
-description: Enter APT context
+description: Node APT package manager
 actions:
   docs:
     description: Open PVE API docs for this endpoint in web browser

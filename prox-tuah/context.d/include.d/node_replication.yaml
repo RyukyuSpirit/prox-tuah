@@ -1,0 +1,45 @@
+description: Node replication
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: List status of all replication jobs on this node
+    params:
+      guest:
+        description: Only list replication jobs for this guest
+context:
+  id:
+    is_var: True
+    description: Replication ID
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get replication ID directory index
+    context:
+      log:
+        description: Replication job log
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read replication job log
+            params:
+              limit:
+                description: Limit logs (<0-N>)
+              start:
+                description: Start logs at (<0-N>)
+      schedule_now:
+        description: Replication job schedule now
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          post:
+            description: Schedule replication job to start as soon as possible
+      status:
+        description: Replication job status
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get replication job status
