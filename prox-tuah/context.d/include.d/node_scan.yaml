@@ -1,0 +1,93 @@
+description: Node scan
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get index of available scan methods
+    params:
+context:
+  cifs:
+    description: CIFS server
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Scan remote CIFS server
+        params:
+          server:
+            required: True
+            description: The server address (name or IP)
+          domain:
+            description: SMB domain (workgroup)
+          password:
+            description: User password
+          username:
+            description: User name
+  iscsi:
+    description: iSCSI server
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Scan remote iSCSI server
+        params:
+          portal:
+            required: True
+            description: The iSCSI portal (IP or DNS name with optional port)
+  lvm:
+    description: LVM volume group
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List local LVM volume groups
+  lvmthin:
+    description: LVM thin pools
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List local LVM thin pools
+        params:
+          vg:
+            required: True
+            description: Volume group
+  nfs:
+    description: NFS server
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Scan remote NFS server
+        params:
+          server:
+            required: True
+            description: The server address (name or IP)
+  pbs:
+    description: Proxmox Backup Server
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Scan remote PBS server
+        params:
+          password:
+            required: True
+            description: User password or API token secret
+          server:
+            required: True
+            description: The server address (name or IP)
+          username:
+            required: True
+            description: User-name or API token-ID
+          fingerprint:
+            description: Certificate SHA 256 fngerprint
+          port:
+            description: Optional port
+  zfs:
+    description: ZFS server
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Scan zfs pool list on local node
