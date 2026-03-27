@@ -97,7 +97,9 @@ class ProxmoxHandler(ProxmoxAPI):
         # Dict map of variable parents to variable name
         var_map = {
             "aliases": "name",
+            "content": "volume",
             "directory": "name",
+            "fabrics": "fabric",
             "fs": "name",
             "ipset": "name",
             "lvmthin": "name",
@@ -117,7 +119,10 @@ class ProxmoxHandler(ProxmoxAPI):
             "services": "service",
             "snapshot": "snapname",
             "storage": "storage",
+            "tasks": "upid",
+            "vnets": "vnet",
             "zfs": "name",
+            "zones": "zone",
         }
         # strip unrelated items from list
         for c in ['api', 'get', 'post', 'put', 'delete', 'docs']:

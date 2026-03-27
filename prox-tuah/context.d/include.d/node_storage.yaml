@@ -1,0 +1,234 @@
+description: Node storage
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get status for all datastores
+context:
+  storage:
+    is_var: True
+    description: Node storage
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get storage directory index
+    context:
+      content:
+        description: Storage content
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: List storage content
+            params:
+              content:
+                description: Only list content of this type
+              vmid:
+                description: Only list images for this VM
+          post:
+            description: Allocate disk images
+            params:
+              filename:
+                required: True
+                description: The name of the file to create
+              size:
+                required: True
+                description: Size in kilobyte. Optional suffixes 'M' and 'G' (megabyte and gigabyte)
+              vmid:
+                required: True
+                description: Specify owner VM
+              format:
+                description: Format of the image (<raw|qcow2|subvol|vmdk>)
+        context:
+          volume:
+            is_var: True
+            description: Content volume
+            actions:
+              delete:
+                description: Delete volume
+                params:
+                  delay:
+                    description: Time to wait for the task to finish
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get volume attributes
+              post:
+                description: Copy a volume
+                params:
+                  target:
+                    required: True
+                    description: Target volume identifier
+                  target_node:
+                    description: Target node
+              put:
+                description: Update volume attributes
+                params:
+                  notes:
+                    description: The new notes
+                  protected:
+                    description: Protection status (<0|1>)
+                  storage:
+                    description: The storage identifier
+      file-restore:
+        description: Storage file-restore
+        context:
+          download:
+            description: PBS backup file/directory extraction
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Extract a file or directory (as zip archive) from a PBS backup
+                params:
+                  filepath:
+                    required: True
+                    description: base64-path to the directory or file to download
+                  volume:
+                    required: True
+                    description: Backup volume ID or name
+                  tar:
+                    description: Download dirs as 'tar.zst' instead of 'zip' (<0|1>)
+          list:
+            description: List files and directories
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: List files and directories for single file restore under the given path
+                params:
+                  filepath:
+                    required: True
+                    description: base64-path to the directory or file being listed, or "/"
+                  volume:
+                    required: True
+                    description: Backup volume ID or name
+      download-url:
+        description: Storage download URL
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          post:
+            description: Download templates, ISO images, OVAs and VM images by using an URL
+            params:
+              content:
+                required: True
+                description: Content type (<iso|vztmpl|import>)
+              filename:
+                required: True
+                description: The name of the file to create
+              url:
+                required: True
+                description: The URL to download the file from
+              checksum:
+                description: The expected checksum of the file
+              checksum-algorithm:
+                description: The algorithm to calculate the checksum of the file (<md5|sha1|sha224|sha256|sha384|sha512>)
+              compression:
+                description: Decompress the downloaded file using the specified compression algorithm
+              verify-certificates:
+                description: Verify SSL/TLS certificates (<0|1>)
+      import-metadata:
+        description: Storage import-metadata
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get the base parameters for creating a guest which imports data from a foreign importable guest, like an ESXi VM
+            params:
+              volume:
+                required: True
+                description: Volume identifier for the guest archive/entry
+      oci-registry-pull:
+        description: Storage oci-registry-pull
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          post:
+            description: Pull an OCI image from a registry
+            params:
+              reference:
+                required: True
+                description: The reference to the OCI image to download
+              filename:
+                description: Custom destination file name of the OCI image
+      prunebackups:
+        description: Storage prune information for backups
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get prune information for backups
+            params:
+              prune-backups:
+                description: Use these retention options instead of those from the storage configuration
+              type:
+                description: Only consider backups for guests of this type (<qemu|lxc>)
+              vmid:
+                description: Only consider backups for this guest
+          delete:
+            description: Prune backups. Only those using the standard naming scheme are considered.
+            params:
+              prune-backups:
+                description: Use these retention options instead of those from the storage configuration
+              type:
+                description: Only prune backups for guests of this type (<qemu|lxc>)
+              vmid:
+                description: Only prune backups for this guest
+      rrd:
+        description: Storage RRD (PNG)
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read storage RRD statistics (returns PNG)
+            params:
+              ds:
+                required: True
+                description: The list of datasources you want to display
+              timeframe:
+                required: True
+                description: Specify the time frame you are interested in (<hour|day|week|month|year>)
+              cf:
+                description: The RRD consolidation function (<AVERAGE|MAX>)
+      rrddata:
+        description: Storage RRD statistics (data)
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read storage RRD statistics (returns PNG)
+            params:
+              timeframe:
+                required: True
+                description: Specify the time frame you are interested in (<hour|day|week|month|year>)
+              cf:
+                description: The RRD consolidation function (<AVERAGE|MAX>)
+      status:
+        description: Storage status
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read storage status
+      upload:
+        description: Storage upload
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          post:
+            description: Upload templates, ISO images, OVAs and VM images
+            params:
+              content:
+                required: True
+                description: Content type (<iso|vztmpl|import>)
+              filename:
+                required: True
+                description: The name of the file to create
+              checksum:
+                description: The expected checksum of the file
+              checksum-algorithm:
+                description: The algorithm to calculate the checksum of the file (<md5|sha1|sha224|sha256|sha384|sha512>)
+              tmpfilename:
+                description: The source file name. This parameter is usually set by the REST handler. You can only overwrite it when connecting to the trusted port on localhost.

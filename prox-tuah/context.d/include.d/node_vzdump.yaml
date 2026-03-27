@@ -1,0 +1,96 @@
+description: Node vzdump (backups)
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  post:
+    description: Create backup
+    params:
+      all:
+        description: Backup all known guest systems on this host (<0|1>)
+      bwlimit:
+        description: Limit I/O bandwidth (in KiB/s)
+      compress:
+        description: Compress dump file (<0|1|gzip|lzo|zstd>)
+      dumpdir:
+        description: Store resulting files to specified directory
+      exclude:
+        description: Exclude specified guest systems (assumes --all)
+      exclude-path:
+        description: Exclude certain files/directories (shell globs)
+      fleecing:
+        description: Options for backup fleecing (VM only)
+      ionice:
+        description: Set IO priority when using the BFQ scheduler
+      job-id:
+        description: The id of the backup job
+      lockwait:
+        description: Maximal time to wait for the global lock (minutes)
+      mailnotification:
+        description: Specify when to send a notification mail (<always|failure>)
+      mailto:
+        description: Comma-separated list of email addresses or user that should receive email notifications
+      maxfiles:
+        description: Maximal number of backup files per guest system
+      mode:
+        description: Backup mode (<snapshot|suspend|stop>)
+      node:
+        description: Only run if executed on this node
+      notes-template:
+        description: Template string for generating notes for the backup(s)
+      notification-mode:
+        description: Determine which notification system to use (<auto|legacy-sendmail|notification-system>)
+      pbs-change-detection-mode:
+        description: PBS mode used to detect file changes and switch encoding format for container backups (<legacy|data|metadata>)
+      performance:
+        description: Other performance-related settings
+      pigz:
+        description: Use pigz instead of gzip when N>0
+      pool:
+        description: Backup all known guest systems included in the specified pool
+      protected:
+        description: Mark backup(s) as protected (<0|1>)
+      prune-backups:
+        description: Use these retention options instead of those from the storage configuration
+      quiet:
+        description: Be quiet (<0|1>)
+      remove:
+        description: Prune older backups according to 'prune-backups' (<0|1>)
+      script:
+        description: Use specified hook script
+      stdexcludes:
+        description: Exclude temporary files and logs (<0|1>)
+      stdout:
+        description: Write tar to stdout, not to a file (<0|1>)
+      stop:
+        description: Stop running backup jobs on this host
+      stopwait:
+        description: Maximal time to wait until a guest system is stopped (minutes)
+      storage:
+        description: Store resulting file to this storage
+      tmpdir:
+        description: Store temporary files to specified directory
+      vmid:
+        description: The ID of the guest system you want to backup
+      zstd:
+        description: Zstd threads. N=0 uses half of the available cores, otherwise N is used as thread count
+context:
+  defaults:
+    description: Vzdump defaults
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get the currently configure vzdump defaults
+        params:
+          storage:
+            description: The storage identifier
+  extractconfig:
+    description: Vzdump configuration extraction
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Extract configuration from vzdump backup archive
+        params:
+          volume:
+            description: Volume identifier

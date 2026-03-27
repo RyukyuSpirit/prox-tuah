@@ -1,0 +1,39 @@
+description: Node tasks
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Read task list for one node (finished tasks)
+context:
+  upid:
+    is_var: True
+    description: Task upid
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get task
+      delete:
+        description: Stop a task
+    context:
+      log:
+        description: Task log
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read task log
+            params:
+              download:
+                description: Whether the tasklog file should be downloaded (<0|1>)
+              limit:
+                description: The number of lines to read from the tasklog
+              start:
+                description: Start at this line when reading the tasklog
+      status:
+        description: Task status
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read task status

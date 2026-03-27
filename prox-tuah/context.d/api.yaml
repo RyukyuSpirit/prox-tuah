@@ -38,6 +38,16 @@ api:
               !inc context.d/include.d/node_replication.yaml
             scan:
               !inc context.d/include.d/node_scan.yaml
+            sdn:
+              !inc context.d/include.d/node_sdn.yaml
+            services:
+              !inc context.d/include.d/node_services.yaml
+            storage:
+              !inc context.d/include.d/node_storage.yaml
+            tasks:
+              !inc context.d/include.d/node_tasks.yaml
+            vzdump:
+              !inc context.d/include.d/node_vzdump.yaml
     pools:
       description: "Enter pools context"
     storage:

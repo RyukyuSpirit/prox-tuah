@@ -1,0 +1,97 @@
+description: Node SDN (Software-Defined Network)
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get SDN index
+context:
+  fabrics:
+    description: SDN fabrics
+    context:
+      fabric:
+        is_var: True
+        description: SDN fabric status
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get directory index for SDN fabric status
+        context:
+          interfaces:
+            description: SDN fabric interfaces
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get all interfaces for a fabric
+          neighbors:
+            description: SDN fabric neighbors
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get all neighbors for a fabric
+          routes:
+            description: SDN fabric routes
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get all routes for a fabric
+  vnets:
+    description: SDN vnets
+    context:
+      vnet:
+        is_var: True
+        description: SDN vnet
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get SDN vnet's index
+        context:
+          vrf:
+            description: SDN vnet MAC VRF
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get SDN vnet's index
+  zones:
+    description: SDN zones
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get status for all zones
+    context:
+      zone:
+        is_var: True
+        description: SDN zone
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get SDN zone status directory index
+        context:
+          bridges:
+            description: SDN zone bridges
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get a list of all bridges (vnets) that are part of a zone, as well as the ports that are members of that bridge
+          content:
+            description: SDN zone content
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: List zone content
+          ip-vrf:
+            description: SDN zone ip-vrf
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get the IP VRF of an EVPN zone

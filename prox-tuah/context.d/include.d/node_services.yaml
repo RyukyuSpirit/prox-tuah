@@ -1,0 +1,51 @@
+description: Node services
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get service list
+context:
+  service:
+    is_var: True
+    description: Node service
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get service directory index
+    context:
+      reload:
+        description: Service reload
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          post:
+            description: Reload service
+      restart:
+        description: Service restart
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          post:
+            description: restart service
+      start:
+        description: Service start
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          post:
+            description: start service
+      state:
+        description: Service state
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read service properties
+      stop:
+        description: Service stop
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          post:
+            description: Stop service
