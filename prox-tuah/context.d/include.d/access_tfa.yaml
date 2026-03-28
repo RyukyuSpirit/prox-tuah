@@ -1,0 +1,31 @@
+description: Access two-factor authentication
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: List two-factor authentication configurations of users
+context:
+  userid:
+    is_var: True
+    description: 2FA userid
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List 2FA configuration of user
+      post:
+        description: Add a TFA entry for a user
+        params:
+          type:
+            required: True
+            description: 2FA entry type (<totp|u2f|webauthn|recovery|yubico>)
+          challenge:
+            description: "When responding to a U2F challenge: the original challenge string"
+          description:
+            description: A description to distinguish multiple entries from one another
+          password:
+            description: The current password of the user performing the change
+          totp:
+            description: A TOTP URI
+          value:
+            description: The current value for the provided TOTP URI, or a Webauthn/U2F challenge response

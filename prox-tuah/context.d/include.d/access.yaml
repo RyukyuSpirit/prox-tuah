@@ -6,3 +6,5 @@ openid:
   !inc context.d/include.d/access_openid.yaml
 roles:
   !inc context.d/include.d/access_roles.yaml
+tfa:
+  !inc context.d/include.d/access_tfa.yaml
