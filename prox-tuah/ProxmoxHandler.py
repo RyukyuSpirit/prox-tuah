@@ -99,6 +99,7 @@ class ProxmoxHandler(ProxmoxAPI):
             "aliases": "name",
             "content": "volume",
             "directory": "name",
+            "domains": "realm",
             "fabrics": "fabric",
             "fs": "name",
             "ipset": "name",

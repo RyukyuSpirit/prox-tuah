@@ -1,18 +1,18 @@
 api:
-  description: "Enter Proxmox API mode"
-  can_get: false
+  description: Enter Proxmox API mode
   context:
     access:
-      description: "Enter access context"
-    cluster:
-      description: "Enter cluster context"
-    nodes:
-      description: "Enter nodes context"
+      description: API access resources
       context:
-        node_name:
-          description: "Enter specific node's context"
+        !inc context.d/include.d/access.yaml
+    cluster:
+      description: API cluster resources
+    nodes:
+      description: API nodes resources
+      context:
+        node:
+          description: PVE node
           is_var: true
-          type: "string"
           context:
             apt:
               !inc context.d/include.d/node_apt.yaml
@@ -245,7 +245,7 @@ api:
                     proxy:
                       description: Spice proxy server, or default to the current node
             startall:
-              description: Node start of all guests
+              description: Node start operation on all guests
               actions:
                 docs:
                   description: Open PVE API docs for this endpoint in web browser
@@ -256,12 +256,151 @@ api:
                       description: Issue start command even if virtual guest have 'onboot' not set or set to off
                     vms:
                       description: Only consider guests from this comma-separated list of VMIDs
+            status:
+              description: Node status (query|reboot|shutdown)
+              actions:
+                docs:
+                  description: Open PVE API docs for this endpoint in web browser
+                get:
+                  description: Read node status
+                post:
+                  description: Reboot or shutdown a node
+                  params:
+                    command:
+                      required: True
+                      description: Specify the command (<reboot|shutdown>)
+            stopall:
+              description: Node stop operation on all guests
+              actions:
+                docs:
+                  description: Open PVE API docs for this endpoint in web browser
+                post:
+                  description: Stop all VMs and CTs
+                  params:
+                    force-stop:
+                      description: Force a hard-stop after the timeout (<0|1>)
+                    timeout:
+                      description: Timeout for each guest shutdown task (<0-7200>)
+                    vms:
+                      description: Only consider guests with these IDs
+            subscription:
+              description: Node subscription
+              actions:
+                delete:
+                  description: Delete subscription key of this node
+                docs:
+                  description: Open PVE API docs for this endpoint in web browser
+                get:
+                  description: Read subscription info
+                post:
+                  description: Update subscription info
+                  parameters:
+                    force:
+                      description: Always connect to server, even if local cache is still valid
+                put:
+                  description: Set subscription key
+                  parameters:
+                    key:
+                      required: True
+                      description: Proxmox VE subscription key
+            suspendall:
+              description: Node suspend operation on all guests
+              actions:
+                docs:
+                  description: Open PVE API docs for this endpoint in web browser
+                post:
+                  description: Suspend all VMs
+                  params:
+                    vms:
+                      description: Only consider guests with these IDs
+            syslog:
+              description: Node system log
+              actions:
+                docs:
+                  description: Open PVE API docs for this endpoint in web browser
+                get:
+                  description: Read system log
+                  params:
+                    limit:
+                      description: Display all logs up to this number
+                    service:
+                      description: Service ID
+                    since:
+                      description: Display all log since this date-time string
+                    start:
+                      description: Display all logs starting at this number
+                    until:
+                      description: Display all logs until this date-time string
+            termproxy:
+              description: Node terminal proxy
+              actions:
+                docs:
+                  description: Open PVE API docs for this endpoint in web browser
+                get:
+                  description: Creates a VNC shell proxy
+                  params:
+                    cmd:
+                      description: Run specific command or default to login (requires 'root@pam')
+                    cmd-opts:
+                      description: Add parameters to a command. Encoded as null terminated strings.
+            time:
+              description: Node time and timezone settings
+              actions:
+                docs:
+                  description: Open PVE API docs for this endpoint in web browser
+                get:
+                  description: Read server time and time zone settings
+                put:
+                  description: Set time zone
+                  params:
+                    timezone:
+                      required: True
+                      description: Time zone (reference '/usr/share/zoneinfo/zone.tab' for valid names)
+            version:
+              description: Node API version details
+              actions:
+                docs:
+                  description: Open PVE API docs for this endpoint in web browser
+                get:
+                  description: Get API version details
+            vncshell:
+              description: Node VNC shell proxy
+              actions:
+                post:
+                  params:
+                    cmd:
+                      description: Run specific command or default to login (requires 'root@pam')
+                    cmd-opts:
+                      description: Add parameters to a command. Encoded as null terminated strings.
+                    height:
+                      description: Sets the height of the console in pixels
+                    websocket:
+                      description: use websocket instead of standard vnc
+                    width:
+                      description: Sets the width of the console in pixels
+            vncwebsocket:
+              description: Node VNC websocket
+              actions:
+                get:
+                  description: Opens a websocket for VNC traffic
+                  params:
+                    port:
+                      required: True
+                      description: Port number returned by previous vncproxy call
+                    vncticket:
+                      required: True
+                      description: Ticket from previous call to vncproxy
+            wakeonlan:
+              description: Node wake-on-LAN
+              actions:
+                get:
+                  description: Try to wake a node via 'wake on LAN' network packet
     pools:
-      description: "Enter pools context"
+      description: "API pools resources"
     storage:
-      description: "Enter storage context"
+      description: "API storage resources"
     version:
-      description: "PVE version"
+      description: "API version resources"
       actions:
         docs:
           description: Open PVE API docs for this endpoint in web browser

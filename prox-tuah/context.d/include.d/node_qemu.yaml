@@ -316,7 +316,7 @@ context:
               docs:
                 description: Open PVE API docs for this endpoint in web browser
               post:
-              description: Execute fstrim
+                description: Execute fstrim
           get-fsinfo:
             description: QGA get-fsinfo
             actions:
