@@ -1,0 +1,125 @@
+description: Access users
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get user index
+    params:
+      enabled:
+        description: Optional filter for enable property (<0|1>)
+      full:
+        description: Include group and token information (<0|1>)
+  post:
+    description: Create new user
+    params:
+      userid:
+        required: True
+        description: User ID
+      comment:
+        description: User comment
+      email:
+        description: User email address
+      enable:
+        description: Enable the account (<0|1>)
+      expire:
+        description: Account expiration date (seconds since epoch, or '0' for no expiration)
+      firstname:
+        description: User first name
+      groups:
+        description: User groups
+      keys:
+        description: Keys for two-factor auth (yubico)
+      lastname:
+        description: User last name
+      password:
+        description: Initial password
+context:
+  userid:
+    is_var: True
+    description: User configuration
+    actions:
+      delete:
+        description: Delete user
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get user configuration
+      put:
+        description: Update user configuration
+        params:
+          append:
+            description: Append (<0|1>)
+          comment:
+            description: User comment
+          email:
+            description: User email address
+          enable:
+            description: Enable the account (<0|1>)
+          expire:
+            description: Account expiration date (seconds since epoch, or '0' for no expiration)
+          firstname:
+            description: User first name
+          groups:
+            description: User groups
+          keys:
+            description: Keys for two-factor auth (yubico)
+          lastname:
+            description: User last name
+          password:
+            description: Initial password
+    context:
+      token:
+        description: User API tokens
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get user API tokens
+        context:
+          tokenid:
+            is_var: True
+            description: API token
+            actions:
+              delete:
+                description: Remove API token for a specific user
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get user API tokens
+              post:
+                description: "Generate a new API token for a specific user. NOTE: returns API token value, which needs to be stored as it cannot be retrieved afterwards!"
+                params:
+                  comment:
+                    description: Token comment
+                  expire:
+                    description: API token expiration date (seconds since epoch, or '0' for no expiration)
+                  privsep:
+                    description: Restrict API token privileges with separate ACLs (<0|1>)
+              put:
+                description: Update API token for a specific user
+                params:
+                  comment:
+                    description: Token comment
+                  delete:
+                    description: A list of settings you want to delete
+                  expire:
+                    description: API token expiration date (seconds since epoch, or '0' for no expiration)
+                  privsep:
+                    description: Restrict API token privileges with separate ACLs (<0|1>)
+      tfa:
+        description: User two-factor authentication
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get user TFA types (Personal and Realm)
+            params:
+              multiple:
+                description: Request all entries as an array (<0|1>)
+      unlock-tfa:
+        description: User two-factor authentication unlock
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          put:
+            description: Unlock a user's TFA

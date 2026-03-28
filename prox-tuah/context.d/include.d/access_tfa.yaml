@@ -7,18 +7,18 @@ actions:
 context:
   userid:
     is_var: True
-    description: 2FA userid
+    description: TFA userid
     actions:
       docs:
         description: Open PVE API docs for this endpoint in web browser
       get:
-        description: List 2FA configuration of user
+        description: List TFA configuration of user
       post:
         description: Add a TFA entry for a user
         params:
           type:
             required: True
-            description: 2FA entry type (<totp|u2f|webauthn|recovery|yubico>)
+            description: TFA entry type (<totp|u2f|webauthn|recovery|yubico>)
           challenge:
             description: "When responding to a U2F challenge: the original challenge string"
           description:
@@ -29,3 +29,25 @@ context:
             description: A TOTP URI
           value:
             description: The current value for the provided TOTP URI, or a Webauthn/U2F challenge response
+    context:
+      id:
+        is_var: True
+        description: TFA entry ID
+        actions:
+          delete:
+            description: Delete a TFA entry by ID
+            parameters:
+              password: The current password of the user performing the change
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Fetch a requested TFA entry, if present
+          put:
+            description: Add a TFA entry for a user
+            parameters:
+              description:
+                description: A description to distinguish multiple entries from one another
+              enable:
+                description: Whether the entry should be enabled for login (<0|1>)
+              password:
+                description: The current password of the user performing the change

@@ -122,7 +122,9 @@ class ProxmoxHandler(ProxmoxAPI):
             "snapshot": "snapname",
             "storage": "storage",
             "tasks": "upid",
+            "token": "tokenid",
             "tfa": "userid",
+            "users": "userid",
             "vnets": "vnet",
             "zfs": "name",
             "zones": "zone",
@@ -143,6 +145,10 @@ class ProxmoxHandler(ProxmoxAPI):
                 if level in var_map.keys() and i+1 < len(commands):
                     commands[i+1] = f"{{{var_map[level]}}}"
                     skip_next = True
+
+                    # edge case for adjacent var
+                    if level == "tfa" and i+2 < len(commands):
+                        commands[i+2] = f"{{id}}"
         return commands
 
     def _get_vmid(self, level_list):
