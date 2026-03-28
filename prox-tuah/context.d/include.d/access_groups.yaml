@@ -1,4 +1,4 @@
-description: Access authentication groups
+description: Access groups
 actions:
   docs:
     description: Open PVE API docs for this endpoint in web browser
