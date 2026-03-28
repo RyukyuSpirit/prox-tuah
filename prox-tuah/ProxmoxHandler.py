@@ -103,6 +103,7 @@ class ProxmoxHandler(ProxmoxAPI):
             "directory": "name",
             "domains": "realm",
             "fabrics": "fabric",
+            "flags": "flag",
             "fs": "name",
             "ipset": "name",
             "lvmthin": "name",

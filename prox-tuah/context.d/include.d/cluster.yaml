@@ -98,3 +98,75 @@ bulk-action:
                   description: Suspend the guests to disk (<0|1>)
                 vms:
                   description: Only consider guests from this list of VMIDs
+ceph:
+  description: Cluster Ceph
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: Get cluster Ceph index
+  context:
+    flags:
+      description: Ceph flags
+      actions:
+        docs:
+          description: Open PVE API docs for this endpoint in web browser
+        get:
+          description: Get the status of all ceph flags
+        put:
+          description: Set/unset multiple ceph flags at once
+          params:
+            nobackfill:
+              description: Backfilling of PGs is suspended (<0|1>)
+            nodeep-scrub:
+              description: Deep scrubbing is disabled (<0|1>)
+            nodown:
+              description: OSD failure reports are being ignored, such that the monitors will not mark OSDs down (<0|1>)
+            noin:
+              description: OSDs that were previously marked out will not be marked back in when they start (<0|1>)
+            noout:
+              description: OSDs will not automatically be marked out after the configured intervale (<0|1>)
+            norebalance:
+              description: Rebalancing of PGs is suspended (<0|1>)
+            norecover:
+              description: Recovery of PGs is suspended (<0|1>)
+            noscrub:
+              description: Scrubbing is disabled (<0|1>)
+            notieragent:
+              description: Cache tiering activity is suspended (<0|1>)
+            noup:
+              description: OSDs are not allowed to start (<0|1>)
+            pause:
+              description: Pauses read and writes (<0|1>)
+      context:
+        flag:
+          is_var: True
+          description: Flag status
+          actions:
+            docs:
+              description: Open PVE API docs for this endpoint in web browser
+            get:
+              description: Get the status of a specific ceph flag
+            put:
+              description: Set or clear (unset) a specific ceph flag
+              params:
+                value:
+                  required: True
+                  description: The new value of the flag
+    metadata:
+      description: Ceph metadata
+      actions:
+        docs:
+          description: Open PVE API docs for this endpoint in web browser
+        get:
+          description: Get Ceph metadata
+          params:
+            scope:
+              description: Scope (<all|versions>)
+    status:
+      description: Ceph status
+      actions:
+        docs:
+          description: Open PVE API docs for this endpoint in web browser
+        get:
+          description: Get Ceph status
