@@ -3,10 +3,22 @@ api:
   context:
     access:
       description: API access resources
+      actions:
+        docs:
+          description: Open PVE API docs for this endpoint in web browser
+        get:
+          description: Get access directory index
       context:
         !inc context.d/include.d/access.yaml
     cluster:
       description: API cluster resources
+      actions:
+        docs:
+          description: Open PVE API docs for this endpoint in web browser
+        get:
+          description: Get access cluster index
+      context:
+        !inc context.d/include.d/cluster.yaml
     nodes:
       description: API nodes resources
       context:

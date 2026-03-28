@@ -1,0 +1,135 @@
+description: Cluster ACME
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: ACME
+context:
+  account:
+    description: ACME account
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get ACME account index
+      post:
+        description: Register new ACME account with CA
+        params:
+          contact:
+            required: True
+            description: Contact email address
+          directory:
+            description: URL of ACME CA directory endpoint
+          eab-hmac-key:
+            description: HMAC key for External Account Binding
+          eab-kid:
+            description: Key Identifier for External Account Binding
+          name:
+            description: ACME account config file name
+          tos_url:
+            description: URL of CA TermsOfService - setting this indicates agreement
+    context:
+      name:
+        is_var: True
+        description: Account name
+        actions:
+          delete:
+            description: Deactivate existing ACME account at CA
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Return existing ACME account information
+          put:
+            description: Update existing ACME account information with CA
+            params:
+              contact:
+                description: Contact email address
+  plugins:
+    description: ACME plugins
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get ACME plugin index
+        params:
+          type:
+            description: Only list ACME plugins of a specific type
+      post:
+        description: Add ACME plugin configuration
+        params:
+          id:
+            required: True
+            description: ACME Plugin ID name
+          type:
+            required: True
+            description: ACME challenge type
+          api:
+            description: API plugin name
+          data:
+            description: DNS plugin data (base64 encoded)
+          disable:
+            description: Flag to disable the config (<0|1>)
+          nodes:
+            description: List of cluster node names
+          validation-delay:
+            description: Extra delay in seconds to wait before requesting validation (<0-172800>)
+    context:
+      id:
+        is_var: True
+        description: Plugin ID
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get ACME plugin configuration
+          put:
+            description: Update ACME plugin configuration
+            params:
+              api:
+                description: API plugin name
+              data:
+                description: DNS plugin data (base64 encoded)
+              delete:
+                description: A list of settings you want to delete
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              disable:
+                description: Flag to disable the config (<0|1>)
+              nodes:
+                description: List of cluster node names
+              validation-delay:
+                description: Extra delay in seconds to wait before requesting validation (<0-172800>)
+  challenge-schema:
+    description: ACME challenge type schema
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get schema of ACME challenge types
+  directories:
+    description: ACME directories
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get named known ACME directory endpoints
+  meta:
+    description: ACME meta
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Retrieve ACME directory meta information
+        params:
+          directory:
+            description: URL of ACME CA directory endpoint
+  tos:
+    description: ACME terms of service
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Retrieve ACME terms of service URL from CA
+        params:
+          directory:
+            description: URL of ACME CA directory endpoint

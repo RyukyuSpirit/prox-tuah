@@ -96,6 +96,7 @@ class ProxmoxHandler(ProxmoxAPI):
         """
         # Dict map of variable parents to variable name
         var_map = {
+            "account": "name",
             "aliases": "name",
             "content": "volume",
             "directory": "name",
@@ -114,6 +115,7 @@ class ProxmoxHandler(ProxmoxAPI):
             "pci": "pci-id-or-mapping",
             "pool": "name",
             "pools": "poolid",
+            "plugins": "id",
             "qemu": "vmid",
             "replication": "id",
             "rules": "pos",
