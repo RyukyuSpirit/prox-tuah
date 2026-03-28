@@ -105,6 +105,7 @@ class ProxmoxHandler(ProxmoxAPI):
             "fabrics": "fabric",
             "flags": "flag",
             "fs": "name",
+            "groups": "group",
             "ipset": "name",
             "lvmthin": "name",
             "lxc": "vmid",
@@ -150,9 +151,13 @@ class ProxmoxHandler(ProxmoxAPI):
                     commands[i+1] = f"{{{var_map[level]}}}"
                     skip_next = True
 
-                    # edge case for adjacent var
+                    # edge cases for subsequent vars
                     if level == "tfa" and i+2 < len(commands):
                         commands[i+2] = f"{{id}}"
+                    elif level == "groups" and i+2 < len(commands):
+                        commands[i+2] = f"{{pos}}"
+                    elif level == "ipset" and i+2 < len(commands):
+                        commands[i+2] = f"{{cidr}}"
         return commands
 
     def _get_vmid(self, level_list):

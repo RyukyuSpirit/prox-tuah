@@ -494,6 +494,7 @@ context:
                     description: Comment
             context:
               name:
+                is_var: True
                 description: Specific VM firewall alias
                 actions:
                   docs:
@@ -506,9 +507,6 @@ context:
                       cidr:
                         required: True
                         description: Network/IP specification in CIDR format
-                      name:
-                        required: True
-                        description: Alias name
                       comment:
                         description: Comment
                       digest:
@@ -565,6 +563,7 @@ context:
                         description: Delete all members of the ipset, if any (<0|1>)
                 context:
                   cidr:
+                    is_var: True
                     description: Specific VM firewall ipset CIDR
                     actions:
                       docs:

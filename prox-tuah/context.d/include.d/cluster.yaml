@@ -172,3 +172,5 @@ ceph:
           description: Get Ceph status
 config:
   !inc context.d/include.d/cluster_config.yaml
+firewall:
+  !inc context.d/include.d/cluster_firewall.yaml

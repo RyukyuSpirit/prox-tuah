@@ -1,0 +1,361 @@
+description: Cluster firewall
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get firewall directory index
+context:
+  aliases:
+    description: Cluster firewall aliases
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List aliases
+      post:
+        description: Create IP or network alias
+        params:
+          cidr:
+            required: True
+            description: Network/IP specification in CIDR format
+          name:
+            required: True
+            description: Alias name
+          comment:
+            description: Comment
+    context:
+      name:
+        is_var: True
+        description: Firewall IP or network alias
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read alias
+          put:
+            description: Update IP or network alias
+            params:
+              cidr:
+                required: True
+                description: Network/IP specification in CIDR format
+              comment:
+                description: Comment
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              rename:
+                description: Rename an existing alias
+          delete:
+            description: Remove IP or network alias
+            params:
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+  groups:
+    description: Cluster firewall security groups
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List security groups
+      post:
+        description: Create new security group
+        params:
+          group:
+            required: True
+            description: Security group name
+          comment:
+            description: Security group comment
+          digest:
+            description: Prevent changes if current configuration file has a different digest
+          rename:
+            description: Rename/update an existing security group
+    context:
+      group:
+        is_var: True
+        description: Firewall security group
+        actions:
+          delete:
+            description: Delete security group
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: List rules
+          post:
+            description: Create new rule
+            params:
+              action:
+                required: True
+                description: Rule action
+              type:
+                required: True
+                description: Rule type (<in|out|forward|group>)
+              comment:
+                description: Descriptive comment
+              dest:
+                description: Packet destination address
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              dport:
+                description: TCP/UDP destination port
+              enable:
+                description: Flag to enable/disable a rule (<0-N>)
+              icmp-type:
+                description: Specify icmp-type
+              iface:
+                description: Network interface name
+              log:
+                description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+              macro:
+                description: Use predefined standard macro
+              pos:
+                description: Update rule at position (<0-N>)
+              proto:
+                description: IP protocol
+              source:
+                description: Packet source address
+              sport:
+                description: TCP/UDP source port
+        context:
+          pos:
+            is_var: True
+            description: Firewall rule
+            actions:
+              delete:
+                description: Delete rule
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get single rule data
+              post:
+                description: Modify rule data
+                params:
+                  action:
+                    description: Rule action
+                  comment:
+                    description: Descriptive comment
+                  delete:
+                    description: A list of settings you want to delete
+                  dest:
+                    description: Packet destination address
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  dport:
+                    description: TCP/UDP destination port
+                  enable:
+                    description: Flag to enable/disable a rule (<0-N>)
+                  icmp-type:
+                    description: Specify icmp-type
+                  iface:
+                    description: Network interface name
+                  log:
+                    description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                  macro:
+                    description: Use predefined standard macro
+                  moveto:
+                    description: Move rule to new position
+                  proto:
+                    description: IP protocol
+                  source:
+                    description: Packet source address
+                  sport:
+                    description: TCP/UDP source port
+                  type:
+                    description: Rule type (<in|out|forward|group>)
+  ipset:
+    description: Cluster firewall ipsets
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List ipsets
+      post:
+        description: Create new ipset
+        params:
+          name:
+            required: True
+            description: IPSet name
+          comment:
+            description: Comment
+          digest:
+            description: Prevent changes if current configuration file has a different digest
+          rename:
+            description: Rename an existing ipset
+    context:
+      name:
+        is_var: True
+        description: Firewall ipset
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: List ipset content
+          post:
+            description: Add IP or network to ipset
+            params:
+              cidr:
+                required: True
+                description: Network/IP specification in CIDR format
+              comment:
+                description: Comment
+              nomatch:
+                description: No match (<0|1>)
+          delete:
+            description: Delete ipset
+            params:
+              force:
+                description: Delete all members of the ipset, if any (<0|1>)
+        context:
+          cidr:
+            is_var: True
+            description: Firewall ipset CIDR
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Read IP or network settings from ipset
+              put:
+                description: Update IP or network settings
+                params:
+                  comment:
+                    description: Comment
+                  digest:
+                    description: Prevent changes if current configuration file has a diffrent digest
+                  nomatch:
+                    description: No match (<0|1>)
+              delete:
+                description: Remove IP or network from ipset
+                params:
+                  digest:
+                    description: Prevent changes if current configuration file has a diffrent digest
+  rules:
+    description: Cluster firewall rules
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List rules
+      post:
+        description: Create new rule
+        params:
+          action:
+            required: True
+            description: Rule action
+          type:
+            required: True
+            description: Rule type
+          comment:
+            description: Descriptive comment
+          dest:
+            description: Packet destination address
+          digest:
+            description: Prevent changes if current configuration file has a different digest
+          dport:
+            description: TCP/UDP destination port
+          enable:
+            description: Flag to enable/disable a rule (<0-N>)
+          icmp-type:
+            description: Specify icmp-type
+          iface:
+            description: Network interface name
+          log:
+            description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+          macro:
+            description: Use predefined standard macro
+          pos:
+            description: Update rule at position (<0-N>)
+          proto:
+            description: IP protocol
+          source:
+            description: Packet source address
+          sport:
+            description: TCP/UDP source port
+    context:
+      pos:
+        is_var: True
+        description: Firewall rule
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get single rule data
+          put:
+            description: Modify rule data
+            params:
+              action:
+                description: Rule action
+              comment:
+                description: Descriptive comment
+              delete:
+                description: A list of settings you want to delete
+              dest:
+                description: Packet destination address
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              dport:
+                description: TCP/UDP destination port
+              enable:
+                description: Flag to enable/disable a rule (<0-N>)
+              icmp-type:
+                description: Specify icmp-type
+              iface:
+                description: Network interface name
+              log:
+                description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+              macro:
+                description: Use predefined standard macro
+              moveto:
+                description: Move rule to new postion. Other arguments are ignored.
+              pos:
+                description: Update rule at position (<0-N>)
+              proto:
+                description: IP protocol
+              source:
+                description: Packet source address
+              sport:
+                description: TCP/UDP source port
+              type:
+                description: Rule type
+          delete:
+            description: Delete rule
+            params:
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+  macros:
+    description: Cluster firewall macros
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List available macros
+  options:
+    description: Cluster firewall options
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get firewall options
+      put:
+        description: Set firewall options
+        params:
+          delete:
+            description: A list of settings you want to delete
+          digest:
+            description: Prevent changes if current configuration file has a different digest
+          ebtables:
+            description: Enable ebtables rules cluster wide (<0|1>)
+          enable:
+            description: Whether or not to enable host firewall rules (<0|1>)
+          log_ratelimit:
+            description: Log ratelimiting settings
+          policy_forward:
+            description: Forward policy (<ACCEPT|REJECT|DROP>)
+          policy_in:
+            description: Input policy (<ACCEPT|REJECT|DROP>)
+          policy_out:
+            description: Output policy (<ACCEPT|REJECT|DROP>)
+  refs:
+    description: Cluster firewall references
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List possible ipset/alias references which are allowed in source/dest properties
