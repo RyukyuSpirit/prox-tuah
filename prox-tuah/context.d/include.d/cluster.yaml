@@ -2,3 +2,18 @@ acme:
   !inc context.d/include.d/cluster_acme.yaml
 backup:
   !inc context.d/include.d/cluster_backup.yaml
+backup-info:
+  description: Cluster backup info
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: List index for backup info related endpoints
+  context:
+    not-backed-up:
+      description: Guests which are not covered by any backup job
+      actions:
+        docs:
+          description: Open PVE API docs for this endpoint in web browser
+        get:
+          description: Shows all guests which are not covered by any backup job
