@@ -1,6 +1,32 @@
-description: Access authentication roles 
+description: Access authentication roles
 actions:
   docs:
     description: Open PVE API docs for this endpoint in web browser
   get:
-    description: Get authentication domain index 
+    description: Get roles index
+  post:
+    description: Create new role
+    params:
+      roleid:
+        required: True
+        description: Role ID
+      privs:
+        description: Privileges
+context:
+  roleid:
+    is_var: True
+    description: Authentication role
+    actions:
+      delete:
+        description: Delete role
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get role configuration
+      put:
+        description: Update an existing role
+        params:
+          append:
+            description: Append to existing privileges (<0|1>)
+          privs:
+            description: Privileges
