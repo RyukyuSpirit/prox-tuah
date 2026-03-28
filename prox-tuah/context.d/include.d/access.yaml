@@ -10,3 +10,103 @@ tfa:
   !inc context.d/include.d/access_tfa.yaml
 users:
   !inc context.d/include.d/access_users.yaml
+acl:
+  description: Access ACLs (access control lists)
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: Get ACLs
+    put:
+      description: Update ACL
+      params:
+        path:
+          required: True
+          description: Access control path
+        roles:
+          required: True
+          description: List of roles
+        delete:
+          description: Remove permissions instead of adding it (<0|1>)
+        groups:
+          description: List of groups
+        propogate:
+          description: Allow to propogate permissions (<0|1>)
+        tokens:
+          description: List of API tokens
+        users:
+          description: List of users
+password:
+  description: Access passwords
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    put:
+      description: Change user password
+      params:
+        password:
+          required: True
+          description: The new password
+        userid:
+          required: True
+          description: Full user ID (<name>@<realm>)
+        confirmation-password:
+          description: The current password of the user performing the change
+permissions:
+  description: Access permissions
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: Retrieve effective permissions of given user/token
+      params:
+        path:
+          description: Only dump this specific path, not the whole tree
+        userid:
+          description: User ID or full API token ID
+ticket:
+  description: Access tickets
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: Dummy. Useful for formatters which want to provide a login page
+    post:
+      description: Create or verify authentication ticket
+      params:
+        password:
+          required: True
+          description: The secret password. This can also be a valid ticket.
+        username:
+          required: True
+          description: User name
+        new-format:
+          description: This parameter is now ignored and assumed to be 1
+        otp:
+          description: One-time password for two-factor authentication
+        path:
+          description: Verify ticket, and check if user has access 'privs' on 'path'
+        privs:
+          description: Verify ticket, and check if user has access 'privs' on 'path'
+        tfa-challenge:
+          description: The signed TFA challenge string the user wants to respond to
+vncticket:
+  description: Access VNC authentication tickets
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    post:
+      description: Verify VNC authentication ticket
+      params:
+        authid:
+          required: True
+          description: User ID or token
+        path:
+          required: True
+          description: Verify ticket, and check if user has access 'privs' on 'path'
+        privs:
+          required: True
+          description: Verify ticket, and check if user has access 'privs' on 'path'
+        vncticket:
+          required: True
+          description: The VNC ticket
