@@ -1,0 +1,104 @@
+description: Cluster configuration
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get cluster config directory index
+  post:
+    description: Generate new cluster configuration
+    params:
+      clustername:
+        required: True
+        description: The name of the cluster
+      link:
+        is_part_var: True
+        description: Address and priority information of a single corosync link
+      nodeid:
+        description: Node id for this node
+      votes:
+        description: Number of votes for this node
+context:
+  nodes:
+    description: Cluster nodes
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get corosync node list
+    context:
+      node:
+        is_var: True
+        description: Cluster node
+        actions:
+          delete:
+            description: Removes a node from the cluster configuration
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          post:
+            description: Adds a node to the cluster configuration
+            params:
+              apiversion:
+                description: The JOIN_API_VERSION of the new node
+              force:
+                description: Do not throw error if node already exists (<0|1>)
+              link:
+                is_part_var: True
+                description: Address and priority information of a single corosync link
+              new_node_ip:
+                description: IP address of node to add
+              nodeid:
+                description: Node ID for this node (<1-N>)
+              votes:
+                description: Number of votes for this node (<0-N>)
+  apiversion:
+    description: Cluster API version
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Return the version of the cluster join API available on this node
+  join:
+    description: Cluster join
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get information needed to join this cluster over the connected node
+        params:
+          node:
+            description: The node for which the joinee gets the nodeinfo
+      post:
+        description: Joins the node into an existing cluster
+        params:
+          fingerprint:
+            required: True
+            description: Certificate SHA-256 fingerprint
+          hostname:
+            required: True
+            description: Hostname (or IP) of an exisitng cluster member
+          password:
+            required: True
+            description: Superuser (root) password of peer node
+          force:
+            description: Do no throw error if node already exists (<0|1>)
+          link:
+            is_part_var: True
+            description: Address and priority information of a single corosync link
+          nodeid:
+            description: Node ID for this node (<1-N>)
+          votes:
+            description: Number of votes for this node (<0-N>)
+  qdevice:
+    description: Cluster QDevice
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get QDevice status
+  totem:
+    description: Cluster totem
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get corosync totem protocol settings
