@@ -98,6 +98,7 @@ class ProxmoxHandler(ProxmoxAPI):
         var_map = {
             "account": "name",
             "aliases": "name",
+            "backup": "id",
             "content": "volume",
             "directory": "name",
             "domains": "realm",
