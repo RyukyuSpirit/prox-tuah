@@ -1,0 +1,6 @@
+description: Access authentication roles 
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get authentication domain index 

@@ -1,0 +1,30 @@
+description: Access authentication groups
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get group index
+  post:
+    description: Create new group
+    params:
+      groupid:
+        required: True
+        description: Group ID
+      comment:
+        description: Group comment
+context:
+  groupid:
+    is_var: True
+    description: Authentication group
+    actions:
+      delete:
+        description: Delete group
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get group configuration
+      post:
+        description: Create new group
+        params:
+          comment:
+            description: Group comment

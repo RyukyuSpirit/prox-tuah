@@ -1,0 +1,38 @@
+description: Access authentication OpenID
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get OpenID directory index
+context:
+  auth-url:
+    description: OpenID authorization URL
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      post:
+        description: Get the OpenID authorization URL for the specified realm
+        params:
+          realm:
+            required: True
+            description: Authentication domain ID
+          redirect-url:
+            required: True
+            description: Redirection URL
+  login:
+    description: OpenID authorization code/ticket
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      post:
+        description: Verify OpenID authorization code and create a ticket
+        params:
+          code:
+            required: True
+            description: OpenID authorization code
+          redirect-url:
+            required: True
+            description: Redirection URL
+          state:
+            required: True
+            description: OpenID state

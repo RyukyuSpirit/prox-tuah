@@ -1,0 +1,8 @@
+domains:
+  !inc context.d/include.d/access_domains.yaml
+groups:
+  !inc context.d/include.d/access_groups.yaml
+openid:
+  !inc context.d/include.d/access_openid.yaml
+roles:
+  !inc context.d/include.d/access_roles.yaml

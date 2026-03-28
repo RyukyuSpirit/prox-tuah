@@ -1,0 +1,212 @@
+description: Access authentication domains
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get authentication domain index 
+  post:
+    description: Add an authentication server
+    params:
+      realm:
+        required: True
+        description: Authentication realm
+      type: 
+        required: True
+        description: Realm type
+      acr-values:
+        description: Specifies the Authentication Context Class Reference values that the Auth Server is being requested to use for the Auth Request
+      autocreate:
+        description: Automatically create users if they do not exist (<0|1>)
+      base_dn:
+        description: LDAP base domain name  
+      bind_dn:  
+        description: LDAP bind domain name
+      capath:
+        description: Path to the CA certificate store
+      case-sensitive:
+        description: Username is case-sensitive (<0|1>)
+      cert:
+        description: Path to the client certificate
+      certkey:
+        description: Path to the client certificate key
+      check-connection:
+        description: Check bind connection to the server (<0|1>)
+      client-id:
+        description: OpenID client ID
+      client-key:
+        description: OpenID client key
+      comment:  
+        description: Description 
+      default:
+        description: Use this as default realm (<0|1>)
+      domain:
+        description: AD domain name
+      filter:
+        description: LDAP filter for user sync
+      group_classes:  
+        description: The objectclasses for groups
+      group_dn:
+        description: LDAP base domain for group sync
+      group_filter:
+        description: LDAP filter for group sync
+      group_name_attr:
+        description: LDAP attribute representing a groups name  
+      groups-autocreate:
+        description: Automatically create groups if they do not exist (<0|1>)
+      groups-claim: 
+        description: OpenID claim used to retrieve groups with
+      groups-overwrite:
+        description: All groups will be overwritten for the user on logini (<0|1>)
+      issuer-url:
+        description: OpenID issuer URL
+      mode:
+        description: LDAP protocol mode (<ldap|ldaps|ldap+starttls>)
+      password:
+        description: LDAP bind password
+      port: 
+        description: Server port
+      query-userinfo:
+        description: Enables querying the userinfo endpoint for claims values
+      scopes:
+        description: Specifies the scopes (user details) that should be authorized and returned, for example 'email' or 'profile'
+      secure:
+        description: Use secure LDAPS protocol
+      server1:
+        description: Server IP address (or DNS name)
+      server2:
+        description: Fallback server IP address (or DNS name)
+      sslversion:
+        description: LDAP TLS/SSL versio (<tlsv1|tlsv1_1|tlsv1_2|tlsv1_3>)
+      sync-defaults-options:
+        description: The default options for behavior of synchronizations
+      sync_attributes:
+        description: Comma-separated list of key=value pairs for specifying which LDAP attributes map to which PVE user field
+      tfa:  
+        description: Two-factor authentication provider (<yubico|oath>)
+      user_attr:
+        description: LDAP user attribute name
+      user_classes:
+        description: The objectclasses for users
+      username-claim:
+        description: OpenID claim used to generate the unique username
+      verify: 
+        description: Verify the server's SSL certificate (<0|1>)
+context:
+  realm:
+    is_var: True
+    description: Authentication realm
+    actions:  
+      delete:
+        description: Delete an authentication server
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get auth server configuration 
+      post:
+        description: Update authentication server settings 
+        params:
+          acr-values:
+            description: Specifies the Authentication Context Class Reference values that the Auth Server is being requested to use for the Auth Request
+          autocreate:
+            description: Automatically create users if they do not exist (<0|1>)
+          base_dn:
+            description: LDAP base domain name  
+          bind_dn:  
+            description: LDAP bind domain name
+          capath:
+            description: Path to the CA certificate store
+          case-sensitive:
+            description: Username is case-sensitive (<0|1>)
+          cert:
+            description: Path to the client certificate
+          certkey:
+            description: Path to the client certificate key
+          check-connection:
+            description: Check bind connection to the server (<0|1>)
+          client-id:
+            description: OpenID client ID
+          client-key:
+            description: OpenID client key
+          comment:  
+            description: Description 
+          default:
+            description: Use this as default realm (<0|1>)
+          delete:
+            description: A list of settings you want to delete
+          digest:
+            description: Prevent chagnes if current configuration file has a different digest
+          domain:
+            description: AD domain name
+          filter:
+            description: LDAP filter for user sync
+          group_classes:  
+            description: The objectclasses for groups
+          group_dn:
+            description: LDAP base domain for group sync
+          group_filter:
+            description: LDAP filter for group sync
+          group_name_attr:
+            description: LDAP attribute representing a groups name  
+          groups-autocreate:
+            description: Automatically create groups if they do not exist (<0|1>)
+          groups-claim: 
+            description: OpenID claim used to retrieve groups with
+          groups-overwrite:
+            description: All groups will be overwritten for the user on logini (<0|1>)
+          issuer-url:
+            description: OpenID issuer URL
+          mode:
+            description: LDAP protocol mode (<ldap|ldaps|ldap+starttls>)
+          password:
+            description: LDAP bind password
+          port: 
+            description: Server port
+          prompt: 
+            description: Specifies whether the auth server prompts the end-user for reauthentication and consent
+          query-userinfo:
+            description: Enables querying the userinfo endpoint for claims values
+          scopes:
+            description: Specifies the scopes (user details) that should be authorized and returned, for example 'email' or 'profile'
+          secure:
+            description: Use secure LDAPS protocol
+          server1:
+            description: Server IP address (or DNS name)
+          server2:
+            description: Fallback server IP address (or DNS name)
+          sslversion:
+            description: LDAP TLS/SSL versio (<tlsv1|tlsv1_1|tlsv1_2|tlsv1_3>)
+          sync-defaults-options:
+            description: The default options for behavior of synchronizations
+          sync_attributes:
+            description: Comma-separated list of key=value pairs for specifying which LDAP attributes map to which PVE user field
+          tfa:  
+            description: Two-factor authentication provider (<yubico|oath>)
+          user_attr:
+            description: LDAP user attribute name
+          user_classes:
+            description: The objectclasses for users
+          username-claim:
+            description: OpenID claim used to generate the unique username
+          verify: 
+            description: Verify the server's SSL certificate (<0|1>)
+    context:
+      sync: 
+        description: Realm sync
+        actions:  
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          post:
+            description: Syncs users and/or groups from the configured LDAP to user.cfg
+            params:
+              dry-run:
+                description: Do not write anything (<0|1>)
+              enable-new: 
+                description: Enable newly synced users immediately (<0-1>)
+              full: 
+                description: Use the LDAP directory as source of truth, deleting users or groups not returned from the sync and removing all locally modified properties of synced users (<0|1>)
+              purge:
+                description: Remove ACLs for users or groups which were removed from the config during a sync (<0|1>)
+              remove-vanished:  
+                description: A semicolon-separated list of things to remove when they or the user vanishes during a sync
+              scope:
+                description: Select what to sync (<users|groups|both>)
