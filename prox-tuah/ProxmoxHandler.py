@@ -127,6 +127,7 @@ class ProxmoxHandler(ProxmoxAPI):
             "rules": "pos", # conflicting child, see edge case below
             "roles": "roleid",
             "services": "service",
+            "server": "id",
             "snapshot": "snapname",
             "storage": "storage",
             "tasks": "upid",

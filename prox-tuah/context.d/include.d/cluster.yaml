@@ -180,3 +180,5 @@ jobs:
   !inc context.d/include.d/cluster_jobs.yaml
 mapping:
   !inc context.d/include.d/cluster_mapping.yaml
+metrics:
+  !inc context.d/include.d/cluster_metrics.yaml

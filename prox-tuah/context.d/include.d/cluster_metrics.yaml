@@ -1,0 +1,141 @@
+description: Cluster metrics
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get metrics index
+context:
+  server:
+    description: Metric servers
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List configured metric servers
+    context:
+      id:
+        is_var: True
+        description: Metric server
+        actions:
+          delete:
+            description: Remove metric server
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read metric server configuration
+          post:
+            description: Create a new external metric server config
+            params:
+              port:
+                required: True
+                description: Server network port (<1-65536>)
+              server:
+                required: True
+                description: Server DNS name or IP address
+              type:
+                description: Plugin type (<graphite|influxdb|opentelemetry>)
+              api-path-prefix:
+                description: "An API path prefix inserted beween '<host>:<port>/' and '/api2/'"
+              bucket:
+                description: The InfluxDB bucket/db
+              disable:
+                description: Flag to disable the plugin (<0|1>)
+              influxdbproto:
+                description: InfluxDB protocol (<udp|http|https>)
+              mtu:
+                description: MTU for metrics transmission over UDP (<512-65536>)
+              max-body-size:
+                description: InfluxDB max-body-size in bytes (<1-N>)
+              organization:
+                description: The InfluxDB organization
+              otel-compression:
+                description: Compression algorithm for requests (<none|gzip>)
+              otel-max-body-size:
+                description: Maximum request body size in bytes (<1024-N>)
+              otel-path:
+                description: OTLP endpoint path
+              otel-protocol:
+                description: HTTP protocol
+              otel-resource-attributes:
+                description: Additional resources attributes as JSON, base64 encoded
+              otel-timeout:
+                description: HTTP request timeout in seconds (<1-10>)
+              otel-verify-ssl:
+                description: Verify SSL certificates (<0|1>)
+              path:
+                description: Root Graphite path
+              proto:
+                description: Protocol to send graphite data (<udp|tcp>)
+              timeout:
+                description: Graphite TCP socket timeout (<0-N>)
+              token:
+                description: The InfluxDB access token
+              verify-certificate:
+                description: Verify certificate for HTTPS endpoints (<0|1>)
+          put:
+            description: Update metric server configuration
+            params:
+              port:
+                required: True
+                description: Server network port (<1-65536>)
+              server:
+                required: True
+                description: Server DNS name or IP address
+              api-path-prefix:
+                description: "An API path prefix inserted beween '<host>:<port>/' and '/api2/'"
+              bucket:
+                description: The InfluxDB bucket/db
+              delete:
+                description: A list of settings you want to delete
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              disable:
+                description: Flag to disable the plugin (<0|1>)
+              influxdbproto:
+                description: InfluxDB protocol (<udp|http|https>)
+              mtu:
+                description: MTU for metrics transmission over UDP (<512-65536>)
+              max-body-size:
+                description: InfluxDB max-body-size in bytes (<1-N>)
+              organization:
+                description: The InfluxDB organization
+              otel-compression:
+                description: Compression algorithm for requests (<none|gzip>)
+              otel-max-body-size:
+                description: Maximum request body size in bytes (<1024-N>)
+              otel-path:
+                description: OTLP endpoint path
+              otel-protocol:
+                description: HTTP protocol
+              otel-resource-attributes:
+                description: Additional resources attributes as JSON, base64 encoded
+              otel-timeout:
+                description: HTTP request timeout in seconds (<1-10>)
+              otel-verify-ssl:
+                description: Verify SSL certificates (<0|1>)
+              path:
+                description: Root Graphite path
+              proto:
+                description: Protocol to send graphite data (<udp|tcp>)
+              timeout:
+                description: Graphite TCP socket timeout (<0-N>)
+              token:
+                description: The InfluxDB access token
+              verify-certificate:
+                description: Verify certificate for HTTPS endpoints (<0|1>)
+  export:
+    description: Metric export
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Retrieve metrics of the cluster
+        params:
+          history:
+            description: Also return historic values (<0|1>)
+          local-only:
+            description: Only return metrics for the current node instead of the whole cluster (<0|1>)
+          node-list:
+            description: Only return metrics from nodes passed as comma-separated list
+          start-time:
+            description: Only include metrics with a timestamp > start-time
