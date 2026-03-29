@@ -1,0 +1,225 @@
+description: Cluster high-availability (HA)
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get HA directory index
+context:
+  groups:
+    description: HA groups
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get HA groups
+      post:
+        description: Create a new HA group
+        params:
+          group:
+            required: True
+            description: The HA group identifier
+          nodes:
+            required: True
+            description: List of node members, where a prioirty can be given to each node
+          comment:
+            description: Description
+          nofailback:
+            description: Prevent CRM from migrating services to a higher-priority node that comes online (<0|1>)
+          restricted:
+            description: Resources bound to restricted groups may only run on nodes defined by the group (<0|1>)
+          type:
+            description: Group type
+    context:
+      group:
+        is_var: True
+        description: HA group
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read HA group configuration
+          put:
+            description: Update HA group configuration
+            params:
+              comment:
+                description: Description
+              delete:
+                description: A list of settings you want to delete
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              nodes:
+                description: List of cluster node members, where a priority can be given to each node
+              nofailback:
+                description: Prevent CRM from migrating services to a higher-priority node that comes online (<0|1>)
+              restricted:
+                description: Resources bound to restricted groups may only run on nodes defined by the group (<0|1>)
+  resources:
+    description: HA resources
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List HA resources
+      post:
+        description: Create a new HA resource
+        params:
+          sid:
+            required: True
+            description: HA resource ID
+          comment:
+            description: Description
+          failback:
+            description: Automatically migrate HA resource to the node with the highest priority according to their node affinity rules, if higher-priority node comes online (<0|1>)
+          group:
+            description: The HA group identifier
+          max_relocate:
+            description: Maximal number of service relocate tries when a service fails to start
+          max_restart:
+            description: Maximal number of tries to restart service when it fails to start
+          state:
+            description: Requested resource state (<started|stopped|enabled|disabled|ignored>)
+          type:
+            description: Resource type (<ct|vm>)
+    context:
+      sid:
+        is_var: True
+        description: HA resource
+        actions:
+          delete:
+            description: Delete resource configuration
+            params:
+              purge: Remove this resource from rules that reference it, deleting the rule if this is the only resource in the rule (<0|1>)
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: read resource configuration
+          put:
+            description:
+              comment:
+                description: Description
+              delete:
+                description: A list of settings you want to delete
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              failback:
+                description: Automatically migrate HA resource to the node with the highest priority according to their node affinity rules, if higher-priority node comes online (<0|1>)
+              group:
+                description: The HA group identifier
+              max_relocate:
+                description: Maximal number of service relocate tries when a service fails to start
+              max_restart:
+                description: Maximal number of tries to restart service when it fails to start
+              state:
+                description: Requested resource state (<started|stopped|enabled|disabled|ignored>)
+        context:
+          migrate:
+            description: HA resource migration (live)
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              post:
+                description: Request resource migration (online) to another node
+                params:
+                  node:
+                    required: True
+                    description: Target node
+          relocate:
+            description: HA resource relocation (stop/restart)
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              post:
+                description: Request resource relocation to another node. This stops the service on the old node and restarts it on the target node.
+                params:
+                  node:
+                    required: True
+                    description: Target node
+  rules:
+    description: HA rules
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List HA rules
+        params:
+          resource:
+            description: Limit the returned list to rules affecting the specified resource
+          type:
+            description: Limit the returned list to the specified rule type (<node-affinity|resource-affinity>)
+      post:
+        description: Create HA rule
+        params:
+          resources:
+            required: True
+            description: Limit the returned list to rules affecting the specified resource
+          rule:
+            required: True
+            description: HA rule identifier
+          type:
+            required: True
+            description: HA rule type
+          affinity:
+            description: Describes whether the HA resources are supposed to be kept on the same node (<positive>), or on separate nodes (<negative>)
+          comment:
+            description: HA rule description
+          disable:
+            description: Whether the rule is disabled (<0|1>)
+          nodes:
+            description: List of HA resource IDs
+          strict:
+            description: Whether the node affinity rule is strict (<1>) or non-strict (<0>)
+    context:
+      rule:
+        is_var: True
+        description: Create HA rule
+        actions:
+          delete:
+            description: Delete HA rule
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read HA rule
+          put:
+            description: Update HA rule
+            params:
+              type:
+                required: True
+                description: HA rule type
+              affinity:
+                description: Describes whether the HA resources are supposed to be kept on the same node (<positive>), or on separate nodes (<negative>)
+              comment:
+                description: HA rule description
+              delete:
+                description: A list of setitngs you want to delete
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              disable:
+                description: Whether the rule is disabled (<0|1>)
+              nodes:
+                description: List of cluster node members, where a priority can be given to each node
+              resources:
+                description: List of HA resource IDs
+              strict:
+                description: Whether the node affinity rule is strict (<1>) or non-strict (<0>)
+  status:
+    description: HA manager status
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get HA status directory index
+    context:
+      current:
+        description: Current HA manager status
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get HA manager status
+      manager_status:
+        description: Full HA manager status
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get full HA manager status, including LRM status

@@ -121,7 +121,8 @@ class ProxmoxHandler(ProxmoxAPI):
             "plugins": "id",
             "qemu": "vmid",
             "replication": "id",
-            "rules": "pos",
+            "resources": "sid",
+            "rules": "pos", # conflicting child, see edge case below
             "roles": "roleid",
             "services": "service",
             "snapshot": "snapname",
@@ -158,6 +159,10 @@ class ProxmoxHandler(ProxmoxAPI):
                         commands[i+2] = f"{{pos}}"
                     elif level == "ipset" and i+2 < len(commands):
                         commands[i+2] = f"{{cidr}}"
+
+                    # edge cases for conflicting var children
+                    if level == "rules" and i+1 < len(commands) and commands[i-1] == "ha":
+                        commands[i+1] = f"{{rule}}"
         return commands
 
     def _get_vmid(self, level_list):
