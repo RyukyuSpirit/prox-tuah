@@ -178,3 +178,5 @@ ha:
   !inc context.d/include.d/cluster_ha.yaml
 jobs:
   !inc context.d/include.d/cluster_jobs.yaml
+mapping:
+  !inc context.d/include.d/cluster_mapping.yaml

@@ -100,6 +100,7 @@ class ProxmoxHandler(ProxmoxAPI):
             "aliases": "name",
             "backup": "id",
             "content": "volume",
+            "dir": "id",
             "directory": "name",
             "domains": "realm",
             "fabrics": "fabric",
@@ -164,6 +165,8 @@ class ProxmoxHandler(ProxmoxAPI):
                     # edge cases for conflicting var children
                     if level == "rules" and i+1 < len(commands) and commands[i-1] == "ha":
                         commands[i+1] = f"{{rule}}"
+                    elif level == "pci" and i+1 < len(commands) and commands[i-1] == "mapping":
+                        commands[i+1] = f"{{id}}"
         return commands
 
     def _get_vmid(self, level_list):

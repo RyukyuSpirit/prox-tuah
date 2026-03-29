@@ -1,0 +1,140 @@
+description: Cluster mappings
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: List resources types
+context:
+  dir:
+    description: Directory mappings
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List directory mappings
+      post:
+        description: Create a new directory mapping
+        params:
+          id:
+            required: True
+            description: The ID of the directory mapping
+          map:
+            required: True
+            description: A list of maps for the cluster nodes
+          description:
+            description: Description of the directory mapping
+    context:
+      id:
+        description: Directory mapping ID
+        actions:
+          delete:
+            description: Remove directory mapping
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get directory mapping
+          post:
+            description: Update a directory mapping
+            params:
+              delete:
+                description: A list of settings you want to delete
+              description:
+                description: Description of the directory mapping
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              map:
+                description: A list of maps for the cluster nodes
+  pci:
+    description: PCI hardware mappings
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List PCI hardware mappings
+        params:
+          check-node:
+            description: If given, checks the configurations on the given node for correctness, and adds relevant diagnostics for the devices to the response
+      post:
+        description: Create a new hardware mapping
+        params:
+          id:
+            required: True
+            description: Create a new hardware mapping
+          map:
+            required: True
+            description: A list of maps for the cluster nodes
+          description:
+            description: Description of the logical PCI device
+          live-migration-capable:
+            description: Marks the device(s) as being able to be live-migrated (<0|1>)
+          mdev:
+            description: Marks of the device(s) as being capable of prividing mediated devices (<0|1>)
+    context:
+      id:
+        is_var: True
+        description: PCI mappings
+        actions:
+          delete:
+            description: Remove hardware mapping
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: List PCI mappings
+          put:
+            description: Update a hardware mapping
+            params:
+              delete:
+                description: A list of settings you want to delete
+              description:
+                description: Description of the logical PCI device
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              live-migration-capable:
+                description: Marks the device(s) as being able to be live-migrated (<0|1>)
+              map:
+                description: A list of maps for the cluster nodes
+              mdev:
+                description: Marks of the device(s) as being capable of prividing mediated devices (<0|1>)
+  usb:
+    description: USB hardware mappings
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List USB hardware mappings
+        params:
+          check-node:
+            description: If given, checks the configurations on the given node for correctness, and adds relevant errors to the devices
+      post:
+        description: Create a new hardware mapping
+        params:
+          id:
+            required: True
+            description: The ID of the logical USB mapping
+          map:
+            required: True
+            description: A list of maps for the cluster nodes
+          description:
+            description: Description of the logical USB device
+    context:
+      id:
+        description: USB mapping
+        actions:
+          delete:
+            description: Remove hardware mapping
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get USB mapping
+          put:
+            description: Update a hardware mapping
+            params:
+              map:
+                required: True
+                description: A list of maps for the cluster nodes
+              delete:
+                description: A list of settings you want to delete
+              description:
+                description: Description of the logical USB device
+              digest:
+                description: Prevent changes if current configuration file has a different digest
