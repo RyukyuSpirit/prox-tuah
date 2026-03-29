@@ -176,3 +176,5 @@ firewall:
   !inc context.d/include.d/cluster_firewall.yaml
 ha:
   !inc context.d/include.d/cluster_ha.yaml
+jobs:
+  !inc context.d/include.d/cluster_jobs.yaml

@@ -1,0 +1,74 @@
+description: Cluster jobs
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get index for jobs related endpoints
+context:
+  realm-sync:
+    description: Realm-sync jobs
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: List configured realm-sync-jobs
+    context:
+      id:
+        is_var: True
+        description: Realm-sync job
+        actions:
+          delete:
+            description: Delete realm-sync job definition
+          get:
+            description: Read realm-sync job
+          post:
+            description: Create new realm-sync job
+            params:
+              schedule:
+                required: True
+                description: Backup schedule
+              comment:
+                description: Description for the job
+              enable-new:
+                description: Enable newly synced users immediately (<0|1>)
+              enabled:
+                description: Determines if the job is enabled (<0|1>)
+              realm:
+                description: Authentication domain ID
+              remove-vanished:
+                description: A semicolon-separated list of things to remove when they or the user vanishes during a sync
+              scope:
+                description: Select what to sync (<users|groups|both>)
+          put:
+            description: Update realm-sync job definition
+            params:
+              schedule:
+                required: True
+                description: Backup schedule
+              comment:
+                description: Description for the job
+              delete:
+                description: A list of settings you want to delete
+              enable-new:
+                description: Enable newly synced users immediately (<0|1>)
+              enabled:
+                description: Determines if the job is enabled (<0|1>)
+              remove-vanished:
+                description: A semicolon-separated list of things to remove when they or the user vanishes during a sync
+              scope:
+                description: Select what to sync (<users|groups|both>)
+  schedule-analyze:
+    description: Future job schedule
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Returns a list of future schedule runtimes
+        params:
+          schedule:
+            required: True
+            description: Job schedule
+          iterations:
+            description: Number of event-iteration to simulate and return (<0-100>)
+          starttime:
+            description: UNIX timestamp to start the calculation from

@@ -120,6 +120,7 @@ class ProxmoxHandler(ProxmoxAPI):
             "pools": "poolid",
             "plugins": "id",
             "qemu": "vmid",
+            "realm-sync": "id",
             "replication": "id",
             "resources": "sid",
             "rules": "pos", # conflicting child, see edge case below
