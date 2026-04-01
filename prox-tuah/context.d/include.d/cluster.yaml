@@ -188,3 +188,105 @@ replication:
   !inc context.d/include.d/cluster_replication.yaml
 sdn:
   !inc context.d/include.d/cluster_sdn.yaml
+log:
+  description: Cluster log
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: Read cluster log
+      params:
+        max:
+          description: Maximum number of entries (<1-N>)
+nextid:
+  description: Cluster next free VMID
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: Get next free VMID. Pass a VMID to assert that it's free (at time of check)
+      params:
+        vmid:
+          description: The (unique) ID of the VM
+options:
+  description: Cluster options
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: Get datacenter options
+    put:
+      description: Set datacenter options
+      params:
+        bwlimit:
+          description: Set I/O bandwidth limit for various operations
+        consent-text:
+          description: Consent text that is displayed before logging in
+        console:
+          description: Select the default Console viewer (<applet|vv|html5|xtermjs>)
+        crs:
+          description: Cluster resource scheduling settings
+        delete:
+          description: A list of settings you want to delete
+        description:
+          description: Datacenter description
+        email_from:
+          description: Specify email address to send notification from (default is root@$hostname)
+        fencing:
+          description: Set the fencing mode of the HA cluster (<watchdog|hardware|both>)
+        ha:
+          description: Cluster wide HA settings
+        http_proxy:
+          description: Specify external http proxy which is used for downloadsi (ex. 'http://username:password@host:port/')
+        keyboard:
+          description: Default keyboard layout for vnc server
+        language:
+          description: Default GUI language
+        mac_prefix:
+          description: Prefix for the auto-generated MAC addresses of virtual guests
+        max_workers:
+          description: Defines how many workers (per node) are maximal started on actions like 'stopall VMs' or tasks from the HA-manager
+        migration:
+          description: For cluster-wide migration settings
+        migration_unsecure:
+          description: Migration is secure using SSH tunnel by default
+        next-id:
+          description: Control the range for free VMID auto-selection pool
+        notify:
+          description: Cluster-wide notification settings
+        registered-tags:
+          description: A list of tags that require a 'Sys.Modify' on '/' to set delete
+        replication:
+          description: For cluster wide replication settings
+        tag-style:
+          description: Tag style options
+        u2f:
+          description: u2f
+        user-tag-access:
+          description: Privilege options for user-settable tags
+        webauthn:
+          description: webauthn configuration
+resources:
+  description: Cluster resources
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: Get resources list (cluster-wide)
+      params:
+        type:
+          description: Resource type (<vm|storage|node|sdn>)
+status:
+  description: Cluster status
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: Get cluster status information
+tasks:
+  description: Cluster tasks
+  actions:
+    docs:
+      description: Open PVE API docs for this endpoint in web browser
+    get:
+      description: Get cluster tasks
