@@ -1,20 +1,11 @@
-- complete all pve api contexts:
-    - access
-    - cluster
-    - nodes (WIP)
-    - pools
-    - storage
-    - version
 
 - add quote wrapping for string kwarg values without quotes (current fails unless quotes are explicitly around the values)
 
-- special 'doc' hotkey/param for api contexts to open related web-page from pve API site
-
 - function to display api commands in HTTP/CLI form rather than execute them (ex. dry-run)
 
-- add output sorting
-
 - 'top' global cmd to return to top or to execute from any sub-context
+
+- handle no-value returns
 
 - Add add'l connection methods:
     - VNC
@@ -29,3 +20,12 @@
     - flag to run commands in a file from command line (-f, etc)
 
 - Interactive login (if username/password not in configuration)
+
+- search through all contexts
+    - by name
+    - by description
+    - by params
+
+- Allow multiple handlers
+
+- add output sorting
