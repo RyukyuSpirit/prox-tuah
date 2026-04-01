@@ -100,22 +100,29 @@ class ProxmoxHandler(ProxmoxAPI):
             "aliases": "name",
             "backup": "id",
             "content": "volume",
+            "controllers": "controller",
             "dir": "id",
             "directory": "name",
+            "dns": "name",
             "domains": "realm",
+            "fabric": "id",
             "fabrics": "fabric",
             "flags": "flag",
             "fs": "name",
+            "gotify": "name",
             "groups": "group",
+            "ipams": "ipam",
             "ipset": "name",
             "lvmthin": "name",
             "lxc": "vmid",
+            "matchers": "name",
             "mds": "name",
             "mgr": "name",
             "mon": "monid",
-            "osd": "osdid",
             "network": "iface",
+            "node": "fabric_id",
             "nodes": "node",
+            "osd": "osdid",
             "pci": "pci-id-or-mapping",
             "pool": "name",
             "pools": "poolid",
@@ -126,15 +133,20 @@ class ProxmoxHandler(ProxmoxAPI):
             "resources": "sid",
             "rules": "pos", # conflicting child, see edge case below
             "roles": "roleid",
+            "sendmail": "name",
             "services": "service",
             "server": "id",
+            "smtp": "name",
             "snapshot": "snapname",
             "storage": "storage",
+            "subnets": "subnet",
             "tasks": "upid",
+            "targets": "name",
             "token": "tokenid",
             "tfa": "userid",
             "users": "userid",
             "vnets": "vnet",
+            "webhook": "name",
             "zfs": "name",
             "zones": "zone",
         }
@@ -162,6 +174,10 @@ class ProxmoxHandler(ProxmoxAPI):
                         commands[i+2] = f"{{pos}}"
                     elif level == "ipset" and i+2 < len(commands):
                         commands[i+2] = f"{{cidr}}"
+                    elif level == "ipset" and i+2 < len(commands):
+                        commands[i+2] = f"{{cidr}}"
+                    elif level == "node" and commands[i-1] == "fabrics" and i+2 < len(commands):
+                        commands[i+2] = f"{{node_id}}"
 
                     # edge cases for conflicting var children
                     if level == "rules" and i+1 < len(commands) and commands[i-1] == "ha":

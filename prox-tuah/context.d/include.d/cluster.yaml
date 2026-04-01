@@ -182,3 +182,9 @@ mapping:
   !inc context.d/include.d/cluster_mapping.yaml
 metrics:
   !inc context.d/include.d/cluster_metrics.yaml
+notifications:
+  !inc context.d/include.d/cluster_notifications.yaml
+replication:
+  !inc context.d/include.d/cluster_replication.yaml
+sdn:
+  !inc context.d/include.d/cluster_sdn.yaml
