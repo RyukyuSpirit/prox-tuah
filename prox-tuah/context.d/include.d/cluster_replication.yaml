@@ -1,0 +1,65 @@
+description: Cluster replication
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: List replication jobs
+  post:
+    description: Create a new replication job
+    params:
+      id:
+        required: True
+        description: Replication job ID
+      target:
+        required: True
+        description: Target node
+      type:
+        required: True
+        description: Section type
+      comment:
+        description: Description
+      disable:
+        description: Flat to disable/deactivate the entry (<0|1>)
+      rate:
+        description: Rate limit in mbps as floating point number (<1-N>)
+      remove_job:
+        description: Mark the replication job for removal (<local|full>)
+      schedule:
+        description: Storage replication schedule
+      source:
+        description: For internal use, to detect if the guest was stolen
+context:
+  id:
+    is_var: True
+    description: Replication job
+    actions:
+      delete:
+        description: Mark replication job for removal
+        params:
+          force:
+            description: Will remove the jobconfig entry, but will not cleanup (<0|1>)
+          keep:
+            description: Keep replicated data at target (do not remove)
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Read replication job configuration
+      put:
+        description: Update replication job configuration
+        params:
+          comment:
+            description: Description
+          delete:
+            description: A list of settings you want to delete
+          digest:
+            description: Prevent changes if current configuration file has a different digest
+          disable:
+            description: Flat to disable/deactivate the entry (<0|1>)
+          rate:
+            description: Rate limit in mbps as floating point number (<1-N>)
+          remove_job:
+            description: Mark the replication job for removal (<local|full>)
+          schedule:
+            description: Storage replication schedule
+          source:
+            description: For internal use, to detect if the guest was stolen
