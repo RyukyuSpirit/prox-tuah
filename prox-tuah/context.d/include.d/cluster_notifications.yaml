@@ -1,0 +1,353 @@
+description: Cluster notifications
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get index for notification-related API endpoints
+context:
+  endpoints:
+    description: Notification endpoints
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get index for all available endpoint types
+    context:
+      gotify:
+        description: Gotify endpoints
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Returns a list of all Gotify endpoints
+          post:
+            description: Create a new Gotify endpoint
+            params:
+              name:
+                required: True
+                description: The name of the endpoint
+              server:
+                required: True
+                description: Server URL
+              token:
+                required: True
+                description: Secret token
+              comment:
+                description: Comment
+              disable:
+                description: Disable this target (<0|1>)
+        context:
+          name:
+            is_var: True
+            description: Gotify endpoint
+            actions:
+              delete:
+                description: Remove Gotify endpoint
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Return a specify Gotify endpoint
+              put:
+                description: Update existing Gotify endpoint
+                params:
+                  comment:
+                    description: Comment
+                  delete:
+                    description: A list of settings you want to delete
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  disable:
+                    description: Disable this target (<0|1>)
+                  server:
+                    description: Server URL
+                  token:
+                    description: Secret token
+      sendmail:
+        description: Sendmail endpoints
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Returns a list of all sendmail endpoints
+          post:
+            description: Create a new sendmail endpoint
+            params:
+              name:
+                required: True
+                description: The name of the endpoint
+              author:
+                description: Author of the mail
+              comment:
+                description: Comment
+              disable:
+                description: Disable this target (<0|1>)
+              from-address:
+                description: "'From' address for the mail"
+              mailto:
+                description: List of email recipients
+              mailto-user:
+                description: List of users
+        context:
+          name:
+            is_var: True
+            description: Sendmail enpoint
+            actions:
+              delete:
+                description: Remove sendmail endpoint
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Return a specify sendmail endpoint
+              put:
+                description: Update existing sendmail endpoint
+                params:
+                  author:
+                    description: Update existing sendmail endpoint
+                  comment:
+                    description: Comment
+                  delete:
+                    description: A list of settings you want to delete
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  disable:
+                    description: Disable this target (<0|1>)
+                  from-address:
+                    description: "'From' address for the mail"
+                  mailto:
+                    description: List of email recipients
+                  mailto-user:
+                    description: List of users
+      smtp:
+        description: SMTP endpoints
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Returns a list of all SMTP endpoints
+          post:
+            description: Create a new SMTP endpoint
+            params:
+              from-address:
+                required: True
+                description: "'From' address for the mail"
+              name:
+                required: True
+                description: The name of the endpoint
+              server:
+                required: True
+                description: The address of the SMTP server
+              author:
+                description: Author of the mail
+              comment:
+                description: Comment
+              disable:
+                description: Disable this target (<0|1>)
+              mailto:
+                description: List of email recipients
+              mailto-user:
+                description: List of users
+              mode:
+                description: Determine which encryption method shall be used for the connection (<insecure|starttls|tls>)
+              password:
+                description: Password for SMTP authentication
+              port:
+                description: The port to be used
+              username:
+                description: Username for SMTP authentication
+        context:
+          name:
+            is_var: True
+            description: SMTP enpoint
+            actions:
+              delete:
+                description: Remove SMTP endpoint
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Return a specify SMTP endpoint
+              put:
+                description: Updates existing SMTP endpoint
+                params:
+                  author:
+                    description: Author of the mail
+                  comment:
+                    description: Comment
+                  delete:
+                    description: A list of settings you want to delete
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  disable:
+                    description: Disable this target (<0|1>)
+                  from-address:
+                    description: "'From' address for the mail"
+                  mailto:
+                    description: List of email recipients
+                  mailto-user:
+                    description: List of users
+                  mode:
+                    description: Determine which encryption method shall be used for the connection (<insecure|starttls|tls>)
+                  password:
+                    description: Password for SMTP authentication
+                  port:
+                    description: The port to be used
+                  server:
+                    description: The address of the SMTP server
+                  username:
+                    description: Username for SMTP authentication
+      webhook:
+        description: Webhook endpoints
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Returns a list of all webhook endpoints
+          post:
+            description: Create a new webhook endpoint
+            params:
+              method:
+                required: True
+                description: HTTP method (<post|put|get>)
+              name:
+                required: True
+                description: The name of the endpoint
+              url:
+                required: True
+                description: Server URL
+              body:
+                description: HTTP body, base64 encoded
+              comment:
+                description: Comment
+              disable:
+                description: Disable this target (<0|1>)
+              header:
+                description: HTTP headers to set
+              secret:
+                description: Secrets to set
+        context:
+          name:
+            is_var: True
+            description: Webhook enpoint
+            actions:
+              delete:
+                description: Remove webhook endpoint
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Return a specify webhook endpoint
+              put:
+                description: Updates existing webhook endpoint
+                params:
+                  body:
+                    description: HTTP body, base64 encoded
+                  comment:
+                    description: Comment
+                  delete:
+                    description: A list of settings you want to delete
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  disable:
+                    description: Disable this target (<0|1>)
+                  header:
+                    description: HTTP headers to set
+                  method:
+                    description: HTTP method (<post|put|get>)
+                  secret:
+                    description: Secrets to set
+                  url:
+                    description: Server URL
+  matchers:
+    description: Notification matchers
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Returns a list of all matchers
+      post:
+        description: Create a new matcher
+        params:
+          name:
+            required: True
+            description: Name of the matcher
+          comment:
+            description: Comment
+          disable:
+            description: Disable this matcher (<0|1>)
+          invert-match:
+            description: Invert match of the whole matcher (<0|1>)
+          match-calendar:
+            description: Match notification timestamp
+          match-field:
+            description: Metadata fields to match (regex or exact match)
+          match-severity:
+            description: Notification severities to match
+          mode:
+            description: Choose between 'all' and 'any' for when multiple properties are specified
+          target:
+            description: Targets to notify on match
+    context:
+      name:
+        is_var: True
+        description: Notification matcher
+        actions:
+          delete:
+            description: Remove matcher
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Returns a specific matcher
+          post:
+            description: Update existing matcher
+            params:
+              comment:
+                description: Comment
+              delete:
+                description: A list of settings you want to delete
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              disable:
+                description: Disable this matcher (<0|1>)
+              invert-match:
+                description: Invert match of the whole matcher (<0|1>)
+              match-calendar:
+                description: Match notification timestamp
+              match-field:
+                description: Metadata fields to match (regex or exact match)
+              match-severity:
+                description: Notification severities to match
+              mode:
+                description: Choose between 'all' and 'any' for when multiple properties are specified
+              target:
+                description: Targets to notify on match
+  targets:
+    description: Notification targets
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Returns a list of all entities that can be used as notification targets
+    context:
+      name:
+        is_var: True
+        description: Notification target
+        context:
+          test:
+            description: Test notification to target
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              post:
+                description: Send a test notification to a provided target
+  matcher-field-values:
+    description: Notification metadata fields/values
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Returns known notification metadata fields and their known values
+  matcher-fields:
+    description: Notification metadata fields
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Returns known notification metadata fields
