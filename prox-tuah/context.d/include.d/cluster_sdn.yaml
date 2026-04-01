@@ -1,0 +1,886 @@
+description: Cluster software-defined networks (SDN)
+actions:
+  docs:
+    description: Open PVE API docs for this endpoint in web browser
+  get:
+    description: Get SDN directory index
+  put:
+    description: Apply SDN controller and reload
+    params:
+      lock-token:
+        description: The token for unlockign the global SDN configuation
+      release-lock:
+        description: When lock-token has been provided and configuration successfully committed, release the lock automatically afterwards (<0|1>)
+context:
+  controllers:
+    description: SDN controllers
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get SDN controllers index
+        params:
+          pending:
+            description: Display pending config (<0|1>)
+          running:
+            description: Display running config (<0|1>)
+          type:
+            description: Only list SDN controllers of specific type (<bgp|evpn|faucet|isis>)
+      post:
+        description: Create a new SDN controller object
+        params:
+          controller:
+            required: True
+            description: The SDN controller object identifier
+          type:
+            required: True
+            description: Plugin type (<bgp|evpn|faucet|isis>)
+          asn:
+            description: Autonomous system number (<0-4294967295>)
+          bgp-multipath-as-path-relax:
+            description: Consider different AS paths of equal length for multipath computation (<0|1>)
+          ebgp:
+            description: Enable eBGP (<0|1>)
+          ebgp-multihop:
+            description: Set maximum amount of hops for eBGP peers
+          fabric:
+            description: SDN fabric to use as underlay for this EVPN controller
+          isis-domain:
+            description: Name of the IS-IS domain
+          isis-ifaces:
+            description: Comma-separated list of interfaces where IS-IS should be active
+          isis-net:
+            description: Network entity title for this node in the IS-IS network
+          lock-token:
+            description: The token for unlocking the global SDN configuration
+          loopback:
+            description: Name of the loopback/dummy interface that provides the Router-IP
+          node:
+            description: The cluster node name
+          peers:
+            description: Peers address list
+    context:
+      controller:
+        is_var: True
+        description: SDN controller
+        actions:
+          delete:
+            description: Delete SDN controller object configuration
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get SDN controller configuration
+            params:
+              pending:
+                description: Display pending config (<0|1>)
+              running:
+                description: Display running config (<0|1>)
+          put:
+            description: Update SDN controller object configuration
+            params:
+              asn:
+                description: Autonomous system number (<0-4294967295>)
+              bgp-multipath-as-path-relax:
+                description: Consider different AS paths of equal length for multipath computation (<0|1>)
+              delete:
+                description: A list of settings you want to delete
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              ebgp:
+                description: Enable eBGP (<0|1>)
+              ebgp-multihop:
+                description: Set maximum amount of hops for eBGP peers
+              fabric:
+                description: SDN fabric to use as underlay for this EVPN controller
+              isis-domain:
+                description: Name of the IS-IS domain
+              isis-ifaces:
+                description: Comma-separated list of interfaces where IS-IS should be active
+              isis-net:
+                description: Network entity title for this node in the IS-IS network
+              lock-token:
+                description: The token for unlocking the global SDN configuration
+              loopback:
+                description: Name of the loopback/dummy interface that provides the Router-IP
+              node:
+                description: The cluster node name
+              peers:
+                description: Peers address list
+  dns:
+    description: SDN DNS
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get SDN DNS index
+        params:
+          type:
+            description: Only list SDN DNS of specific type
+      post:
+        description: Create a new SDN DNS object
+        params:
+          dns:
+            required: True
+            description: The SDN DNS object identifier
+          key:
+            required: True
+            description: DNS key
+          type:
+            required: True
+            description: Plugin type
+          url:
+            required: True
+            description: DNS server URL
+          fingerprint:
+            description: Certification SHA-256 fingerprint
+          lock-token:
+            description: The token for unlocking the global SDN configuration
+          reversemaskv6:
+            description: DNS reversemaskv6
+          reversev6mask:
+            description: DNS reversev6mask
+          ttl:
+            description: DNS TTL
+    context:
+      dns:
+        is_var: True
+        description: SDN DNS
+        actions:
+          delete:
+            description: Delete SDN DNS object configuration
+            params:
+              description: The token for unlocking the global SDN configuration
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get SDN DNS index
+          put:
+            description: Update SDN DNS object configuration
+            params:
+              delete:
+                description: A list of setitngs you want to delete
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              fingerprint:
+                description: Certification SHA-256 fingerprint
+              key:
+                description: DNS key
+              lock-token:
+                description: The token for unlocking the global SDN configuration
+              reversemaskv6:
+                description: DNS reversemaskv6
+              ttl:
+                description: DNS TTL
+              url:
+                description: DNS server URL
+  fabrics:
+    description: SDN fabrics
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get SDN fabrics index
+    context:
+      fabric:
+        description: SDN fabrics
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get SDN fabrics index
+            params:
+              pending:
+                description: Display pending config (<0|1>)
+              running:
+                description: Display running config (<0|1>)
+          post:
+            description: Add a fabric
+            params:
+              id:
+                required: True
+                description: Identifier for SDN fabric
+              protocol:
+                required: True
+                description: Type of configuration entry in an SDN fabric section config (<openfabric|ospf>)
+              csnp_interval:
+                description: The csnp_interval property for Openfabric (<1-600>)
+              area:
+                description: OSPF area
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              hello_interval:
+                description:  The hello_interval property for Openfabric (<1-600>)
+              ip6_prefix:
+                description: The IPv6 prefix for node IPs
+              ip_prefix:
+                description: The IPv4 prefix for node IPs
+              lock-token:
+                description: The token for unlocking the global SDN configuration
+        context:
+          id:
+            is_var: True
+            description: SDN fabric
+            params:
+              delete:
+                description: Remove a fabric
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get a fabric
+              put:
+                description: Update a fabric
+                params:
+                  protocol:
+                    required: True
+                    description: Type of configuration entry in an SDN fabric section config (<openfabric|ospf>)
+                  area:
+                    description: OSPF area
+                  csnp_interval:
+                    description: The csnp_interval property for Openfabric (<1-600>)
+                  delete:
+                    description: A list of setitngs you want to delete
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  hello_interval:
+                    description:  The hello_interval property for Openfabric (<1-600>)
+                  ip6_prefix:
+                    description: The IPv6 prefix for node IPs
+                  ip_prefix:
+                    description: The IPv4 prefix for node IPs
+                  lock-token:
+                    description: The token for unlocking the global SDN configuration
+      node:
+        description: SDN fabrics node
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get SDN fabrics index
+            params:
+              pending:
+                description: Display pending config (<0|1>)
+              running:
+                description: Display running config (<0|1>)
+        context:
+          fabric_id:
+            is_var: True
+            description: SDN fabrics node fabric
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get SDN fabrics index
+                params:
+                  pending:
+                    description: Display pending config (<0|1>)
+                  running:
+                    description: Display running config (<0|1>)
+              put:
+                description: Add a node
+                params:
+                  node_id:
+                    required: True
+                    description: Identifier for nodes in an SDN fabric
+                  protocol:
+                    required: True
+                    description: Type of configuration entry in an SDN fabric section config (<openfabric|ospf>)
+                  digest:
+                    description: Prevent changes if current configuration file has a different digest
+                  interfaces:
+                    description: OpenFabric network interface
+                  ip:
+                    description: IPv4 address for this node
+                  ip6:
+                    description: IPv6 address for this node
+                  lock-token:
+                    description: The token for unlocking the global SDN configuration
+            context:
+              node_id:
+                description: SDN fabric node
+                actions:
+                  delete:
+                    description: Remove a node
+                  docs:
+                    description: Open PVE API docs for this endpoint in web browser
+                  get:
+                    description: Get a node
+                  put:
+                    description: Update a node
+                    params:
+                      protocol:
+                        required: True
+                        description: Type of configuration entry in an SDN fabric section config (<openfabric|ospf>)
+                      delete:
+                        description: A list of settings you want to delete
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+                      interfaces:
+                        description: OpenFabric network interface
+                      ip:
+                        description: IPv4 address for this node
+                      ip6:
+                        description: IPv6 address for this node
+                      lock-token:
+                        description: The token for unlocking the global SDN configuration
+      all:
+        description: SDN fabrics all
+        actions:
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get SDN fabrics all index
+            params:
+              pending:
+                description: Display pending config (<0|1>)
+              running:
+                description: Display running config (<0|1>)
+  ipams:
+    description: SDN IP address management (IPAMs)
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get SDN IPAMs index
+        params:
+          type:
+            description: Only list SDN IPAMs of specific type (<netbox|phpipam|pve>)
+      post:
+        description: Create a new SDN IPAM object
+        params:
+          ipam:
+            required: True
+            description: The SDN IPAM object identifier
+          type:
+            required: True
+            description: Plugin type (<netbox|phpipam|pve>)
+          fingerprint:
+            description: Certificate SHA-256 fingerprint
+          lock-token:
+            description: The token for unlocking the global SDN configuration
+          section:
+            description: IPAM section
+          token:
+            description: IPAM token
+          url:
+            description: IPAM URL
+    context:
+      ipam:
+        is_var: True
+        description: SDN IPAM object
+        actions:
+          delete:
+            description: Delete SDN IPAM object configuration
+            params:
+              lock-token:
+                description: The token for unlocking the global SDN configuration
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read SDN IPAM configuration
+          put:
+            description: Update SDN IPAM object configuration
+            params:
+              delete:
+                description: A list of settings you want to delete
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              fingerprint:
+                description: Certificate SHA-256 fingerprint
+              lock-token:
+                description: The token for unlocking the global SDN configuration
+              section:
+                description: IPAM section
+              token:
+                description: IPAM token
+              url:
+                description: IPAM URL
+        status:
+          description: IPAM status
+          actions:
+            get:
+              description: Get SDN IPAM status? (Not currently documented)
+  vnets:
+    description: SDN virtual networks (VNets)
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get SDN VNets index
+        params:
+          pending:
+            description: Display pending config (<0|1>)
+          running:
+            description: Display running config (<0|1>)
+      post:
+        description: Create a new SDN VNet object
+        params:
+          vnet:
+            required: True
+            description: The SDN VNet object identifier
+          zone:
+            required: True
+            description: Name of the zone this VNet belongs to
+          alias:
+            description: Alias name of the VNet
+          isolate-ports:
+            description: Set isolated property for all interfaces on the bridge of this VNet (<0|1>)
+          lock-token:
+            description: The token for unlockign the global SDN configuration
+          tag:
+            description: VLAN tag (for VLAN or QinQ zones) or VXLAN VNI (for VXLAN or EVPN zones)
+          type:
+            description: Type of the VNet
+          vlanaware:
+            description: Allows VLANs to pass through this vnet (<0|1>)
+    context:
+      vnet:
+        is_var: True
+        description: SDN VNet
+        actions:
+          delete:
+            description: Delete SDN VNet object configuration
+            params:
+              lock-token:
+                description: The token for unlocking the global SDN configuration
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Get SDN VNets index
+            params:
+              pending:
+                description: Display pending config (<0|1>)
+              running:
+                description: Display running config (<0|1>)
+          post:
+            description: Create a new SDN VNet object
+            params:
+              alias:
+                description: Alias name of the VNet
+              delete:
+                description: A list of settings you want to delete
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              isolate-ports:
+                description: Set isolated property for all interfaces on the bridge of this VNet (<0|1>)
+              lock-token:
+                description: The token for unlockign the global SDN configuration
+              tag:
+                description: VLAN tag (for VLAN or QinQ zones) or VXLAN VNI (for VXLAN or EVPN zones)
+              type:
+                description: Type of the VNet
+              vlanaware:
+                description: Allows VLANs to pass through this vnet (<0|1>)
+              zone:
+                description: Name of the zone this VNet belongs to
+        context:
+          firewall:
+            description: SDN VNet firewall
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get firewall directory index
+            context:
+              rules:
+                description: VNet firewall rules
+                actions:
+                  docs:
+                    description: Open PVE API docs for this endpoint in web browser
+                  get:
+                    description: List rules
+                  post:
+                    description: Create new rule
+                    params:
+                      action:
+                        required: True
+                        description: Rule action or security group name
+                      type:
+                        required: True
+                        description: Rule type (<in|out|forward|group>)
+                      comment:
+                        description: Descriptive comment
+                      dest:
+                        description: Packet destination address
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+                      dport:
+                        description: TCP/UDP destination port
+                      enable:
+                        description: Flag to enable/disable a rule (<0-N>)
+                      icmp-type:
+                        description: Specify icmp-type
+                      iface:
+                        description: Network interface name
+                      log:
+                        description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                      macro:
+                        description: Use predefined standard macro
+                      pos:
+                        description: Update rule at position (<0-N>)
+                      proto:
+                        description: IP protocol
+                      source:
+                        description: Packet source address
+                      sport:
+                        description: TCP/UDP source port
+                context:
+                  pos:
+                    is_var: True
+                    description: Firewall rule
+                    actions:
+                      delete:
+                        description: Delete rule
+                        params:
+                          digest:
+                            description: Prevent changes if current configuration file has a different digest
+                      docs:
+                        description: Open PVE API docs for this endpoint in web browser
+                      get:
+                        description: List rule
+                      put:
+                        description: Modify rule data
+                        params:
+                          action:
+                            description: Rule action or security group name
+                          comment:
+                            description: Descriptive comment
+                          delete:
+                            description: A list of settings you want to delete
+                          dest:
+                            description: Packet destination address
+                          digest:
+                            description: Prevent changes if current configuration file has a different digest
+                          dport:
+                            description: TCP/UDP destination port
+                          enable:
+                            description: Flag to enable/disable a rule (<0-N>)
+                          icmp-type:
+                            description: Specify icmp-type
+                          iface:
+                            description: Network interface name
+                          log:
+                            description: Log level for rule (<emerg|alert|critt|err|warning|notice|info|debug|nolog>)
+                          macro:
+                            description: Use predefined standard macro
+                          moveto:
+                            description: Move rule to new position (<0-N>)
+                          pos:
+                            description: Update rule at position (<0-N>)
+                          proto:
+                            description: IP protocol
+                          source:
+                            description: Packet source address
+                          sport:
+                            description: TCP/UDP source port
+                          type:
+                            description: Rule type (<in|out|forward|group>)
+              options:
+                description: VNet firewall options
+                actions:
+                  docs:
+                    description: Open PVE API docs for this endpoint in web browser
+                  get:
+                    description: Get VNet firewall options
+                  put:
+                    description: Set VNet firewall options
+                    params:
+                      delete:
+                        description: A list of settings you want to delete
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+                      enable:
+                        description: Whether or not to enable host firewall rules (<0|1>)
+                      log_level_forward:
+                        description: Log level for forwarded traffic (<emerg|alert|crit|err|warning|notice|info|debug|nolog>)
+                      policy_forward:
+                        description: Forward policy (<ACCEPT|REJECT|DROP>)
+          subnets:
+            description: SDN VNet subnets
+            actions:
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              get:
+                description: Get firewall directory index
+                params:
+                  pending:
+                    description: Display pending config (<0|1>)
+                  running:
+                    description: Display running config (<0|1>)
+              post:
+                description: Create a new SDN subnet object
+                params:
+                  subnet:
+                    required: True
+                    description: The SDN subnet object identifier
+                  type:
+                    required: True
+                    description: SDN subnet type
+                  vnet:
+                    required: True
+                    description: Associated VNet
+                  dhcp-dns-server:
+                    description: IP address for the DNS server
+                  dhcp-range:
+                    description: A list of DHCP ranges for this subnet
+                  dnszoneprefix:
+                    description: DNS domain zone prefix
+                  gateway:
+                    description: "Subnet Gateway: Will be assigned on VNet for layer3 zones"
+                  lock-token:
+                    description: The token for unlocking the global SDN configuration
+                  snat:
+                    description: Enable masquerade for this subnet if pve-firewall (<0|1>)
+            context:
+              subnet:
+                is_var: True
+                description: Read SDN subnet configuration
+                actions:
+                  delete:
+                    description: Delete SDN subnet object configuration
+                    params:
+                      lock-token:
+                        description: The token for unlocking the global SDN configuration
+                  docs:
+                    description: Open PVE API docs for this endpoint in web browser
+                  get:
+                    description: Get firewall directory index
+                    params:
+                      pending:
+                        description: Display pending config (<0|1>)
+                      running:
+                        description: Display running config (<0|1>)
+                  put:
+                    description: Update SDN subnet object configuration
+                    params:
+                      delete:
+                        description: A list of settings you want to delete
+                      dhcp-dns-server:
+                        description: IP address for the DNS server
+                      dhcp-range:
+                        description: A list of DHCP ranges for this subnet
+                      digest:
+                        description: Prevent changes if current configuration file has a different digest
+                      dnszoneprefix:
+                        description: DNS domain zone prefix
+                      gateway:
+                        description: "Subnet Gateway: Will be assigned on VNet for layer3 zones"
+                      lock-token:
+                        description: The token for unlocking the global SDN configuration
+                      snat:
+                        description: Enable masquerade for this subnet if pve-firewall (<0|1>)
+                      vnet:
+                        description: Associated VNet
+          ips:
+            description: SDN VNet IPs
+            actions:
+              delete:
+                description: Delete IP mapping in a VNet
+                params:
+                  ip:
+                    required: True
+                    description: The IP address to associate with the given MAC address
+                  zone:
+                    required: True
+                    description: The SDN zone object identifier
+                  mac:
+                    description: A common MAC address with the I/G (Individual/Group) bit not set
+              docs:
+                description: Open PVE API docs for this endpoint in web browser
+              post:
+                description: Create IP mapping in a VNet
+                params:
+                  ip:
+                    required: True
+                    description: The IP address to associate with the given MAC address
+                  zone:
+                    required: True
+                    description: The SDN zone object identifier
+                  mac:
+                    description: A common MAC address with the I/G (Individual/Group) bit not set
+              put:
+                description: Update IP mapping in a VNet
+                params:
+                  ip:
+                    required: True
+                    description: The IP address to associate with the given MAC address
+                  zone:
+                    required: True
+                    description: The SDN zone object identifier
+                  mac:
+                    description: A common MAC address with the I/G (Individual/Group) bit not set
+                  vmid:
+                    description: The unique ID of the VM
+  zones:
+    description: SDN zones
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      get:
+        description: Get SDN zones index
+        params:
+          pending:
+            description: Display pending config (<0|1>)
+          running:
+            description: Display running config (<0|1>)
+          type:
+            description: Only list SDN zones of specific type (<evpn|faucet|qinq|simple|vlan|vxlan>)
+      post:
+        description: Create a new SDN zone object
+        params:
+          type:
+            required: True
+            description: Plugin type (<evpn|faucet|qinq|simple|vlan|vxlan>)
+          advertise-subnets:
+            description: Advertise IP prefixes (Type-5 routes) instead of MAC/IP pairs (Type-2 routes) (<0|1>)
+          bridge:
+            description: The bridge for which VLANS should be managed
+          bridge-disable-mac-learning:
+            description: Disable auto mac learning (<0|1>)
+          controller:
+            description: Controller for this zone
+          dhcp:
+            description: Type of the DHCP backend for this zone
+          disable-arp-nd-suppression:
+            description: Suppress IPv4 ARP and IPv6 Neighbor Discovery messages (<0|1>)
+          dns:
+            description: DNS API server
+          dnszone:
+            description: DNS domain zone
+          dp-id:
+            description: Faucet dataplane ID
+          exitnodes:
+            description: List of cluster node names
+          exitnodes-local-routing:
+            description: Allow exitnodes to connect to EVPN guests (<0|1>)
+          exitnodes-primary:
+            description: Force traffic through this exitnode first
+          fabric:
+            description: SDN fabric to use as underlay for this VXLAN zone
+          ipam:
+            description: Use a specific IPAM
+          lock-token:
+            description: The token for unlocking the global SDN configuration
+          mac:
+            description: Anycast logical router mac address
+          mtu:
+            description: MTU of the zone, will be used for the created VNet bridges
+          nodes:
+            description: List of cluster node names
+          peers:
+            description: Comma-separated list of peers, that are part of the VXLAN zone
+          reversedns:
+            description: Reverse DNS API server
+          rt-import:
+            description: List of route targets that should be imported into the VRF of the zone
+          tag:
+            description: Service-VLAN tag (outer VLAN)
+          vlan-protocol:
+            description: Which VLAN protocol should be used for the creation of the QinQ zone (<802.1q|802.1ad>)
+          vrf-vxlan:
+            description: VNI for the zone VRF (<1-16777215>)
+          vxlan-port:
+            description: UDP port that should be used for the VXLAN tunnel (<1-65536>)
+    context:
+      zone:
+        description: SDN zone
+        actions:
+          delete:
+            description: Delete SDN zone object configuration
+            params:
+              lock-token:
+                description: The token for unlocking the global SDN configuration
+          docs:
+            description: Open PVE API docs for this endpoint in web browser
+          get:
+            description: Read SDN zone configuration
+            params:
+              pending:
+                description: Display pending config (<0|1>)
+              running:
+                description: Display running config (<0|1>)
+          put:
+            description: Create a new SDN zone object
+            params:
+              advertise-subnets:
+                description: Advertise IP prefixes (Type-5 routes) instead of MAC/IP pairs (Type-2 routes) (<0|1>)
+              bridge:
+                description: The bridge for which VLANS should be managed
+              bridge-disable-mac-learning:
+                description: Disable auto mac learning (<0|1>)
+              controller:
+                description: Controller for this zone
+              delete:
+                description: A list of settings you want to delete
+              dhcp:
+                description: Type of the DHCP backend for this zone
+              digest:
+                description: Prevent changes if current configuration file has a different digest
+              disable-arp-nd-suppression:
+                description: Suppress IPv4 ARP and IPv6 Neighbor Discovery messages (<0|1>)
+              dns:
+                description: DNS API server
+              dnszone:
+                description: DNS domain zone
+              dp-id:
+                description: Faucet dataplane ID
+              exitnodes:
+                description: List of cluster node names
+              exitnodes-local-routing:
+                description: Allow exitnodes to connect to EVPN guests (<0|1>)
+              exitnodes-primary:
+                description: Force traffic through this exitnode first
+              fabric:
+                description: SDN fabric to use as underlay for this VXLAN zone
+              ipam:
+                description: Use a specific IPAM
+              lock-token:
+                description: The token for unlocking the global SDN configuration
+              mac:
+                description: Anycast logical router mac address
+              mtu:
+                description: MTU of the zone, will be used for the created VNet bridges
+              nodes:
+                description: List of cluster node names
+              peers:
+                description: Comma-separated list of peers, that are part of the VXLAN zone
+              reversedns:
+                description: Reverse DNS API server
+              rt-import:
+                description: List of route targets that should be imported into the VRF of the zone
+              tag:
+                description: Service-VLAN tag (outer VLAN)
+              vlan-protocol:
+                description: Which VLAN protocol should be used for the creation of the QinQ zone (<802.1q|802.1ad>)
+              vrf-vxlan:
+                description: VNI for the zone VRF (<1-16777215>)
+              vxlan-port:
+                description: UDP port that should be used for the VXLAN tunnel (<1-65536>)
+  lock:
+    description: SDN global lock
+    actions:
+      delete:
+        description: Release global lock for SDN configuration
+        params:
+          force:
+            description: Allow releasing lock without providing the token (<0|1>)
+          lock-token:
+            description: The token for unlocking the global SDN configuration
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      post:
+        description: Acquire global lock for SDN configuration
+        params:
+          allow-pending:
+            description: Allow acquiring lock even though there are pending changes (<0|1>)
+  rollback:
+    description: SDN rollback
+    actions:
+      docs:
+        description: Open PVE API docs for this endpoint in web browser
+      post:
+        description: Rollback pending chnages to SDN configuration
+        params:
+          lock-token:
+            description: The token for unlocking the global SDN configuration
+          release-lock:
+            description: When lock-token has been provided and configuration successfully rolled back, release the lock automatically afterwards (<0-1>)
