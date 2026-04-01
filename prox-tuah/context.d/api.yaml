@@ -2,7 +2,7 @@ api:
   description: Enter Proxmox API mode
   context:
     access:
-      description: API access resources
+      description: PVE access
       actions:
         docs:
           description: Open PVE API docs for this endpoint in web browser
@@ -11,7 +11,7 @@ api:
       context:
         !inc context.d/include.d/access.yaml
     cluster:
-      description: API cluster resources
+      description: PVE cluster
       actions:
         docs:
           description: Open PVE API docs for this endpoint in web browser
@@ -20,7 +20,7 @@ api:
       context:
         !inc context.d/include.d/cluster.yaml
     nodes:
-      description: API nodes resources
+      description: PVE nodes
       context:
         node:
           description: PVE node
@@ -408,11 +408,327 @@ api:
                 get:
                   description: Try to wake a node via 'wake on LAN' network packet
     pools:
-      description: "API pools resources"
+      description: "PVE pools"
+      actions:
+        delete:
+          description: Delete pool
+          params:
+            poolid:
+              required: True
+              description: Pool ID
+        docs:
+          description: Open PVE API docs for this endpoint in web browser
+        get:
+          description: List pools or get pool configuration
+          params:
+            poolid:
+              description: Pool ID
+            type:
+              description: Pool type (<qemu|lxc|storage>)
+        post:
+          description: Create new pool
+          params:
+            poolid:
+              required: True
+              description: Pool ID
+            comment:
+              description: Comment
+        put:
+          description: Update pool
+          params:
+            poolid:
+              required: True
+              description: Pool ID
+            allow-move:
+              description: Allow adding a guest even if already in another pool (<0|1>)
+            comment:
+              description: Comment
+            delete:
+              description: Remove the passed VMIDs and/or storage IDs instead of adding them (<0|1>)
+            storage:
+              description: List of storage IDs to add or remove from this pool
+            vms:
+              description: List of guest VMIDs to add or remove from this pool
+      context:
+        poolid:
+          is_var: True
+          description: Pool
+          actions:
+            delete:
+              description: Delete pool
+            docs:
+              description: Open PVE API docs for this endpoint in web browser
+            get:
+              description: Get pool configuration
+              params:
+                type:
+                  description: Pool type (<qemu|lxc|storage>)
+            put:
+              description: Update pool data
+              params:
+                allow-move:
+                  description: Allow adding a guest even if already in another pool (<0|1>)
+                comment:
+                  description: Comment
+                delete:
+                  description: Remove the passed VMIDs and/or storage IDs instead of adding them (<0|1>)
+                storage:
+                  description: List of storage IDs to add or remove from this pool
+                vms:
+                  description: List of guest VMIDs to add or remove from this pool
     storage:
-      description: "API storage resources"
+      description: "PVE storage"
+      actions:
+        docs:
+          description: Open PVE API docs for this endpoint in web browser
+        get:
+          description: Get storage index
+          params:
+            type:
+              description: Only list storage of specific type
+        post:
+          description: Create a new storage
+          params:
+            storage:
+              required: True
+              description: The storage identifier
+            type:
+              required: True
+              description: Storage type
+            authsupported:
+              description: Authsupported
+            base:
+              description: Base volume
+            blocksize:
+              description: Block size
+            bwlimit:
+              description: Set I/O bandwidthf or various operations (in KiB/s)
+            comstar_hg:
+              description: Host group for comstar views
+            comstar_tg:
+              description: Target group for comstar views
+            content:
+              description: Allowed content types
+            content-dirs:
+              description: Overrides for default content type directories
+            create-base-path:
+              description: Create the base directory if it doesn't exist (<0|1>)
+            create-subdirs:
+              description: Populate the directory with the default structure (<0|1>)
+            data-pool:
+              description: Data pool (for erasure coding only)
+            datastore:
+              description: Proxmox Backup Server datastore name
+            disable:
+              description: Flag to disable the storage
+            domain:
+              description: CIFS domain
+            encryption-key:
+              description: Encryption key
+            export:
+              description: NFS export path
+            fingerprint:
+              description: Certificate SHA-256 fingerprint
+            format:
+              description: Default image format (<raw|qcow2|subvol|vmdk>)
+            fs-name:
+              description: The Ceph filesystem name
+            fuse:
+              description: Mount CephFS through FUSE (<0|1>)
+            is_mountpoint:
+              description: Assume the given path is an externally managed mountpoint and consider the storage offline if it is not mounted
+            iscsiprovider:
+              description: iscsi provider
+            keyring:
+              description: Client keyring contents (for external clusters)
+            krbd:
+              description: Always access rbd through krbd kernel module
+            lio_tpg:
+              description: Target portal group for Linux LIO targets
+            master-pubkey:
+              description: Base64-encoded, PEM-formatted public RSA key
+            max-protected-backups:
+              description: Maximal number of protected backups per guest(<-1-N>, '-1' for unlimited)
+            mkdir:
+              description: Create the directory if it doesn't exist and populate it with default sub-dirs
+            monhost:
+              description: IP addresses of monitors (for external clusters)
+            mountpoint:
+              description: Mount point
+            namespace:
+              description: Namespace
+            nocow:
+              description: Set the NOCOW flag on files (<0|1>)
+            nodes:
+              description: List of nodes for which the storage configuration applies
+            nowritecache:
+              description: Disable write caching on the target
+            options:
+              description: NFS/CIFS mount options
+            password:
+              description: Password for accessing the share/datastore
+            path:
+              description: File system path
+            pool:
+              description: Pool
+            port:
+              description: Use this port to connect to the storage instead of the default one (<1-65535>)
+            portal:
+              description: iSCSI portal (IP or DNS name with optional port)
+            preallocation:
+              description: Preallocation mode for raw and qcow2 images (<off|metadata|falloc|full>)
+            prune-backups:
+              description: The retention options with shorter intervals are processed first with --keep-last being the very first one
+            saferemove:
+              description: Zero-out data when removing LVs (<0|1>)
+            saferemove-stepsize:
+              description: Wipe step size in MiB (<1|2|4|8|16|32>)
+            saferemove-throughput:
+              description: Wipe throughput (cstream -t parameter value)
+            server:
+              description: Server IP or DNS name
+            share:
+              description: CIFS share
+            shared:
+              description: Indicate that this is a single storage with the same contents on all nodes (<0|1>)
+            skip-cert-verification:
+              description: Disable TLS certificate verification, only enable on fully trusted networks! (<0|1>)
+            smbversion:
+              description: SMB protocol version (<default|2.0|2.1|3|3.0|3.11>)
+            snapshot-as-volume-chain:
+              description: Enable support for creating storage-vendor agnostic snapshot through volume backing-chains (<0|1>)
+            sparse:
+              description: Use sparse volumes
+            subdir:
+              description: Subdir to mount
+            tagged_only:
+              description: Only use logical volumes tagged with 'pve-vm-ID'
+            target:
+              description: iSCSI target
+            thinpool:
+              description: LVM thin pool LV name
+            username:
+              description: RBD ID
+            vgname:
+              description: Volume group name
+            zfs-base-path:
+              description: Base path where to look for the created ZFS block devices
+      context:
+        storage:
+          is_var: True
+          description: Storage
+          actions:
+            delete:
+              description: Delete storage configuration
+            docs:
+              description: Open PVE API docs for this endpoint in web browser
+            get:
+              description: Read storage configuration
+            put:
+              description: Update storage configuration
+              params:
+                blocksize:
+                  description: Block size
+                bwlimit:
+                  description: Set I/O bandwidthf or various operations (in KiB/s)
+                comstar_hg:
+                  description: Host group for comstar views
+                comstar_tg:
+                  description: Target group for comstar views
+                content:
+                  description: Allowed content types
+                content-dirs:
+                  description: Overrides for default content type directories
+                create-base-path:
+                  description: Create the base directory if it doesn't exist (<0|1>)
+                create-subdirs:
+                  description: Populate the directory with the default structure (<0|1>)
+                data-pool:
+                  description: Data pool (for erasure coding only)
+                delete:
+                  description: A list of settings you want to delete
+                digest:
+                  description: Prevent changes if current configuration file has a different digest
+                disable:
+                  description: Flag to disable the storage
+                domain:
+                  description: CIFS domain
+                encryption-key:
+                  description: Encryption key
+                fingerprint:
+                  description: Certificate SHA-256 fingerprint
+                format:
+                  description: Default image format (<raw|qcow2|subvol|vmdk>)
+                fs-name:
+                  description: The Ceph filesystem name
+                fuse:
+                  description: Mount CephFS through FUSE (<0|1>)
+                is_mountpoint:
+                  description: Assume the given path is an externally managed mountpoint and consider the storage offline if it is not mounted
+                keyring:
+                  description: Client keyring contents (for external clusters)
+                krbd:
+                  description: Always access rbd through krbd kernel module
+                lio_tpg:
+                  description: Target portal group for Linux LIO targets
+                master-pubkey:
+                  description: Base64-encoded, PEM-formatted public RSA key
+                max-protected-backups:
+                  description: Maximal number of protected backups per guest(<-1-N>, '-1' for unlimited)
+                mkdir:
+                  description: Create the directory if it doesn't exist and populate it with default sub-dirs
+                monhost:
+                  description: IP addresses of monitors (for external clusters)
+                mountpoint:
+                  description: Mount point
+                namespace:
+                  description: Namespace
+                nocow:
+                  description: Set the NOCOW flag on files (<0|1>)
+                nodes:
+                  description: List of nodes for which the storage configuration applies
+                nowritecache:
+                  description: Disable write caching on the target
+                options:
+                  description: NFS/CIFS mount options
+                password:
+                  description: Password for accessing the share/datastore
+                pool:
+                  description: Pool
+                port:
+                  description: Use this port to connect to the storage instead of the default one (<1-65535>)
+                preallocation:
+                  description: Preallocation mode for raw and qcow2 images (<off|metadata|falloc|full>)
+                prune-backups:
+                  description: The retention options with shorter intervals are processed first with --keep-last being the very first one
+                saferemove:
+                  description: Zero-out data when removing LVs (<0|1>)
+                saferemove-stepsize:
+                  description: Wipe step size in MiB (<1|2|4|8|16|32>)
+                saferemove-throughput:
+                  description: Wipe throughput (cstream -t parameter value)
+                server:
+                  description: Server IP or DNS name
+                shared:
+                  description: Indicate that this is a single storage with the same contents on all nodes (<0|1>)
+                skip-cert-verification:
+                  description: Disable TLS certificate verification, only enable on fully trusted networks! (<0|1>)
+                smbversion:
+                  description: SMB protocol version (<default|2.0|2.1|3|3.0|3.11>)
+                snapshot-as-volume-chain:
+                  description: Enable support for creating storage-vendor agnostic snapshot through volume backing-chains (<0|1>)
+                sparse:
+                  description: Use sparse volumes
+                subdir:
+                  description: Subdir to mount
+                tagged_only:
+                  description: Only use logical volumes tagged with 'pve-vm-ID'
+                username:
+                  description: RBD ID
+                zfs-base-path:
+                  description: Base path where to look for the created ZFS block devices
     version:
-      description: "API version resources"
+      description: "PVE version"
       actions:
         docs:
           description: Open PVE API docs for this endpoint in web browser
