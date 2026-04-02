@@ -5,8 +5,8 @@ user:
     vm:
       description: "VM context"
       actions:
-        show:
-          description: "Show all VMs"
+        list:
+          description: "List all VMs"
           run_func: show_vms
           params:
             scope:
@@ -15,14 +15,20 @@ user:
       context:
         vmid:
           is_var: True
-          description: "Enter specific VM's context"
+          description: "Virtual machine"
           context:
-            status:
-              description: "VM power status"
+            connect:
+              description: "Connect to VM"
               actions:
-                show:
-                  description: Show VM power status
-                  run_func: show_vm_status
+                spice:
+                  description: Connect via SPICE
+                  run_func: connect_vm
+            power:
+              description: "Change VM power status"
+              actions:
+                reboot:
+                  description: Reboot VM
+                  run_func: change_vm_status
                 shutdown:
                   description: Shutdown VM (clean)
                   run_func: change_vm_status
@@ -32,14 +38,9 @@ user:
                 stop:
                   description: Stop VM (immediate)
                   run_func: change_vm_status
-          actions:
-            connect:
-              description: "Connect to VM (Default: SPICE)"
-              run_func: connect_vm
             show:
-              description: "Show VM configuration"
-              run_func: show_vm
-              params:
-                scope:
-                  is_var: True
-                  description: "(brief|detail|config) Type of information about the VM to return"
+              description: "Show VM information"
+              actions:
+                status:
+                  description: Show VM power status
+                  run_func: show_vm_status
