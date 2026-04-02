@@ -1,6 +1,4 @@
 
-- add quote wrapping for string kwarg values without quotes (current fails unless quotes are explicitly around the values)
-
 - function to display api commands in HTTP/CLI form rather than execute them (ex. dry-run)
 
 - 'top' global cmd to return to top or to execute from any sub-context
