@@ -1,6 +1,5 @@
 admin:
   description: "ADMIN mode"
-  can_get: false
   context:
     vm:
       description: "Virtual machines"
@@ -71,6 +70,9 @@ admin:
               description: "Show VM information"
               run_func: show_vm_info
               params:
+                brief:
+                  is_fixed: True
+                  description: Show VM information (brief)
                 default:
                   is_fixed: True
                   description: Show VM information

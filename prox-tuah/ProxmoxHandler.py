@@ -45,6 +45,9 @@ class ProxmoxHandler(ProxmoxAPI):
     def _get_vm(self, vmid):
         return self._get_vms_dict().get(vmid)
 
+    def _get_vm_keyvalue(self, vmid, key):
+        return {key: self._get_vm(vmid).get(key,"N/A")}
+
     def _get_vms_name_list(self, *args, **kwargs):
         return [{vm['vmid']: vm['name']} for vm in self._get_vms()]
 
@@ -212,16 +215,16 @@ class ProxmoxHandler(ProxmoxAPI):
         else:
             scope = "default"
 
-        vm = self._get_vm(vmid)
-
         try:
             match scope:
+                case "brief":
+                    output =  [vm for vm in self._get_vms_brief() if f'{vm.get("vmid","")}' == vmid][0]
                 case "default":
-                    output = vm
+                    output = self._get_vm(vmid)
                 case "power":
-                    output = {"status": vm.get("status", "N/A")}
+                    output = self._get_vm_keyvalue(vmid, "status")
                 case _:
-                    output = vm
+                    output = self._get_vm(vmid)
         except Exception as e:
             output = f"ERROR: Unable to get status of '{vmid}' on '{node}': {e}"
 

@@ -48,6 +48,9 @@ user:
               description: "Show VM information"
               run_func: show_vm_info
               params:
+                brief:
+                  is_fixed: True
+                  description: Show VM information (brief)
                 default:
                   is_fixed: True
                   description: Show VM information
