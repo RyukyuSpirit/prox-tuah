@@ -23,7 +23,7 @@ class TUAH():
         self.context = context # context at current level
         self.global_help = {
             "exit": "Go back one context",
-            "main": "Return to main context",
+            "top": "Return to top/main context",
             "quit": "Quit application",
         }
         self.pipe_context = {
@@ -528,7 +528,7 @@ class TUAH():
 
         # update prompt
         if self.context == self.full_context:
-            self.prompt = "main# "
+            self.prompt = "top# "
         else:
             self.prompt = f"{self.context.get('prompt', '/'.join(self.level_list))}# "
 
@@ -552,7 +552,7 @@ class TUAH():
     def start(self):
 
         self.clear_screen()
-        self.go_to_main()
+        self.go_to_top()
         self.run()
 
     def run(self):
@@ -575,7 +575,7 @@ class TUAH():
 
             self.handle_entry(self.entry)
 
-    def go_to_main(self):
+    def go_to_top(self):
         """
         Go to main (top) context
         """
@@ -790,16 +790,16 @@ class TUAH():
                 print("  Terminating session...")
                 sys.exit()
 
-            elif entry in ["main", "top"]:
-                self.go_to_main()
+            elif entry in ["top"]:
+                self.go_to_top()
 
             elif entry in ["exit", "back"]:
-                # return to main menu if 1 level deep
+                # return to top if 1 level deep
                 if len(self.level_list) == 1:
-                    self.go_to_main()
+                    self.go_to_top()
                     return
                 elif not self.level_list:
-                    print("  Already at the main menu")
+                    print("  Already at the top")
                     return
                 # return one level
                 else:
