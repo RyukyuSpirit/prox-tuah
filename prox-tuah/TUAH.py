@@ -218,7 +218,7 @@ class TUAH():
                         break
                     # if no matches notify
                     else:
-                        self.print_error(f'No modifiers found starting with "{text}"', severity="wARNING")
+                        self.print_string(f'No modifiers found starting with "{text}"', title="WARNING")
                         break
 
             # if action was found, collect params
@@ -293,7 +293,7 @@ class TUAH():
 
                     # if kwarg is undefined, notify and break
                     else:
-                        self.print_error(f'No params found starting with "{text}":')
+                        self.print_string(f'No params found starting with "{text}":', title="ERROR")
                         break
 
                 # check for autocompletion
@@ -329,7 +329,7 @@ class TUAH():
 
                     # if no matches found, notify and break
                     else:
-                        self.print_error(f'No params found starting with "{text}"', severity="WARNING")
+                        self.print_string(f'No params found starting with "{text}"', title="WARNING")
                         break
 
             # otherwise continue processing command text
@@ -382,7 +382,7 @@ class TUAH():
                     else:
                         # if no matches found, break
                         if not action_context:
-                            self.print_error(f'No commands found starting with "{text}"', severity="INFO")
+                            self.print_string(f'No commands found starting with "{text}"', title="INFO")
                         run = False
                         completed_commands.append(text)
                         self.typed_text = " ".join(completed_commands)
@@ -411,7 +411,7 @@ class TUAH():
 
                         # notify of missing params and retain typed_text
                         if missing_req_params:
-                            results = f"Missing required parameter(s): {' | '.join(missing_req_params)}"
+                            results = f"ERROR: Missing required parameter(s): {' | '.join(missing_req_params)}"
                             completed_commands.append(text)
                             self.typed_text = " ".join(completed_commands)
                             self.retain_text = True
@@ -595,11 +595,14 @@ class TUAH():
         except AttributeError:
             return f"Function not found on handler: '{func_name}'"
 
-    def print_error(self, msg, severity="ERROR"):
+    def print_string(self, msg, title=None):
         """
-        Wrapper to print an error message to the screen
+        Wrapper to print a string to the screen
         """
-        print(f"\n  {severity}: {msg}\n")
+        if title:
+            print(f"\n  {title}: {msg}\n")
+        else:
+            print(f"\n  {msg}\n")
 
     def container_has_match(self, container, r_pattern):
         """
@@ -688,12 +691,12 @@ class TUAH():
         regex_pattern = fnmatch.translate(m_pattern)
         # filter depending on type
         if isinstance(raw_output, str):
-            print_error("Specifying 'filter' is not supported for 'str' return types")
+            print_string("Specifying 'filter' is not supported for 'str' return types", title="ERROR")
             return raw_output
         elif isinstance(raw_output, list) or isinstance(raw_output, dict):
             return self.get_matching_container(raw_output, regex_pattern)
         else:
-            self.print_error(f"Unhandled return type: {raw_output}")
+            self.print_string(f"Unhandled return type: {raw_output}", title="ERROR")
 
     def get_fields(self, output, fields_str):
         """
@@ -728,7 +731,7 @@ class TUAH():
                             f_dict[k] = v
                     f_list.append(f_dict)
                 else:
-                    self.print_error(f"Targeting 'field(s)' not supported by this return type: {output}")
+                    self.print_string(f"Targeting 'field(s)' not supported by this return type: {output}", title="ERROR")
             return f_list
         return
 
@@ -739,7 +742,15 @@ class TUAH():
         """
         fields = out_modifiers.get("fields", "all")
         filter = out_modifiers.get("filter", None)
-        format = out_modifiers.get("format", "table")
+        if isinstance(raw_output, str):
+            format = out_modifiers.get("format", "raw")
+        else:
+            format = out_modifiers.get("format", "table")
+
+        # handle no output
+        if not raw_output:
+            self.print_string("No returned values", title="INFO")
+            return
 
         # reduce output to items matching filter
         if filter:
@@ -752,7 +763,7 @@ class TUAH():
             if isinstance(output, list) or isinstance(output, dict):
                 output = self.get_fields(output, fields)
             else:
-                print_error(f"Specifying fields is only supported by 'dictionary' return types")
+                print_string(f"Specifying fields is only supported by 'dictionary' return types", title="ERROR")
 
         # finalize output based on format
         if format == "raw":
@@ -771,7 +782,7 @@ class TUAH():
             pprint(output)
             print()
         else:
-            self.print_error(f"Unknown format type: {format}")
+            self.print_string(f"Unknown format type: {format}", title="ERROR")
 
     def handle_entry(self, entry):
         """
@@ -825,7 +836,7 @@ class TUAH():
 
                             # print error if not found as static/var child
                             else:
-                                self.print_error(f"Child '{level}' not found in context: {back_context}")
+                                self.print_string(f"Child '{level}' not found in context: {back_context}", title="ERROR")
 
                     self.update_context(back_context, self.level_list)
 
