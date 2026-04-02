@@ -1,46 +1,56 @@
 user:
-  description: "Enter USER mode"
-  can_get: false
+  description: "USER mode"
   context:
     vm:
-      description: "VM context"
+      description: "Virtual machines"
       actions:
         list:
           description: "List all VMs"
           run_func: show_vms
           params:
-            scope:
-              is_var: True
-              description: "(brief|detail|config) Amount of info to return per VM (Options: brief|detail|config)"
+            brief:
+              is_fixed: True
+              description: "Show brief information"
+            detail:
+              is_fixed: True
+              description: "Show detailed information"
       context:
         vmid:
           is_var: True
           description: "Virtual machine"
-          context:
+          actions:
             connect:
-              description: "Connect to VM"
-              actions:
-                spice:
-                  description: Connect via SPICE
-                  run_func: connect_vm
+              description: "Connect to VM (default: SPICE)"
+              run_func: connect_vm
+              params:
+                protocol:
+                  description: Connection protocol (<spice>)
             power:
               description: "Change VM power status"
-              actions:
+              run_func: change_vm_status
+              params:
                 reboot:
+                  is_fixed: True
                   description: Reboot VM
-                  run_func: change_vm_status
                 shutdown:
+                  is_fixed: True
                   description: Shutdown VM (clean)
                   run_func: change_vm_status
                 start:
+                  is_fixed: True
                   description: Start VM
                   run_func: change_vm_status
                 stop:
+                  is_fixed: True
                   description: Stop VM (immediate)
                   run_func: change_vm_status
             show:
               description: "Show VM information"
-              actions:
-                status:
+              run_func: show_vm_info
+              params:
+                default:
+                  is_fixed: True
+                  description: Show VM information
+                power:
+                  is_fixed: True
                   description: Show VM power status
-                  run_func: show_vm_status

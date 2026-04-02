@@ -498,7 +498,7 @@ class TUAH():
                         # format field according to var type
                         if cv.get("description"):
                             if cv.get("is_var"):
-                                key = '<{ck}>'
+                                key = f'<{ck}>'
                             elif cv.get("is_part_var"):
                                 var_suffix = cv.get("var_suffix", "N")
                                 key = f'{ck}<{var_suffix}>'
@@ -767,7 +767,7 @@ class TUAH():
 
         # finalize output based on format
         if format == "raw":
-            print(f"\n  {output}\n")
+            print(f"\n{indent(output, '  ')}\n")
         elif format == "table":
             if isinstance(output, list):
                 # print list of dict table

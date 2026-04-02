@@ -33,23 +33,23 @@ class ProxmoxHandler(ProxmoxAPI):
             return None
 
 
-    def get_vms(self):
+    def _get_vms(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 0]
 
-    def get_vms_dict(self):
+    def _get_vms_dict(self):
         vms = {}
-        for vm in self.get_vms():
+        for vm in self._get_vms():
             vms.update({str(vm['vmid']): vm})
         return vms
 
-    def get_vm(self, vmid):
-        return self.get_vms_dict().get(vmid)
+    def _get_vm(self, vmid):
+        return self._get_vms_dict().get(vmid)
 
-    def get_vms_name_list(self, *args, **kwargs):
-        return [{vm['vmid']: vm['name']} for vm in self.get_vms()]
+    def _get_vms_name_list(self, *args, **kwargs):
+        return [{vm['vmid']: vm['name']} for vm in self._get_vms()]
 
-    def get_vms_brief(self):
-        return [{'vmid': vm['vmid'], 'name': vm['name'], 'node': vm['node'], 'status': vm['status']} for vm in self.get_vms()]
+    def _get_vms_brief(self):
+        return [{'vmid': vm['vmid'], 'name': vm['name'], 'node': vm['node'], 'status': vm['status']} for vm in self._get_vms()]
 
     def get_templates_list(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 1]
@@ -196,20 +196,32 @@ class ProxmoxHandler(ProxmoxAPI):
         """
         Returns the node of the given vmid
         """
-        return [vm['node'] for vm in self.get_vms() if f"{vm.get('vmid')}" == vmid][0]
+        return [vm['node'] for vm in self._get_vms() if f"{vm.get('vmid')}" == vmid][0]
 
 ### TUAH HANDLER FUNCS BELOW THIS LINE ###
-
-    def show_vm_status(self, level_list=[], params=[]):
+    def show_vm_info(self, level_list=[], params=[]):
         """
-        Show vm's power status
+        Show vm's info at requested level
         """
         vmid = self._get_vmid(level_list)
         node = self._get_vmid_node(vmid)
 
+        # accept first param, if any as scope
+        if params:
+            scope = params[0]
+        else:
+            scope = "default"
+
+        vm = self._get_vm(vmid)
+
         try:
-            status = self.nodes(node).qemu(vmid).status.current.get().get("status")
-            output = {"status": status}
+            match scope:
+                case "default":
+                    output = vm
+                case "power":
+                    output = {"status": vm.get("status", "N/A")}
+                case _:
+                    output = vm
         except Exception as e:
             output = f"ERROR: Unable to get status of '{vmid}' on '{node}': {e}"
 
@@ -221,7 +233,11 @@ class ProxmoxHandler(ProxmoxAPI):
         """
         vmid = self._get_vmid(level_list)
         node = self._get_vmid_node(vmid)
-        new_status = level_list[-1]
+
+        if params:
+            new_status = params[0]
+        else:
+            return "ERROR: Missing required parameter: <action>"
 
         if new_status in ["reboot", "reset", "resume", "shutdown", "start", "stop", "suspend"]:
             try:
@@ -243,7 +259,7 @@ class ProxmoxHandler(ProxmoxAPI):
             except Exception as e:
                 output = f"ERROR: Unable to change power state of '{vmid}' on '{node}': {e}"
         else:
-            output = f"ERROR: Unknown status {new_status}"
+            output = f"ERROR: Unknown status '{new_status}'"
 
         return output
 
@@ -294,7 +310,7 @@ class ProxmoxHandler(ProxmoxAPI):
         try:
             output = self.nodes(node).qemu(vmid).delete()
         except Exception as e:
-            output = f"Error deleting VM {vmid}: {e}"
+            output = f"ERROR: Failed to delete VM {vmid}: {e}"
 
         return output
 
@@ -306,8 +322,11 @@ class ProxmoxHandler(ProxmoxAPI):
         node = self._get_vmid_node(vmid)
 
         # get and write formatted spice file
-        spice_conf = self.get_spice_config(vmid, node)
-        filename = self.config.get('spice_file', 'tmp_spice.vv')
+        try:
+            spice_conf = self.get_spice_config(vmid, node)
+            filename = self.config.get('spice_file', 'tmp_spice.vv')
+        except Exception as e:
+            return f"ERROR: Failed to pull spice config for VM {vmid}\n({e})"
 
         try:
             with open(filename, "w") as f:
@@ -315,7 +334,7 @@ class ProxmoxHandler(ProxmoxAPI):
                 for k,v in spice_conf.items():
                     f.write(f"{k}={v}\n")
         except IOError as e:
-            return f"Error: Failed to create spice file '{filename}': {e}"
+            return f"ERROR: Failed to create spice file '{filename}'\n({e})"
 
         # open spice file with spice client
         try:
@@ -323,7 +342,7 @@ class ProxmoxHandler(ProxmoxAPI):
             subprocess.Popen([str(spice_client), filename], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             return f"Launched spice client"
         except Exception as e:
-            return f"Error occurred launching spice client '{spice_client}': {e}"
+            return f"ERROR: Unable to launch spice client '{spice_client}'\n({e})"
 
 
     def show_vm(self, level_list=[], params=[]):
@@ -339,9 +358,9 @@ class ProxmoxHandler(ProxmoxAPI):
 
         match scope.lower():
             case "brief":
-                return [vm for vm in self.get_vms_brief() if f'{vm.get("vmid","")}' == vmid][0]
+                return [vm for vm in self._get_vms_brief() if f'{vm.get("vmid","")}' == vmid][0]
             case "detail":
-                return [vm for vm in self.get_vms() if f'{vm.get("vmid","")}' == vmid][0]
+                return [vm for vm in self._get_vms() if f'{vm.get("vmid","")}' == vmid][0]
             case "config":
                 return "TO BE IMPLEMENTED"
 
@@ -356,9 +375,9 @@ class ProxmoxHandler(ProxmoxAPI):
 
         match scope.lower():
             case "brief":
-                return self.get_vms_brief()
+                return self._get_vms_brief()
             case "detail":
-                return self.get_vms()
+                return self._get_vms()
             case "config":
                 return "TO BE IMPLEMENTED"
 

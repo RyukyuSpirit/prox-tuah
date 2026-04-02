@@ -1,52 +1,25 @@
 admin:
-  description: "Enter ADMIN mode"
+  description: "ADMIN mode"
   can_get: false
   context:
     vm:
-      description: "All VMs"
+      description: "Virtual machines"
       actions:
-        show:
-          description: "Show all VMs"
+        list:
+          description: "List all VMs"
           run_func: show_vms
           params:
             brief:
               is_fixed: True
-              description: "Show minimal information"
+              description: "Show brief information"
             detail:
               is_fixed: True
               description: "Show detailed information"
-
       context:
         vmid:
           is_var: True
-          description: "Specific VM"
-          context:
-            status:
-              description: "VM power status"
-              actions:
-                show:
-                  description: Show VM power status
-                  run_func: show_vm_status
-                shutdown:
-                  description: Shutdown VM (clean)
-                  run_func: change_vm_status
-                start:
-                  description: Start VM
-                  run_func: change_vm_status
-                stop:
-                  description: Stop VM (immediate)
-                  run_func: change_vm_status
+          description: "Virtual machine"
           actions:
-            show:
-              description: "Show VM configuration"
-              run_func: show_vm
-              params:
-                scope:
-                  is_var: True
-                  description: "(brief|detail|config) Type of information about the VM to return"
-            connect:
-              description: "Connect to VM (Default: SPICE)"
-              run_func: connect_vm
             clone:
               description: "Clone VM"
               run_func: clone_vm
@@ -56,6 +29,12 @@ admin:
                   required: True
                 name:
                   description: "Name for the clone"
+            connect:
+              description: "Connect to VM (default: SPICE)"
+              run_func: connect_vm
+              params:
+                protocol:
+                  description: Connection protocol (<spice>)
             delete:
               description: "Delete VM"
               run_func: delete_vm
@@ -69,3 +48,32 @@ admin:
                   description: "Amount of memory in MB"
                 sockets:
                   description: "Number of CPU sockets"
+            power:
+              description: "Change VM power status"
+              run_func: change_vm_status
+              params:
+                reboot:
+                  is_fixed: True
+                  description: Reboot VM
+                shutdown:
+                  is_fixed: True
+                  description: Shutdown VM (clean)
+                  run_func: change_vm_status
+                start:
+                  is_fixed: True
+                  description: Start VM
+                  run_func: change_vm_status
+                stop:
+                  is_fixed: True
+                  description: Stop VM (immediate)
+                  run_func: change_vm_status
+            show:
+              description: "Show VM information"
+              run_func: show_vm_info
+              params:
+                default:
+                  is_fixed: True
+                  description: Show VM information
+                power:
+                  is_fixed: True
+                  description: Show VM power status
