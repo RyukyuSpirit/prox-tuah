@@ -33,8 +33,10 @@ class ProxmoxHandler(ProxmoxAPI):
             return None
 
 
+### VM ###
     def _get_vms(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 0]
+
 
     def _get_vms_dict(self):
         vms = {}
@@ -48,12 +50,53 @@ class ProxmoxHandler(ProxmoxAPI):
     def _get_vm_keyvalue(self, vmid, key):
         return {key: self._get_vm(vmid).get(key,"N/A")}
 
+
     def _get_vms_name_list(self, *args, **kwargs):
         return [{vm['vmid']: vm['name']} for vm in self._get_vms()]
 
     def _get_vms_brief(self):
         return [{'vmid': vm['vmid'], 'name': vm['name'], 'node': vm['node'], 'status': vm['status']} for vm in self._get_vms()]
 
+### NODE ###
+    def _get_nodes(self):
+        return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'node']
+
+    def _get_nodes_brief(self):
+        return [{'node': node['node'], 'status': node['status']} for node in self._get_nodes()]
+
+    def _get_node(self, node):
+        return [n for n in self._get_nodes() if node.get('node') == node][0]
+
+    def _get_node_names(self):
+        return [n['node'] for n in self._get_nodes()]
+
+    def _get_node_storage(self, node):
+        return self.nodes(node).storage.get()
+
+    def _get_node_storage_names(self, node):
+        return [s['storage'] for s in self.nodes(node).storage.get()]
+
+### ISO ###
+    def _get_isos(self):
+        isos = []
+        for node in self._get_node_names():
+            for s in self._get_node_storage_names(node):
+                storage_isos = self.nodes(node).storage(s).content.get(content="iso")
+                if storage_isos:
+                    isos.extend(storage_isos)
+        return isos
+
+    def _get_isos_brief(self):
+        isos = []
+        for iso in self._get_isos():
+            iso_dict = {}
+            volid = iso["volid"]
+            name = volid.split("iso/")[1]
+            iso_dict.update({"name": name})
+            isos.append(iso_dict)
+        return isos
+
+### TEMPLATE ###
     def get_templates_list(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 1]
 
@@ -366,6 +409,38 @@ class ProxmoxHandler(ProxmoxAPI):
                 return [vm for vm in self._get_vms() if f'{vm.get("vmid","")}' == vmid][0]
             case "config":
                 return "TO BE IMPLEMENTED"
+
+    def list_nodes(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of all nodes info depending on received scope
+        """
+        scope = "brief"
+
+        if params:
+            scope = params[0]
+
+        match scope.lower():
+            case "brief":
+                return self._get_nodes_brief()
+            case "detail":
+                return self._get_nodes()
+            case "config":
+                return "TO BE IMPLEMENTED"
+
+    def list_isos(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of all iso info depending on received scope
+        """
+        scope = "brief"
+
+        if params:
+            scope = params[0]
+
+        match scope.lower():
+            case "brief":
+                return self._get_isos_brief()
+            case "detail":
+                return self._get_isos()
 
     def show_vms(self, level_list=[], params=[]):
         """
