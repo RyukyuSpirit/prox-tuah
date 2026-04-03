@@ -14,6 +14,23 @@ admin:
             detail:
               is_fixed: True
               description: "Show detailed information"
+            storage:
+              is_fixed: True
+              description: "List ISO storage/node"
+        download:
+          description: Download ISO from URL
+          run_func: download_iso
+          params:
+            name:
+              required: True
+              description: Name to save ISO as
+            url:
+              required: True
+              description: URL to download
+            node:
+              description: Node that contains the storage for the ISO (defaults to random)
+            storage:
+              description: Storage to save ISO to (defaults to random)
     node:
       description: PVE nodes
       actions:

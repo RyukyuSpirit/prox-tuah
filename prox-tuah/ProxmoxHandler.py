@@ -96,6 +96,14 @@ class ProxmoxHandler(ProxmoxAPI):
             isos.append(iso_dict)
         return isos
 
+    def _get_iso_storages(self):
+        storages = []
+        for storage in self.cluster.resources.get(type="storage"):
+            if "iso" in storage["content"]:
+                storages.append({"storage": storage["storage"], "node": storage["node"]})
+        return storages
+
+
 ### TEMPLATE ###
     def get_templates_list(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 1]
@@ -451,6 +459,7 @@ class ProxmoxHandler(ProxmoxAPI):
             case "config":
                 return "TO BE IMPLEMENTED"
 
+### ISO ###
     def list_isos(self, level_list=[], params=[]):
         """
         Wrapper to provide list of all iso info depending on received scope
@@ -465,6 +474,15 @@ class ProxmoxHandler(ProxmoxAPI):
                 return self._get_isos_brief()
             case "detail":
                 return self._get_isos()
+            case "storage":
+                return self._get_iso_storages()
+
+    def download_iso(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of all iso info depending on received scope
+        """
+
+        params_dict = self._get_kwargs_dict(params)
 
     def show_vms(self, level_list=[], params=[]):
         """
