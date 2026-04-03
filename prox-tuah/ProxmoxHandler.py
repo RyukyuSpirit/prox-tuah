@@ -232,6 +232,7 @@ class ProxmoxHandler(ProxmoxAPI):
                         commands[i+1] = f"{{id}}"
         return commands
 
+### PARAM HANDLING ###
     def _get_vmid(self, level_list):
         """
         Returns the vmid from the given level_list
@@ -243,6 +244,33 @@ class ProxmoxHandler(ProxmoxAPI):
         Returns the node of the given vmid
         """
         return [vm['node'] for vm in self._get_vms() if f"{vm.get('vmid')}" == vmid][0]
+
+    def _get_kwargs_dict(self, params):
+        """
+        Returns dict of converted kwarg params list, stripping redundant string quotes
+        """
+
+        params_dict = {}
+        for p in params:
+            k,v = p.split("=")
+            if (v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'")):
+                params_dict[k] = v[1:-1]
+            else:
+                params_dict[k] = v
+
+        return params_dict
+
+    def _get_kwargs_str(self, params):
+        """
+        Returns formatted string of kwargs from given params list, adding quotes to values
+        """
+        params_dict = self._get_kwargs_dict(params)
+
+        kwargs_list = []
+        for k,v in params_dict.items():
+            kwargs_list.append(f'{k}="{v}"')
+
+        return ",".join(kwargs_list)
 
 ### TUAH HANDLER FUNCS BELOW THIS LINE ###
     def show_vm_info(self, level_list=[], params=[]):
@@ -316,11 +344,7 @@ class ProxmoxHandler(ProxmoxAPI):
         vmid = self._get_vmid(level_list)
         node = self._get_vmid_node(vmid)
 
-        # package list of kwargs as dict for unpacking
-        params_dict = {}
-        for p in params:
-            k,v = p.split("=")
-            params_dict[k] = v
+        params_dict = self._get_kwargs_dict(params)
 
         return self.nodes(node).qemu(vmid).clone.create(**params_dict)
 
@@ -518,14 +542,16 @@ class ProxmoxHandler(ProxmoxAPI):
         # consolidate endpoints for string-notation call
         endpoint = "/".join(level_list)
 
+        kwargs_str = self._get_kwargs_str(params)
+
         try:
-            if params:
-                results = eval(f"self('{endpoint}').get({','.join(params)})")
+            if kwargs_str:
+                results = eval(f"self('{endpoint}').get({kwargs_str})")
             else:
                 results = eval(f"self('{endpoint}').get()")
         except Exception as e:
-            if params:
-                results = (f"Error: failed to GET '{endpoint}' with params '{params}' ({e})")
+            if kwargs_str:
+                results = (f"Error: failed to GET '{endpoint}' with params '{kwargs_str}' ({e})")
             else:
                 results = (f"Error: failed to GET '{endpoint}' with no params ({e})")
 
@@ -539,15 +565,17 @@ class ProxmoxHandler(ProxmoxAPI):
         # get endpoint for string-notation call
         endpoint = "/".join(self.get_endpoint_list(level_list))
 
+        kwargs_str = self._get_kwargs_str(params)
+
         # attempt api call
         try:
-            if params:
-                results = eval(f"self('{endpoint}').post({','.join(params)})")
+            if kwargs_str:
+                results = eval(f"self('{endpoint}').post({kwargs_str})")
             else:
                 results = eval(f"self('{endpoint}').post()")
         except Exception as e:
-            if params:
-                results = (f"Error: failed to POST '{endpoint}' with params '{params}' ({e})")
+            if kwargs_str:
+                results = (f"Error: failed to POST '{endpoint}' with params '{kwargs_str}' ({e})")
             else:
                 results = (f"Error: failed to POST '{endpoint}' with no params ({e})")
 
@@ -561,15 +589,17 @@ class ProxmoxHandler(ProxmoxAPI):
         # get endpoint for string-notation call
         endpoint = "/".join(self.get_endpoint_list(level_list))
 
+        kwargs_str = self._get_kwargs_str(params)
+
         # attempt api call
         try:
-            if params:
-                results = eval(f"self('{endpoint}').put({','.join(params)})")
+            if kwargs_str:
+                results = eval(f"self('{endpoint}').put({kwargs_str})")
             else:
                 results = eval(f"self('{endpoint}').put()")
         except Exception as e:
-            if params:
-                results = (f"Error: failed to PUT '{endpoint}' with params '{params}' ({e})")
+            if kwargs_str:
+                results = (f"Error: failed to PUT '{endpoint}' with params '{kwargs_str}' ({e})")
             else:
                 results = (f"Error: failed to PUT '{endpoint}' with no params ({e})")
 
@@ -583,15 +613,17 @@ class ProxmoxHandler(ProxmoxAPI):
         # get endpoint for string-notation call
         endpoint = "/".join(self.get_endpoint_list(level_list))
 
+        kwargs_str = self._get_kwargs_str(params)
+
         # attempt api call
         try:
-            if params:
-                results = eval(f"self('{endpoint}').delete({','.join(params)})")
+            if kwargs_str:
+                results = eval(f"self('{endpoint}').delete({kwargs_str})")
             else:
                 results = eval(f"self('{endpoint}').delete()")
         except Exception as e:
-            if params:
-                results = (f"Error: failed to delete '{endpoint}' with params '{params}' ({e})")
+            if kwargs_str:
+                results = (f"Error: failed to delete '{endpoint}' with params '{kwargs_str}' ({e})")
             else:
                 results = (f"Error: failed to delete '{endpoint}' with no params ({e})")
 
