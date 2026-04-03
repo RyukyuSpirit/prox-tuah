@@ -354,6 +354,11 @@ class ProxmoxHandler(ProxmoxAPI):
 
         params_dict = self._get_kwargs_dict(params)
 
+        # use next available vmid if not provided
+        if not params_dict.get("newid"):
+            next_vmid = self.cluster.nextid.get()
+            params_dict.update({"newid": next_vmid})
+
         return self.nodes(node).qemu(vmid).clone.create(**params_dict)
 
     def edit_vm(self, level_list=[], params=[]):

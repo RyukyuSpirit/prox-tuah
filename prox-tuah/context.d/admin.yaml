@@ -67,8 +67,7 @@ admin:
               run_func: clone_vm
               params:
                 newid:
-                  description: "VMID for the clone"
-                  required: True
+                  description: "VMID for the clone (defaults to next available)"
                 name:
                   description: "Name for the clone"
             connect:
