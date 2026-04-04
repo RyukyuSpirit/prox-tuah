@@ -57,6 +57,11 @@ class ProxmoxHandler(ProxmoxAPI):
     def _get_vms_brief(self):
         return [{'vmid': vm['vmid'], 'name': vm['name'], 'node': vm['node'], 'status': vm['status']} for vm in self._get_vms()]
 
+    def _delete_vm(self, vmid):
+        vm = self._get_vm(vmid)
+        node = vm["node"]
+        return self.nodes(node).qemu(vmid).delete()
+
 ### NODE ###
     def _get_nodes(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'node']
@@ -381,21 +386,41 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return output
 
+    def delete_vms(self, level_list=[], params=[]):
+        """
+        Deletes VMs (from parent context)
+        """
+
+        # join multiple params into single string if csv separated by spaces
+        p_string = "".join(params)
+
+        # split csv params into individual vmids
+        vmids = p_string.split(",")
+
+        output = []
+
+        # delete each VM
+        for vmid in vmids:
+            try:
+                results = self._delete_vm(vmid)
+                output.append(f"Deleting VM {vmid} ({results})")
+            except Exception as e:
+                output.append(f"ERROR: Failed to delete VM {vmid}: ({e})")
+
+        return "\n".join(output)
+
     def delete_vm(self, level_list=[], params=[]):
         """
-        Deletes VM
+        Deletes VM (from VM's context)
         """
         vmid = self._get_vmid(level_list)
         node = self._get_vmid_node(vmid)
 
-        # package list of kwargs as dict for unpacking
-
         try:
-            output = self.nodes(node).qemu(vmid).delete()
+            results = self._delete_vm(vmid)
+            return f"Deleting VM {vmid} ({results})"
         except Exception as e:
-            output = f"ERROR: Failed to delete VM {vmid}: {e}"
-
-        return output
+            return f"ERROR: Failed to delete VM {vmid}: ({e})"
 
     def connect_vm(self, level_list=[], params=[]):
         """

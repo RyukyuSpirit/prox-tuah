@@ -47,6 +47,13 @@ admin:
     vm:
       description: "Virtual machines"
       actions:
+        delete:
+          description: "Delete VM(s)"
+          run_func: delete_vms
+          params:
+            vmid(s):
+              is_var: True
+              description: Delete VM or VMs (comma-separated if multiple)
         list:
           description: "List all VMs"
           run_func: show_vms
