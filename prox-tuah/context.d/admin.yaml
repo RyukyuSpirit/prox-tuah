@@ -21,7 +21,7 @@ admin:
           description: Download ISO from URL
           run_func: download_iso
           params:
-            name:
+            filename:
               required: True
               description: Name to save ISO as
             url:

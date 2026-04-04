@@ -2,6 +2,7 @@ import yaml
 import re
 import subprocess
 import webbrowser
+import random
 from proxmoxer import ProxmoxAPI
 from pprint import pprint
 from pathlib import Path
@@ -414,7 +415,6 @@ class ProxmoxHandler(ProxmoxAPI):
         Deletes VM (from VM's context)
         """
         vmid = self._get_vmid(level_list)
-        node = self._get_vmid_node(vmid)
 
         try:
             results = self._delete_vm(vmid)
@@ -511,8 +511,40 @@ class ProxmoxHandler(ProxmoxAPI):
         """
         Wrapper to provide list of all iso info depending on received scope
         """
-
         params_dict = self._get_kwargs_dict(params)
+        params_dict.update({"content": "iso"})
+        storages = self._get_iso_storages()
+        node = params_dict.pop("node", "")
+        storage = params_dict.pop("storage", "")
+
+        # get random storage on given node
+        if node and not storage:
+            n_storage = [s['storage'] for s in storages if s['node'] == node]
+            storage = random.choices(n_storage)
+        # get random node for given storage
+        elif storage and not node:
+            s_node = [s['node'] for s in storages if s['storage'] == storage]
+            node = random.choices(s_node)
+        # get random node and storage
+        elif not node and not storage:
+            r_storage = random.choice(storages)
+            node = r_storage["node"]
+            storage = r_storage["storage"]
+
+        # check if given node/storage are valid iso stores
+        is_valid = False
+        for s in storages:
+            if s["node"] == node and s["storage"] == storage:
+               is_valid = True
+
+        if is_valid:
+            try:
+                results = self.nodes(node).storage(storage)("download-url").post(**params_dict)
+                return f"Downloading ISO '{params_dict['filename']}' to {node}/{storage}: ({results})"
+            except Exception as e:
+                return f"ERROR: Failed to download ISO {params_dict['filename']}: ({e})"
+        else:
+            return f"ERROR: Storage {node}/{storage} not found"
 
     def show_vms(self, level_list=[], params=[]):
         """
