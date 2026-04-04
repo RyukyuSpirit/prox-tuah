@@ -224,14 +224,14 @@ class TUAH():
             # if action was found, collect params
             elif action_context:
 
-                # check if this is a fixed or variable param
                 p_var_name = ""
-                p_fixed_name = ""
+                p_fixed_names = []
+                # check if this is a variable param or if there are fixed name params
                 for k,v in action_context.get('params', {}).items():
                     if v.get('is_var'):
                         p_var_name = k
                     if v.get('is_fixed'):
-                        p_fixed_name = k
+                        p_fixed_names.append(k)
 
                 # if gathering string, check for end quotes
                 if gathering_string:
@@ -259,8 +259,9 @@ class TUAH():
                     running_params_list.append(text)
                     completed_commands.append(text)
                     self.typed_text = " ".join(completed_commands)
+
                 # accept if fixed arg param
-                elif p_fixed_name:
+                elif text in p_fixed_names:
                     has_params = True
                     running_params_list.append(text)
                     completed_commands.append(text)
@@ -303,11 +304,18 @@ class TUAH():
 
                     # if unambiguous or exact param match found, autocomplete
                     if len(matches) == 1 or any(text == m["name"] for m in matches):
-                        # get completed_kwarg which includes the '='
+                        # get completed_kwarg
                         match = matches[0]['name']
+
                         # complete exact match
                         if action_context['params'].get(match):
-                            completed_kwarg = f"{match}="
+                            # if fixed param, accept as it
+                            if match in p_fixed_names:
+                                completed_kwarg = match
+                            # else, format as kwarg
+                            else:
+                                completed_kwarg = f"{match}="
+
                         # complete unambiguous partial match
                         else:
                             varless_match = match.split("<")[0]
