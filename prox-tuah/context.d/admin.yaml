@@ -4,19 +4,14 @@ admin:
     iso:
       description: ISO images
       actions:
-        list:
-          description: List all ISOs
-          run_func: list_isos
+        delete:
+          description: Delete ISO
+          run_func: delete_iso
           params:
-            brief:
-              is_fixed: True
-              description: "Show brief information"
-            detail:
-              is_fixed: True
-              description: "Show detailed information"
-            storage:
-              is_fixed: True
-              description: "List ISO storage/node"
+            filename:
+              required: True
+              is_var: True
+              description: Name of ISO to delete
         download:
           description: Download ISO from URL
           run_func: download_iso
@@ -31,6 +26,19 @@ admin:
               description: Node that contains the storage for the ISO (defaults to random)
             storage:
               description: Storage to save ISO to (defaults to random)
+        list:
+          description: List all ISOs
+          run_func: list_isos
+          params:
+            brief:
+              is_fixed: True
+              description: "Show brief information"
+            detail:
+              is_fixed: True
+              description: "Show detailed information"
+            storage:
+              is_fixed: True
+              description: "List ISO storage/node"
     node:
       description: PVE nodes
       actions:

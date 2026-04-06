@@ -28,9 +28,13 @@
 
 - add output sorting
 
-- error when tab completing (and executing) after quoted multi-word string 
+- error when tab completing (and executing) after quoted multi-word string
 ####
 api/nodes/pve01/qemu/102# snapshot post snapname=noquotes desc="multi word string" vmst
 
   ERROR: No params found starting with "desc="multi word string"":
 ####
+
+- allow viewing history
+
+- allow saving history to file

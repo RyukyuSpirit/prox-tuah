@@ -84,12 +84,33 @@ class ProxmoxHandler(ProxmoxAPI):
 
 ### ISO ###
     def _get_isos(self):
+        """Returns all ISOs"""
         isos = []
         for node in self._get_node_names():
-            for s in self._get_node_storage_names(node):
-                storage_isos = self.nodes(node).storage(s).content.get(content="iso")
-                if storage_isos:
-                    isos.extend(storage_isos)
+            storage_isos = self._get_node_isos(node)
+            if storage_isos:
+                isos.extend(storage_isos)
+        return isos
+
+    def _get_iso(self, name):
+        """Returns named ISO including residing node/storage"""
+        storages = self._get_iso_storages()
+        for s in storages:
+            isos = self._get_node_isos(s["node"])
+            if isos:
+                for i in isos:
+                    if i["volid"].endswith(f"/{name}"):
+                        iso = i
+                        iso.update({"node": s["node"], "storage": s["storage"]})
+                        return iso
+
+    def _get_node_isos(self, node):
+        """Return ISOs on given node"""
+        isos = []
+        for s in self._get_node_storage_names(node):
+            storage_isos = self.nodes(node).storage(s).content.get(content="iso")
+            if storage_isos:
+                isos.extend(storage_isos)
         return isos
 
     def _get_isos_brief(self):
@@ -108,7 +129,6 @@ class ProxmoxHandler(ProxmoxAPI):
             if "iso" in storage["content"]:
                 storages.append({"storage": storage["storage"], "node": storage["node"]})
         return storages
-
 
 ### TEMPLATE ###
     def get_templates_list(self):
@@ -507,9 +527,31 @@ class ProxmoxHandler(ProxmoxAPI):
             case "storage":
                 return self._get_iso_storages()
 
+    def delete_iso(self, level_list=[], params=[]):
+        """
+        Wrapper to delete iso
+        """
+        filename = params[0]
+
+        # get iso details
+        try:
+            iso = self._get_iso(filename)
+        except Exception as e:
+            return f"ERROR: Unable to find ISO '{filename}'\n({e})"
+
+        if not iso:
+            return f"ERROR: Unable to find ISO '{filename}'"
+        else:
+            # delete iso
+            try:
+                results =  self.nodes(iso["node"]).storage(iso["storage"]).content(iso["volid"]).delete()
+                return f"Deleting ISO '{filename}' on {iso['node']}/{iso['storage']}: ({results})"
+            except Exception as e:
+                return f"ERROR: Unable to delete ISO '{filename} on {iso['node']}/{iso['storage']}'\n({e})"
+
     def download_iso(self, level_list=[], params=[]):
         """
-        Wrapper to provide list of all iso info depending on received scope
+        Wrapper to download iso
         """
         params_dict = self._get_kwargs_dict(params)
         params_dict.update({"content": "iso"})
