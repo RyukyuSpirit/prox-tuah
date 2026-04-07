@@ -52,6 +52,62 @@ admin:
             detail:
               is_fixed: True
               description: "Show detailed information"
+    template:
+      description: "Templates"
+      actions:
+        delete:
+          description: "Delete template(s)"
+          run_func: delete_templates
+          params:
+            vmid(s):
+              is_var: True
+              description: Delete template or templates (comma-separated if multiple)
+        list:
+          description: "List all templates"
+          run_func: show_templates
+          params:
+            brief:
+              is_fixed: True
+              description: "Show brief information"
+            detail:
+              is_fixed: True
+              description: "Show detailed information"
+      context:
+        vmid:
+          is_var: True
+          description: "VMID"
+          actions:
+            clone:
+              description: "Clone template to VM"
+              run_func: clone_template
+              params:
+                newid:
+                  description: "templateID for the clone (defaults to next available)"
+                name:
+                  description: "Name for the clone"
+            delete:
+              description: "Delete template"
+              run_func: delete_template
+            edit:
+              description: "Edit template configuration"
+              run_func: edit_template
+              params:
+                cores:
+                  description: "Number of cores per socket"
+                memory:
+                  description: "Amount of memory in MB"
+                sockets:
+                  description: "Number of CPU sockets"
+            show:
+              description: "Show template information"
+              run_func: show_template_info
+              params:
+                brief:
+                  is_fixed: True
+                  description: Show template information (brief)
+                default:
+                  is_fixed: True
+                  description: Show template information
     vm:
       description: "Virtual machines"
       actions:
@@ -136,3 +192,6 @@ admin:
                 power:
                   is_fixed: True
                   description: Show VM power status
+            template:
+              description: "Convert VM to template"
+              run_func: template_vm

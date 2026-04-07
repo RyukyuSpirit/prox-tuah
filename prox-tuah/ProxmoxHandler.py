@@ -34,32 +34,35 @@ class ProxmoxHandler(ProxmoxAPI):
             return None
 
 
-### VM ###
-    def _get_vms(self):
-        return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 0]
+### VM/TEMPLATE ###
+    def _get_vms(self, template=False):
+        if template:
+            return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 1]
+        else:
+            return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 0]
 
 
-    def _get_vms_dict(self):
+    def _get_vms_dict(self, template=False):
         vms = {}
-        for vm in self._get_vms():
+        for vm in self._get_vms(template=template):
             vms.update({str(vm['vmid']): vm})
         return vms
 
-    def _get_vm(self, vmid):
-        return self._get_vms_dict().get(vmid)
+    def _get_vm(self, vmid, template=False):
+        return self._get_vms_dict(template=template).get(vmid)
 
-    def _get_vm_keyvalue(self, vmid, key):
-        return {key: self._get_vm(vmid).get(key,"N/A")}
+    def _get_vm_keyvalue(self, vmid, key, template=False):
+        return {key: self._get_vm(vmid, template=template).get(key,"N/A")}
 
 
     def _get_vms_name_list(self, *args, **kwargs):
         return [{vm['vmid']: vm['name']} for vm in self._get_vms()]
 
-    def _get_vms_brief(self):
-        return [{'vmid': vm['vmid'], 'name': vm['name'], 'node': vm['node'], 'status': vm['status']} for vm in self._get_vms()]
+    def _get_vms_brief(self, template=False):
+        return [{'vmid': vm['vmid'], 'name': vm['name'], 'node': vm['node'], 'status': vm['status']} for vm in self._get_vms(template=template)]
 
-    def _delete_vm(self, vmid):
-        vm = self._get_vm(vmid)
+    def _delete_vm(self, vmid, template=False):
+        vm = self._get_vm(vmid, template=template)
         node = vm["node"]
         return self.nodes(node).qemu(vmid).delete()
 
@@ -267,17 +270,20 @@ class ProxmoxHandler(ProxmoxAPI):
         return commands
 
 ### PARAM HANDLING ###
-    def _get_vmid(self, level_list):
+    def _get_vmid(self, level_list, template=False):
         """
         Returns the vmid from the given level_list
         """
-        return level_list[level_list.index("vm") + 1]
+        if template:
+            return level_list[level_list.index("template") + 1]
+        else:
+            return level_list[level_list.index("vm") + 1]
 
-    def _get_vmid_node(self, vmid):
+    def _get_vmid_node(self, vmid, template=False):
         """
         Returns the node of the given vmid
         """
-        return [vm['node'] for vm in self._get_vms() if f"{vm.get('vmid')}" == vmid][0]
+        return [vm['node'] for vm in self._get_vms(template=template) if f"{vm.get('vmid')}" == vmid][0]
 
     def _get_kwargs_dict(self, params):
         """
@@ -307,12 +313,12 @@ class ProxmoxHandler(ProxmoxAPI):
         return ",".join(kwargs_list)
 
 ### TUAH HANDLER FUNCS BELOW THIS LINE ###
-    def show_vm_info(self, level_list=[], params=[]):
+    def show_vm_info(self, level_list=[], params=[], template=False):
         """
         Show vm's info at requested level
         """
-        vmid = self._get_vmid(level_list)
-        node = self._get_vmid_node(vmid)
+        vmid = self._get_vmid(level_list, template=template)
+        node = self._get_vmid_node(vmid, template=template)
 
         # accept first param, if any as scope
         if params:
@@ -323,15 +329,15 @@ class ProxmoxHandler(ProxmoxAPI):
         try:
             match scope:
                 case "brief":
-                    output =  [vm for vm in self._get_vms_brief() if f'{vm.get("vmid","")}' == vmid][0]
+                    output =  [vm for vm in self._get_vms_brief(template=template) if f'{vm.get("vmid","")}' == vmid][0]
                 case "default":
-                    output = self._get_vm(vmid)
+                    output = self._get_vm(vmid, template=template)
                 case "power":
                     output = self._get_vm_keyvalue(vmid, "status")
                 case _:
-                    output = self._get_vm(vmid)
+                    output = self._get_vm(vmid, template=template)
         except Exception as e:
-            output = f"ERROR: Unable to get status of '{vmid}' on '{node}': {e}"
+            output = f"ERROR: Unable to get information for '{vmid}' on '{node}': {e}"
 
         return output
 
@@ -371,12 +377,12 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return output
 
-    def clone_vm(self, level_list=[], params=[]):
+    def clone_vm(self, level_list=[], params=[], template=False):
         """
         Clones a vm with requested params
         """
-        vmid = self._get_vmid(level_list)
-        node = self._get_vmid_node(vmid)
+        vmid = self._get_vmid(level_list, template=template)
+        node = self._get_vmid_node(vmid, template=template)
 
         params_dict = self._get_kwargs_dict(params)
 
@@ -387,12 +393,23 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return self.nodes(node).qemu(vmid).clone.create(**params_dict)
 
-    def edit_vm(self, level_list=[], params=[]):
+    def template_vm(self, level_list=[], params=[]):
         """
-        Edits a vm with requested params
+        Converts a vm to templatewith requested params
         """
         vmid = self._get_vmid(level_list)
         node = self._get_vmid_node(vmid)
+
+        params_dict = self._get_kwargs_dict(params)
+
+        return self.nodes(node).qemu(vmid).template.create(**params_dict)
+
+    def edit_vm(self, level_list=[], params=[], template=False):
+        """
+        Edits a vm with requested params
+        """
+        vmid = self._get_vmid(level_list, template=template)
+        node = self._get_vmid_node(vmid, template=template)
 
         # package list of kwargs as dict for unpacking
         params_dict = {}
@@ -400,17 +417,25 @@ class ProxmoxHandler(ProxmoxAPI):
             k,v = p.split("=")
             params_dict[k] = v
 
+        if template:
+            v_type = "template"
+        else:
+            v_type = "VM"
         try:
             output = self.nodes(node).qemu(vmid).config.create(**params_dict)
         except Exception as e:
-            output = f"Error deleting VM {vmid}: {e}"
+            output = f"ERROR: Unable to delete {v_type} {vmid}: {e}"
 
         return output
 
-    def delete_vms(self, level_list=[], params=[]):
+    def delete_vms(self, level_list=[], params=[], template=False):
         """
         Deletes VMs (from parent context)
         """
+        if template:
+            v_type = "template"
+        else:
+            v_type = "VM"
 
         # join multiple params into single string if csv separated by spaces
         p_string = "".join(params)
@@ -423,24 +448,60 @@ class ProxmoxHandler(ProxmoxAPI):
         # delete each VM
         for vmid in vmids:
             try:
-                results = self._delete_vm(vmid)
-                output.append(f"Deleting VM {vmid} ({results})")
+                results = self._delete_vm(vmid, template=template)
+                output.append(f"Deleting {v_type} {vmid} ({results})")
             except Exception as e:
-                output.append(f"ERROR: Failed to delete VM {vmid}: ({e})")
+                output.append(f"ERROR: Failed to delete {v_type} {vmid}: ({e})")
 
         return "\n".join(output)
 
-    def delete_vm(self, level_list=[], params=[]):
+    def delete_vm(self, level_list=[], params=[], template=False):
         """
         Deletes VM (from VM's context)
         """
-        vmid = self._get_vmid(level_list)
+        if template:
+            v_type = "template"
+        else:
+            v_type = "VM"
+
+        vmid = self._get_vmid(level_list, template=template)
 
         try:
-            results = self._delete_vm(vmid)
-            return f"Deleting VM {vmid} ({results})"
+            results = self._delete_vm(vmid, template=template)
+            return f"Deleting {v_type} {vmid} ({results})"
         except Exception as e:
-            return f"ERROR: Failed to delete VM {vmid}: ({e})"
+            return f"ERROR: Failed to delete {v_type} {vmid}: ({e})"
+
+### TEMPLATE ###
+    def show_template_info(self, level_list=[], params=[]):
+        """
+        Show vm's info at requested level
+        """
+        return self.show_vm_info(level_list=level_list, params=params, template=True)
+
+    def edit_template(self, level_list=[], params=[], template=True):
+        """
+        Edits a vm with requested params
+        """
+        return self.edit_vm(level_list=level_list, params=params, template=True)
+
+    def clone_template(self, level_list=[], params=[]):
+        """
+        Clones a template with requested params
+        """
+        return self.clone_vm(level_list=level_list, params=params, template=True)
+
+    def delete_templates(self, level_list=[], params=[]):
+        """
+        Deletes templates (from parent context)
+        """
+        return self.delete_vms(level_list=level_list, params=params, template=True)
+
+    def delete_template(self, level_list=[], params=[]):
+        """
+        Deletes template (from template's context)
+        """
+        return self.delete_vm(level_list=level_list, params=params, template=True)
 
     def connect_vm(self, level_list=[], params=[]):
         """
@@ -602,6 +663,23 @@ class ProxmoxHandler(ProxmoxAPI):
                 return self._get_vms_brief()
             case "detail":
                 return self._get_vms()
+            case "config":
+                return "TO BE IMPLEMENTED"
+
+    def show_templates(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of all VM info depending on received scope
+        """
+        scope = "brief"
+
+        if params:
+            scope = params[0]
+
+        match scope.lower():
+            case "brief":
+                return self._get_vms_brief(template=True)
+            case "detail":
+                return self._get_vms(template=True)
             case "config":
                 return "TO BE IMPLEMENTED"
 
