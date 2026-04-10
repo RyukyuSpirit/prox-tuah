@@ -1,5 +1,5 @@
 api:
-  description: Enter Proxmox API mode
+  description: API mode
   context:
     access:
       description: PVE access

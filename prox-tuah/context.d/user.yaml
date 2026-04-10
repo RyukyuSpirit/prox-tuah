@@ -1,5 +1,5 @@
 user:
-  description: "USER mode"
+  description: "User mode"
   context:
     vm:
       description: "Virtual machines"

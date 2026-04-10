@@ -1,5 +1,5 @@
 dev:
-  description: "Enter DEV mode"
+  description: "Dev mode"
   can_get: false
   actions:
     func:

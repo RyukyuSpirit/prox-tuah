@@ -140,6 +140,40 @@ class ProxmoxHandler(ProxmoxAPI):
     def get_templates_name_list(self):
         return [{vm['vmid']: vm['name']} for vm in self.get_templates_list()]
 
+### NETWORK ###
+    def _get_networks(self):
+        nodes = self._get_node_names()
+        networks = []
+        for node in nodes:
+            nets = self._get_node_networks(node)
+
+            # add node name to nets dict
+            for n in nets:
+                n['node'] = node
+
+            # add node's nets to networks list
+            networks.extend(nets)
+
+        return networks
+
+    def _get_networks_brief(self):
+        nets = self._get_networks()
+
+        networks = []
+
+        # pull desired values for brief output
+        for net in nets:
+            n = {}
+            for k in ["node", "iface", "type", "active", "cidr"]:
+                n.update({k: net.get(k, '')})
+            networks.append(n)
+
+        return networks
+
+
+    def _get_node_networks(self, node):
+        return self.nodes(node).network.get()
+
     def get_spice_config(self, vmid, node):
         spice_conf = self.nodes(node).qemu(vmid).spiceproxy.create()
 
@@ -648,6 +682,22 @@ class ProxmoxHandler(ProxmoxAPI):
                 return f"ERROR: Failed to download ISO {params_dict['filename']}: ({e})"
         else:
             return f"ERROR: Storage {node}/{storage} not found"
+
+### NETWORKS ###
+    def list_networks(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of networks depending on received scope
+        """
+        scope = "all"
+
+        if params:
+            scope = params[0]
+
+        match scope.lower():
+            case "brief":
+                return self._get_networks_brief()
+            case _:
+                return self._get_networks()
 
     def show_vms(self, level_list=[], params=[]):
         """

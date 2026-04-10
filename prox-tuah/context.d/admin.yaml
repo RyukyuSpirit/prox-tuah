@@ -1,5 +1,5 @@
 admin:
-  description: "ADMIN mode"
+  description: "Admin mode"
   context:
     iso:
       description: ISO images
@@ -39,6 +39,20 @@ admin:
             storage:
               is_fixed: True
               description: "List ISO storage/node"
+    network:
+      description: Networks
+      actions:
+        list:
+          description: List all networks
+          run_func: list_networks
+          params:
+            brief:
+              is_fixed: True
+              description: "Show brief information"
+            detail:
+              is_fixed: True
+              description: "Show detailed information"
+
     node:
       description: PVE nodes
       actions:

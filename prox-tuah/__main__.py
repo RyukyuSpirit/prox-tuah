@@ -20,7 +20,7 @@ def load_context(context_dir):
     include_constructor = YamlIncludeConstructor(base_dir=current_dir)
     yaml.SafeLoader.add_constructor('!inc', include_constructor)
 
-    for f in files:
+    for f in sorted(files):
         with open(f, 'r') as file:
             try:
                 c = yaml.safe_load(file)
