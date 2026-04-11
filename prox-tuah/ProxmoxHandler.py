@@ -174,6 +174,30 @@ class ProxmoxHandler(ProxmoxAPI):
     def _get_node_networks(self, node):
         return self.nodes(node).network.get()
 
+### POOL ###
+    def _get_pools(self):
+        """Returns dict of pools"""
+        return self.pools.get()
+
+    def _get_pools_members(self):
+        """Returns list of pool dicts, including their members"""
+        f_pools = []
+        pools = self._get_pools()
+        for pool in pools:
+            name = pool['poolid']
+            members = self._get_pool_members(name)
+            pool.update({"members": "\n".join(members)})
+            f_pools.append(pool)
+
+        return f_pools
+
+    def _get_pool_members(self, pool):
+        """Returns list of member names of specified pool"""
+        members = self.pools(pool).get()["members"]
+
+        return [m['name'] for m in members]
+
+
     def get_spice_config(self, vmid, node):
         spice_conf = self.nodes(node).qemu(vmid).spiceproxy.create()
 
@@ -841,6 +865,24 @@ class ProxmoxHandler(ProxmoxAPI):
                 results.append(f"ERROR: Failed to edit network device {iface} on {n}")
 
         return "\n".join(results)
+
+### POOL ###
+    def list_pools(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of pools
+        """
+        scope = "brief"
+
+        if params:
+            scope = params[0]
+
+        match scope.lower():
+            case "brief":
+                return self._get_pools()
+            case "detail":
+                return self._get_pools_members()
+            case _:
+                return self._get_pools()
 
 ### DEV ###
     def rawdog(self, level_list=[], params=[]):
