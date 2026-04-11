@@ -347,6 +347,9 @@ class ProxmoxHandler(ProxmoxAPI):
         return ",".join(kwargs_list)
 
 ### TUAH HANDLER FUNCS BELOW THIS LINE ###
+
+### VM ###
+
     def show_vm_info(self, level_list=[], params=[], template=False):
         """
         Show vm's info at requested level
@@ -374,6 +377,23 @@ class ProxmoxHandler(ProxmoxAPI):
             output = f"ERROR: Unable to get information for '{vmid}' on '{node}': {e}"
 
         return output
+
+    def show_vms(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of all VM info depending on received scope
+        """
+        scope = "brief"
+
+        if params:
+            scope = params[0]
+
+        match scope.lower():
+            case "brief":
+                return self._get_vms_brief()
+            case "detail":
+                return self._get_vms()
+            case "config":
+                return "TO BE IMPLEMENTED"
 
     def change_vm_status(self, level_list=[], params=[]):
         """
@@ -507,6 +527,23 @@ class ProxmoxHandler(ProxmoxAPI):
             return f"ERROR: Failed to delete {v_type} {vmid}: ({e})"
 
 ### TEMPLATE ###
+    def show_templates(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of all VM info depending on received scope
+        """
+        scope = "brief"
+
+        if params:
+            scope = params[0]
+
+        match scope.lower():
+            case "brief":
+                return self._get_vms_brief(template=True)
+            case "detail":
+                return self._get_vms(template=True)
+            case "config":
+                return "TO BE IMPLEMENTED"
+
     def show_template_info(self, level_list=[], params=[]):
         """
         Show vm's info at requested level
@@ -805,44 +842,10 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return "\n".join(results)
 
-    def show_vms(self, level_list=[], params=[]):
-        """
-        Wrapper to provide list of all VM info depending on received scope
-        """
-        scope = "brief"
-
-        if params:
-            scope = params[0]
-
-        match scope.lower():
-            case "brief":
-                return self._get_vms_brief()
-            case "detail":
-                return self._get_vms()
-            case "config":
-                return "TO BE IMPLEMENTED"
-
-    def show_templates(self, level_list=[], params=[]):
-        """
-        Wrapper to provide list of all VM info depending on received scope
-        """
-        scope = "brief"
-
-        if params:
-            scope = params[0]
-
-        match scope.lower():
-            case "brief":
-                return self._get_vms_brief(template=True)
-            case "detail":
-                return self._get_vms(template=True)
-            case "config":
-                return "TO BE IMPLEMENTED"
-
-
+### DEV ###
     def rawdog(self, level_list=[], params=[]):
         """
-        Accepts fully formatted function call and attempts to run it
+        Accepts fully formatted function call (including 'self' reference) and attempts to run it
         """
         call = params[0]
 
@@ -853,6 +856,9 @@ class ProxmoxHandler(ProxmoxAPI):
         return results
 
     def run_func(self, level_list=[], params=[]):
+        """
+        Accepts a fully formated function call (excluding 'self' reference) and attempts to run it
+        """
         # first item in params is param string
         full_string = "".join(params)
 
@@ -886,6 +892,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return results
 
+### API ###
     def get(self, level_list=[], params=[]):
         """
         Executes api get call

@@ -119,7 +119,7 @@ admin:
             address:
               description: IPv4 address
             address6:
-              description: IPv4 address
+              description: IPv6 address
             autostart:
               description: Automatically start interface on boot (<0|1>)
             bond-primary:
