@@ -774,10 +774,36 @@ class ProxmoxHandler(ProxmoxAPI):
                 upid = self.nodes(n).network(iface).delete()
                 results.append(f"Removing network device {iface} from {n}")
             except Exception as e:
-                results.append(f"ERROR: Failed to remove network device to {n}: ({e})")
+                results.append(f"ERROR: Failed to remove network device {iface} to {n}: ({e})")
 
         return "\n".join(results)
 
+    def edit_network_device(self, level_list=[], params=[]):
+        """
+        Wrapper to edit network device on node(s)
+        """
+        params_dict = self._get_kwargs_dict(params)
+        iface = params_dict.pop("iface")
+
+        # get all nodes or specified node as list
+        node = params_dict.pop("node", False)
+        if not node:
+            nodes = self._get_node_names()
+        elif node.lower() != all:
+            nodes = [node]
+        else:
+            nodes = self._get_node_names()
+
+        results = []
+        # edit network on node(s)
+        for n in nodes:
+            try:
+                upid = self.nodes(n).network(iface).put(**params_dict)
+                results.append(f"Updating network device {iface} on {n}: {upid}")
+            except Exception as e:
+                results.append(f"ERROR: Failed to edit network device {iface} on {n}")
+
+        return "\n".join(results)
 
     def show_vms(self, level_list=[], params=[]):
         """
