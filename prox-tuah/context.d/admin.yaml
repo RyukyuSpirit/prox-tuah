@@ -42,6 +42,76 @@ admin:
     network:
       description: Networks
       actions:
+        add:
+          description: Add a network (bond/bridge/vlan)
+          run_func: add_network_device
+          params:
+            iface:
+              required: True
+              description: Network interface name
+            type:
+              required: True
+              description: Network interface type (<bridge|bond|eth|alias|...>)
+            address:
+              description: IPv4 address
+            address6:
+              description: IPv4 address
+            autostart:
+              description: Automatically start interface on boot (<0|1>)
+            bond-primary:
+              description: Specify the primary interface for active-backup bond
+            bond-mode:
+              description: Bonding mode (<balance-rr|active-backup|balance-xor|...>)
+            bond_xmit_hash_policy:
+              description: Selects the transmit hash policy to use for slave selection in balance-xor and 802.3ad modes
+            bridge_ports:
+              description: Specify the interfaces you want to add to your bridge
+            bridge_vids:
+              description: Specify the allowed VLANS (ex. "2 4 100-200")
+            bridge_vlan_aware:
+              description: Enable bridge vlan support (<0|1>)
+            cidr:
+              description: IPv4 CIDR
+            cidr6:
+              description: IPv6 CIDR
+            comments:
+              description: Comments (v4)
+            comments6:
+              description: Comments (v6)
+            gateway:
+              description: Default gateway address (v4)
+            gateway6:
+              description: Default gateway address (v6)
+            mtu:
+              description: Maximum transmission unit (<1280-65520>)
+            netmask:
+              description: Network mask (v4)
+            netmask6:
+              description: Network mask (v6)
+            node:
+              description: "Node to add network device to (default: ALL)"
+            ovs_bonds:
+              description: Specify the interfaces used by the bonding device
+            ovs_bridge:
+              description: The OVS bridge associated with a OVS port
+            ovs_options:
+              description: OVS interface options
+            ovs_ports:
+              description: Specify the interfaces you want to add to our bridge
+            ovs_tag:
+              description: Specify a VLAN tag, used by OVSPort, OVSIntPort, OVSBond (<1-4094>)
+            slaves:
+              description: Specify the interfaces used by the bonding device
+            vlan-id:
+              description: VLAN-id for a custom named vlan interface (<1-4094>)
+            vlan-raw-device:
+              description: Specify the raw interface for the vlan interface
+        reload:
+          description: Reload network configuration (apply pending changes)
+          run_func: reload_network
+          params:
+            node:
+              description: "Node to reload network on (default: ALL)"
         list:
           description: List all networks
           run_func: list_networks

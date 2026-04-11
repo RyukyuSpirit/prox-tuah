@@ -699,6 +699,59 @@ class ProxmoxHandler(ProxmoxAPI):
             case _:
                 return self._get_networks()
 
+    def add_network_device(self, level_list=[], params=[]):
+        """
+        Wrapper to add network device
+        """
+        params_dict = self._get_kwargs_dict(params)
+
+        # get all nodes or specified node as list
+        node = params_dict.pop("node", False)
+        if not node:
+            nodes = self._get_node_names()
+        elif node.lower() != all:
+            nodes = [node]
+        else:
+            nodes = self._get_node_names()
+
+        results = []
+        # add network to node(s)
+        for n in nodes:
+            try:
+                upid = self.nodes(n).network.post(**params_dict)
+                results.append(f"Adding network device {params_dict['iface']} to {n}")
+            except Exception as e:
+                results.append(f"ERROR: Failed to add network device to {n}: ({e})")
+
+        return "\n".join(results)
+
+    def reload_network(self, level_list=[], params=[]):
+        """
+        Wrapper to add reload network on node(s)
+        """
+        params_dict = self._get_kwargs_dict(params)
+
+        # get all nodes or specified node as list
+        node = params_dict.pop("node", False)
+        if not node:
+            nodes = self._get_node_names()
+        elif node.lower() != all:
+            nodes = [node]
+        else:
+            nodes = self._get_node_names()
+
+        results = []
+        # add network to node(s)
+        for n in nodes:
+            try:
+                upid = self.nodes(n).network.put(node=n)
+                results.append(f"Reloading network on {n}: {upid}")
+            except Exception as e:
+                results.append(f"ERROR: Failed to reload network on {n}: ({e})")
+
+        return "\n".join(results)
+
+
     def show_vms(self, level_list=[], params=[]):
         """
         Wrapper to provide list of all VM info depending on received scope
