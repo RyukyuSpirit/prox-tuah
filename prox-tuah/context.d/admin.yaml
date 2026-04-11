@@ -106,6 +106,15 @@ admin:
               description: VLAN-id for a custom named vlan interface (<1-4094>)
             vlan-raw-device:
               description: Specify the raw interface for the vlan interface
+        remove:
+          description: Remove network device
+          run_func: remove_network_device
+          params:
+            iface:
+              required: True
+              description: Network interface name
+            node:
+              description: "Node to remove network device from (default: ALL)"
         reload:
           description: Reload network configuration (apply pending changes)
           run_func: reload_network

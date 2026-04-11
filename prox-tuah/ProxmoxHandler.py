@@ -751,6 +751,33 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return "\n".join(results)
 
+    def remove_network_device(self, level_list=[], params=[]):
+        """
+        Wrapper to remove network device from node(s)
+        """
+        params_dict = self._get_kwargs_dict(params)
+        iface = params_dict["iface"]
+
+        # get all nodes or specified node as list
+        node = params_dict.pop("node", False)
+        if not node:
+            nodes = self._get_node_names()
+        elif node.lower() != all:
+            nodes = [node]
+        else:
+            nodes = self._get_node_names()
+
+        results = []
+        # remove network from node(s)
+        for n in nodes:
+            try:
+                upid = self.nodes(n).network(iface).delete()
+                results.append(f"Removing network device {iface} from {n}")
+            except Exception as e:
+                results.append(f"ERROR: Failed to remove network device to {n}: ({e})")
+
+        return "\n".join(results)
+
 
     def show_vms(self, level_list=[], params=[]):
         """
