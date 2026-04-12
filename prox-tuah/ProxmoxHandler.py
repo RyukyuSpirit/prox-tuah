@@ -177,7 +177,7 @@ class ProxmoxHandler(ProxmoxAPI):
 ### POOL ###
     def _get_pools(self):
         """Returns dict of pools"""
-        return self.pools.get()
+        return self._order_dict_list(self.pools.get(), ["poolid", "comment"])
 
     def _get_pools_members(self):
         """Returns list of pool dicts, including their members"""
@@ -190,6 +190,21 @@ class ProxmoxHandler(ProxmoxAPI):
             f_pools.append(pool)
 
         return f_pools
+
+### UTILITY ###
+
+    def _order_dict_list(self, unordered, order):
+        """Returns a list of dicts with key/values ordered according to received order list"""
+        ordered = []
+
+        # order each dict item according to order list
+        for u_dict in unordered:
+            o_dict = {}
+            for k in order:
+                o_dict.update({k: u_dict.get(k, "N/A")})
+            ordered.append(o_dict)
+
+        return ordered
 
     def _get_pool_members(self, pool):
         """Returns list of member names of specified pool"""
