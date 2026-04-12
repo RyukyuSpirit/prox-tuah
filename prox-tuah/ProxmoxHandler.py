@@ -191,6 +191,12 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return f_pools
 
+    def _get_pool_members(self, pool):
+        """Returns list of member names of specified pool"""
+        members = self.pools(pool).get()["members"]
+
+        return [f"({m['vmid']}) {m['name']}" for m in members]
+
 ### UTILITY ###
 
     def _order_dict_list(self, unordered, order):
@@ -205,13 +211,6 @@ class ProxmoxHandler(ProxmoxAPI):
             ordered.append(o_dict)
 
         return ordered
-
-    def _get_pool_members(self, pool):
-        """Returns list of member names of specified pool"""
-        members = self.pools(pool).get()["members"]
-
-        return [m['name'] for m in members]
-
 
     def get_spice_config(self, vmid, node):
         spice_conf = self.nodes(node).qemu(vmid).spiceproxy.create()
@@ -930,6 +929,28 @@ class ProxmoxHandler(ProxmoxAPI):
             results.append(f"Deleting pool '{poolid}'")
         except Exception as e:
             results.append(f"ERROR: Failed to delete pool '{poolid}': ({e})")
+
+        return "\n".join(results)
+
+    def add_pool_members(self, level_list=[], params=[]):
+        """
+        Wrapper to add members to pool
+        """
+        params_dict = self._get_kwargs_dict(params)
+        poolid = params_dict.pop("pool")
+        params_dict.update({"poolid": poolid})
+        vms_list = params_dict.pop("vms").split(",")
+        params_dict.update({"allow-move": 1})
+
+        results = []
+        for vm in vms_list:
+            try:
+                kwargs_dict = params_dict.copy()
+                kwargs_dict.update({"vms": vm})
+                self.pools.put(**kwargs_dict)
+                results.append(f"Adding VM '{vm}' to pool '{poolid}'")
+            except Exception as e:
+                results.append(f"ERROR: Failed to add VM '{vm}' to pool '{poolid}': ({e})")
 
         return "\n".join(results)
 

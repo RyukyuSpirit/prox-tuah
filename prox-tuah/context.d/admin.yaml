@@ -213,6 +213,16 @@ admin:
     pools:
       description: Resource pools
       actions:
+        add_members:
+          description: Add member(s) to pool
+          run_func: add_pool_members
+          params:
+            pool:
+              required: True
+              description: Pool to add member(s) to
+            vms:
+              required: True
+              description: VMIDs (comma-separated) of VMs to add to pool
         create:
           description: Create new pool
           run_func: create_pool
