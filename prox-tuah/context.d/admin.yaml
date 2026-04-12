@@ -1,7 +1,7 @@
 admin:
   description: "Admin mode"
   context:
-    iso:
+    isos:
       description: ISO images
       actions:
         delete:
@@ -39,7 +39,7 @@ admin:
             storage:
               is_fixed: True
               description: "List ISO storage/node"
-    network:
+    networks:
       description: Networks
       actions:
         add:
@@ -197,7 +197,7 @@ admin:
               description: Network interface name
             node:
               description: "Node to remove network device from (default: ALL)"
-    node:
+    nodes:
       description: PVE nodes
       actions:
         list:
@@ -210,7 +210,7 @@ admin:
             detail:
               is_fixed: True
               description: "Show detailed information"
-    pool:
+    pools:
       description: Pools
       actions:
         list:
@@ -223,7 +223,7 @@ admin:
             detail:
               is_fixed: True
               description: "Show detailed information"
-    template:
+    templates:
       description: "Templates"
       actions:
         delete:
@@ -279,7 +279,7 @@ admin:
                 default:
                   is_fixed: True
                   description: Show template information
-    vm:
+    vms:
       description: "Virtual machines"
       actions:
         delete:
