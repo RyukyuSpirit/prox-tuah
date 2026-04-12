@@ -213,6 +213,15 @@ admin:
     pools:
       description: Pools
       actions:
+        create:
+          description: Create new pool
+          run_func: create_pool
+          params:
+            name:
+              required: True
+              description: Pool name (poolid)
+            comment:
+              description: Pool comment
         list:
           description: List all pools
           run_func: list_pools

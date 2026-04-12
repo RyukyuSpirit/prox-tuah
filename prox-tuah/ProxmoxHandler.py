@@ -884,6 +884,23 @@ class ProxmoxHandler(ProxmoxAPI):
             case _:
                 return self._get_pools()
 
+    def create_pool(self, level_list=[], params=[]):
+        """
+        Wrapper to create new pool
+        """
+        params_dict = self._get_kwargs_dict(params)
+        poolid = params_dict.pop("name", False)
+        params_dict.update({"poolid": poolid})
+
+        results = []
+        try:
+            self.pools.post(**params_dict)
+            results.append(f"Creating pool '{poolid}'")
+        except Exception as e:
+            results.append(f"ERROR: Failed to create pool '{poolid}': ({e})")
+
+        return "\n".join(results)
+
 ### DEV ###
     def rawdog(self, level_list=[], params=[]):
         """
