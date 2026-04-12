@@ -916,6 +916,23 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return "\n".join(results)
 
+    def delete_pool(self, level_list=[], params=[]):
+        """
+        Wrapper to delete pool
+        """
+        params_dict = self._get_kwargs_dict(params)
+        poolid = params_dict.pop("name", False)
+        params_dict.update({"poolid": poolid})
+
+        results = []
+        try:
+            self.pools.delete(poolid=poolid)
+            results.append(f"Deleting pool '{poolid}'")
+        except Exception as e:
+            results.append(f"ERROR: Failed to delete pool '{poolid}': ({e})")
+
+        return "\n".join(results)
+
 ### DEV ###
     def rawdog(self, level_list=[], params=[]):
         """
