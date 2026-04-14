@@ -23,7 +23,7 @@ class TUAH():
         self.context = context # context at current level
         self.global_help = {
             "exit": "Go back one context",
-            "top": "Return to top/main context",
+            "top": "Return to top or execute from top (if followed by commands)",
             "quit": "Quit application",
         }
         self.pipe_context = {
@@ -175,10 +175,18 @@ class TUAH():
         out_modifiers = {} # output modifiers
         completed_commands = []
 
-        running_context = self.context
         running_level_list = self.level_list.copy()
         running_params_list = []
         running_string = ""
+
+        # running context is top context if "top" is first command
+        if commands[0] == "top":
+            completed_commands.append(commands.pop(0))
+            running_context = self.full_context
+            running_level_list = []
+        # otherwise, running context is current context
+        else:
+            running_context = self.context
 
         # process each text in command line
         for text in commands:
@@ -455,6 +463,9 @@ class TUAH():
                     # otherwise print context help
                     else:
                         self.print_help(running_context, inc_global=False)
+            # if command starts at top print help from running context
+            elif completed_commands[0] == "top":
+                self.print_help(running_context, inc_global=False)
 
             # add space after typed_text if unambiguous
             if leave_space:
