@@ -249,6 +249,16 @@ admin:
             detail:
               is_fixed: True
               description: "Show detailed information"
+        remove_members:
+          description: Remove member(s) from pool
+          run_func: remove_pool_members
+          params:
+            pool:
+              required: True
+              description: Pool to remove member(s) from
+            vms:
+              required: True
+              description: VMIDs (comma-separated) of VMs to remove from pool
     templates:
       description: "Templates"
       actions:

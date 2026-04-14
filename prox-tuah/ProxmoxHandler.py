@@ -954,6 +954,29 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return "\n".join(results)
 
+    def remove_pool_members(self, level_list=[], params=[]):
+        """
+        Wrapper to remove members from pool
+        """
+        params_dict = self._get_kwargs_dict(params)
+        poolid = params_dict.pop("pool")
+        params_dict.update({"poolid": poolid})
+        vms_list = params_dict.pop("vms").split(",")
+        params_dict.update({"allow-move": 1})
+        params_dict.update({"delete": 1})
+
+        results = []
+        for vm in vms_list:
+            try:
+                kwargs_dict = params_dict.copy()
+                kwargs_dict.update({"vms": vm})
+                self.pools.put(**kwargs_dict)
+                results.append(f"Removing VM '{vm}' from pool '{poolid}'")
+            except Exception as e:
+                results.append(f"ERROR: Failed to remove VM '{vm}' from pool '{poolid}': ({e})")
+
+        return "\n".join(results)
+
 ### DEV ###
     def rawdog(self, level_list=[], params=[]):
         """
