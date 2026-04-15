@@ -25,6 +25,7 @@ class TUAH():
             "exit": "Go back one context",
             "top": "Return to top or execute from top (if followed by commands)",
             "quit": "Quit application",
+            "..": "Go back one context or execute from previous context, if followed by '/' and commands (Nestable. Ex. '../../nodes get')",
         }
         self.pipe_context = {
             "pipe_params": {
@@ -169,26 +170,57 @@ class TUAH():
         is_same = False
         has_params = False
         is_piped = False
+        depth = 0 # number of levels between current context and DD'd parent context
         gathering_string = False
         action_context = None
         do_print_help = False
         out_modifiers = {} # output modifiers
         completed_commands = []
+        parent_prefix = ""
 
         running_level_list = self.level_list.copy()
         running_params_list = []
         running_string = ""
 
-        # running context is top context if "top" is first command
+        ### get running_context ###
+        # if starts with top, running_context is top
         if commands[0] == "top":
             completed_commands.append(commands.pop(0))
             running_context = self.full_context
             running_level_list = []
+        # if starts with DDs, get running context based on parent depth
+        if ".." in commands[0]:
+            # remove typed_text, to be reconstructed through rest of the func
+            self.typed_text = ""
+
+            # get depth count
+            for c in commands[0].split("/"):
+                if c == "..":
+                    depth += 1
+
+            # if first command only contains DDs, pop it
+            if commands[0].endswith("../") or commands[0].endswith(".."):
+                self.handle_output("Does endwith / or ..")
+                commands.pop(0)
+            # otherwise, replace command with just the context portion
+            else:
+                first_command = commands.pop(0).split("../")[-1]
+                commands.insert(0, first_command)
+
+            # if amount of DDs exceed levels, running_context is top
+            if depth > len(self.level_list) - 1:
+                running_context = self.full_context
+                running_level_list = []
+            # otherwise, grab running_context from desired depth
+            else:
+                running_level_list = self.level_list[:-depth]
+                running_context = self.get_context(running_level_list)
+
         # otherwise, running context is current context
         else:
             running_context = self.context
 
-        # process each text in command line
+        ### process each command in commands ###
         for text in commands:
             # if passed pipe, collect output modifiers
             if is_piped:
@@ -451,6 +483,13 @@ class TUAH():
         # otherwise retain completed text
         else:
             self.retain_text = True
+
+            # if this is from a parent context, prepend appropriate number of DDs to typed_text
+            if depth > 0:
+                self.typed_text = f"{'../' * depth}{self.typed_text}"
+                # leave no space if tabbing on initial DDs
+                if self.typed_text.endswith("../"):
+                    leave_space = False
 
             # if command is unchanged or do_print_help, print help for running context
             if commands == completed_commands or do_print_help:
@@ -833,31 +872,17 @@ class TUAH():
                     return
                 # return one level
                 else:
-                    self.level_list.pop()
-                    back_context = self.full_context
-                    last_level = self.level_list[-1]
-                    # iterate through level_list to get to new last context
-                    for level in self.level_list:
+                    self.go_to_context(self.level_list[:-1])
 
-                        # progress through static child
-                        if back_context['context'].get(level):
-                            back_context = back_context['context'][level]
-                        # check if var child
-                        else:
-                            # if entry is variable then enter its context
-                            var_name = ""
-                            for k,v in back_context.get('context', {}).items():
-                                if v.get('is_var', {}):
-                                    var_name = k
-
-                            if var_name:
-                                back_context = back_context.get('context')[var_name]
-
-                            # print error if not found as static/var child
-                            else:
-                                self.print_string(f"Child '{level}' not found in context: {back_context}", title="ERROR")
-
-                    self.update_context(back_context, self.level_list)
+            elif entry.startswith("..") and (entry.endswith("/") or entry.endswith("..")):
+                depth = 0 # number of levels to back up to
+                for c in entry.split("/"):
+                    if c == "..":
+                        depth += 1
+                if depth > len(self.level_list) - 1:
+                    self.go_to_top()
+                else:
+                    self.go_to_context(self.level_list[:-depth])
 
             # handle non-global single-word entry
             else:
@@ -866,6 +891,38 @@ class TUAH():
         # handle multi-word entry
         else:
             self.complete_cmd(self.entry.split(), run=True)
+
+    def go_to_context(self, level_list=[]):
+        """Go to context specified by level list"""
+        parent_context = self.get_context(level_list=level_list)
+
+        self.update_context(parent_context, level_list)
+
+    def get_context(self, level_list=[]):
+        """Returns context specified by level list"""
+        f_context = self.full_context
+        last_level = level_list[-1]
+        # iterate through level_list to get to new last context
+        for level in level_list:
+
+            # progress through static child
+            if f_context['context'].get(level):
+                f_context = f_context['context'][level]
+            # check if var child
+            else:
+                # if entry is variable then enter its context
+                var_name = ""
+                for k,v in f_context.get('context', {}).items():
+                    if v.get('is_var', {}):
+                        var_name = k
+
+                if var_name:
+                    f_context = f_context.get('context')[var_name]
+
+                # print error if not found as static/var child
+                else:
+                    self.print_string(f"Child '{level}' not found in context: {f_context}", title="ERROR")
+        return f_context
 
     def clear_screen(self):
         """
