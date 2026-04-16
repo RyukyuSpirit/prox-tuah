@@ -825,7 +825,7 @@ class TUAH():
 
         # finalize output based on format
         if format == "raw":
-            print(f"\n{indent(output, '  ')}\n")
+            print(f"\n{indent(str(output), '  ')}\n")
         elif format == "table":
             if isinstance(output, list):
                 # print list of dict table

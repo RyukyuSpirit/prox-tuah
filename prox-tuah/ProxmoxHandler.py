@@ -1090,6 +1090,10 @@ class ProxmoxHandler(ProxmoxAPI):
 
         kwargs_str = self._get_kwargs_str(params)
 
+        if self.config.get("api_syntax"):
+            print(f'\n  --API SYNTAX--\n\n  {indent(self._get_syntax_block(method="post", endpoint=endpoint, kwargs_str=kwargs_str), "  ")}')
+            print("\n  --CALL RESULTS--")
+
         # attempt api call
         try:
             if kwargs_str:
@@ -1114,6 +1118,10 @@ class ProxmoxHandler(ProxmoxAPI):
 
         kwargs_str = self._get_kwargs_str(params)
 
+        if self.config.get("api_syntax"):
+            print(f'\n  --API SYNTAX--\n\n  {indent(self._get_syntax_block(method="put", endpoint=endpoint, kwargs_str=kwargs_str), "  ")}')
+            print("\n  --CALL RESULTS--")
+
         # attempt api call
         try:
             if kwargs_str:
@@ -1137,6 +1145,10 @@ class ProxmoxHandler(ProxmoxAPI):
         endpoint = "/".join(self.get_endpoint_list(level_list))
 
         kwargs_str = self._get_kwargs_str(params)
+
+        if self.config.get("api_syntax"):
+            print(f'\n  --API SYNTAX--\n\n  {indent(self._get_syntax_block(method="delete", endpoint=endpoint, kwargs_str=kwargs_str), "  ")}')
+            print("\n  --CALL RESULTS--")
 
         # attempt api call
         try:
