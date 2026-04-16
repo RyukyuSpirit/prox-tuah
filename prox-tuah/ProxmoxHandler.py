@@ -6,6 +6,8 @@ import random
 from proxmoxer import ProxmoxAPI
 from pprint import pprint
 from pathlib import Path
+from tabulate import tabulate
+from textwrap import indent
 
 class ProxmoxHandler(ProxmoxAPI):
     """
@@ -198,6 +200,30 @@ class ProxmoxHandler(ProxmoxAPI):
         return [f"({m['vmid']}) {m['name']}" for m in members]
 
 ### UTILITY ###
+    def _get_syntax_block(self, method="get", endpoint="", kwargs_str=""):
+        """Returns a formatted string block of api syntaxes for given method/endpoint/kwargs and api_syntaxes in config"""
+        syntax_list = []
+        for s in self.config.get("api_syntax"):
+            if s.lower() == "proxmoxer":
+                call_string = f'ProxmoxAPI("{endpoint}").{method}({kwargs_str if kwargs_str else ""})'
+                syntax_list.append({"API Caller": "proxmoxer", "Syntax": call_string})
+
+            elif s.lower() == "pvesh":
+                params = []
+                # split out kwarg_str into individual params
+                if kwargs_str:
+                    kwargs = kwargs_str.split(",")
+                    for k,v in kwargs:
+                        params.extend([f"--{k}", v])
+
+                if params:
+                    call_string = f'pvesh {method} /{endpoint} {" ".join(params)}'
+                else:
+                    call_string = f'pvesh {method} /{endpoint}'
+
+                syntax_list.append({"API Caller": "pvesh", "Syntax": call_string})
+
+        return tabulate(syntax_list, headers="keys")
 
     def _order_dict_list(self, unordered, order):
         """Returns a list of dicts with key/values ordered according to received order list"""
@@ -1032,15 +1058,14 @@ class ProxmoxHandler(ProxmoxAPI):
         """
         Executes api get call
         """
-        # strip api/get from level_list, if present
-        if "api" in level_list:
-            level_list.remove('api')
-        level_list.remove('get')
-
-        # consolidate endpoints for string-notation call
-        endpoint = "/".join(level_list)
+        # get endpoint for string-notation call
+        endpoint = "/".join(self.get_endpoint_list(level_list))
 
         kwargs_str = self._get_kwargs_str(params)
+
+        if self.config.get("api_syntax"):
+            print(f'\n  --API SYNTAX--\n\n  {indent(self._get_syntax_block(method="get", endpoint=endpoint, kwargs_str=kwargs_str), "  ")}')
+            print("\n  --CALL RESULTS--")
 
         try:
             if kwargs_str:
