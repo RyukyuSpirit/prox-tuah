@@ -213,15 +213,42 @@ class ProxmoxHandler(ProxmoxAPI):
                 # split out kwarg_str into individual params
                 if kwargs_str:
                     kwargs = kwargs_str.split(",")
-                    for k,v in kwargs:
+                    for kwarg in kwargs:
+                        k, s, v = kwarg.partition("=")
                         params.extend([f"--{k}", v])
 
+                if method == "post":
+                    method = "create"
+                elif method == "put":
+                    method = "set"
                 if params:
                     call_string = f'pvesh {method} /{endpoint} {" ".join(params)}'
                 else:
                     call_string = f'pvesh {method} /{endpoint}'
 
                 syntax_list.append({"API Caller": "pvesh", "Syntax": call_string})
+            elif s.lower() == "curl":
+                params = []
+                # split out kwarg_str into curl data params
+                if kwargs_str:
+                    kwargs = kwargs_str.split(",")
+                    for kwarg in kwargs:
+                        params.append(f"--data-urlencode {kwarg}")
+
+                f_method = method.upper() if method != "get" else ""
+
+                if params:
+                    if f_method:
+                        call_string = f'curl -k -H "Authorization: PVEAPIToken=<token>" -X {f_method} {f" ".join(params)} https://{self.config.get("server", "<server_ip>")}:8006/api2/json/{endpoint}'
+                    else:
+                        call_string = f'curl -k -H "Authorization: PVEAPIToken=<token>" {f" ".join(params)} https://{self.config.get("server", "<server_ip>")}:8006/api2/json/{endpoint}'
+                else:
+                    if f_method:
+                        call_string = f'curl -k -H "Authorization: PVEAPIToken=<token>" -X {f_method} https://{self.config.get("server", "<server_ip>")}:8006/api2/json/{endpoint}'
+                    else:
+                        call_string = f'curl -k -H "Authorization: PVEAPIToken=<token>" https://{self.config.get("server", "<server_ip>")}:8006/api2/json/{endpoint}'
+
+                syntax_list.append({"API Caller": "curl", "Syntax": call_string})
 
         return tabulate(syntax_list, headers="keys")
 

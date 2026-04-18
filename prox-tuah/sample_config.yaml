@@ -8,3 +8,4 @@ custom_hosts:
 api_syntax:
   - pvesh
   - proxmoxer
+  - curl
