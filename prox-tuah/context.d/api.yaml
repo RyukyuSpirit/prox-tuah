@@ -30,6 +30,7 @@ api:
         node:
           description: PVE node
           is_var: true
+          validation_func: validate_node
           actions:
             docs:
               description: Open PVE API docs for this endpoint in web browser

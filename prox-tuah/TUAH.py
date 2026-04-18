@@ -438,6 +438,19 @@ class TUAH():
 
         # if run was specified execute action or switch contexts
         if run:
+            # validate, if configured for this endpoint
+            validation_func = running_context.get("validation_func")
+            if validation_func:
+                validation = self.handler_func(self.handler, validation_func, level_list=running_level_list, params=running_params_list)
+            # otherwise make any input valid
+            else:
+                validation = True
+
+            # return if validation failed
+            if not validation == True:
+                self.print_string(validation, title="ERROR")
+                return
+
             # execute if final word is an action
             if is_action:
                 # use defined run_func or name of action if not defined

@@ -715,6 +715,7 @@ class ProxmoxHandler(ProxmoxAPI):
             case "config":
                 return "TO BE IMPLEMENTED"
 
+### NODES ###
     def list_nodes(self, level_list=[], params=[]):
         """
         Wrapper to provide list of all nodes info depending on received scope
@@ -731,6 +732,18 @@ class ProxmoxHandler(ProxmoxAPI):
                 return self._get_nodes()
             case "config":
                 return "TO BE IMPLEMENTED"
+
+    def validate_node(self, level_list=[], params=[]):
+        """
+        Validated whether specified node is present
+        """
+        node = level_list[-1]
+
+        if node in self._get_node_names():
+            return True
+        else:
+            return f"Node '{node}' is not valid"
+
 
 ### ISO ###
     def list_isos(self, level_list=[], params=[]):
