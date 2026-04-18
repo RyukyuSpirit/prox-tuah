@@ -21,10 +21,20 @@ api:
         !inc context.d/include.d/cluster.yaml
     nodes:
       description: PVE nodes
+      actions:
+        docs:
+          description: Open PVE API docs for this endpoint in web browser
+        get:
+          description: Get cluster node index
       context:
         node:
           description: PVE node
           is_var: true
+          actions:
+            docs:
+              description: Open PVE API docs for this endpoint in web browser
+            get:
+              description: Get cluster node index
           context:
             apt:
               !inc context.d/include.d/node_apt.yaml
