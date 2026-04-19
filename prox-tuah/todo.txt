@@ -1,6 +1,10 @@
 
 - function to display api commands in HTTP/CLI form rather than execute them (ex. dry-run)
 
+- create a new vm
+
+- token-based authentication
+
 - 'top' global cmd to return to top or to execute from any sub-context
 
 - handle no-value returns
@@ -38,3 +42,7 @@ api/nodes/pve01/qemu/102# snapshot post snapname=noquotes desc="multi word strin
 - allow viewing history
 
 - allow saving history to file
+
+- add lxc creation
+
+- add lxc template downloading
