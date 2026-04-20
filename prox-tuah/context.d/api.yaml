@@ -21,6 +21,7 @@ api:
         !inc context.d/include.d/cluster.yaml
     nodes:
       description: PVE nodes
+      options_func: _get_node_names
       actions:
         docs:
           description: Open PVE API docs for this endpoint in web browser

@@ -140,6 +140,13 @@ class TUAH():
             if k.startswith(text):
                 matches.append({"name": k, "description": v.get("description")})
 
+        if context.get("options_func"):
+            options = self.handler_func(self.handler, context.get("options_func"))
+
+            for o in options:
+                if o.startswith(text):
+                    matches.append({"name": o, "description": f"Queried option"})
+
         return matches
 
     def get_required_params(self, action_context):

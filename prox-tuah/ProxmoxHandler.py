@@ -78,7 +78,7 @@ class ProxmoxHandler(ProxmoxAPI):
     def _get_node(self, node):
         return [n for n in self._get_nodes() if node.get('node') == node][0]
 
-    def _get_node_names(self):
+    def _get_node_names(self, *args, **kwargs):
         return [n['node'] for n in self._get_nodes()]
 
     def _get_node_storage(self, node):
@@ -735,7 +735,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
     def validate_node(self, level_list=[], params=[]):
         """
-        Validated whether specified node is present
+        Validate whether specified node is present
         """
         node = level_list[-1]
 
@@ -743,7 +743,6 @@ class ProxmoxHandler(ProxmoxAPI):
             return True
         else:
             return f"Node '{node}' is not valid"
-
 
 ### ISO ###
     def list_isos(self, level_list=[], params=[]):
