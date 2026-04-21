@@ -105,6 +105,10 @@ class TUAH():
             print("  Pipe Options")
             print(f'{indent(tabulate(help['pipe_params'].items()), "  ")}\n')
 
+        if help.get('options'):
+            print("  Options")
+            print(f'{indent(tabulate(help['options'].items()), "  ")}\n')
+
         if inc_global:
             print("  Global Commands")
             print(f'{indent(tabulate(self.global_help.items()), "  ")}\n')
@@ -394,16 +398,26 @@ class TUAH():
                 # get matches in running_context
                 matches = self._get_matches(text, running_context)
 
-                # if unambiguous or exact param match found, autocomplete
+                # if unambiguous or exact match found, autocomplete
                 if len(matches) == 1 or any(text == m["name"] for m in matches):
                     completed_word = matches[0]['name']
                     completed_commands.append(completed_word)
+                    # fixed subcontext
                     if running_context.get('context', {}).get(completed_word):
                         running_context = running_context['context'][completed_word]
+                    # action
                     elif running_context.get('actions', {}).get(completed_word):
                         running_context = running_context['actions'][completed_word]
                         is_action = True
                         action_context = running_context.copy()
+                    # var subcontext
+                    else:
+                        # find variable child and change to it's context
+                        c_var_name = ""
+                        for k,v in running_context.get('context', {}).items():
+                            if v.get('is_var', {}):
+                                c_var_name = k
+                        running_context = running_context['context'][k]
                     running_level_list.append(completed_word)
                     self.typed_text = " ".join(completed_commands)
 
@@ -537,7 +551,6 @@ class TUAH():
         if not commands:
             self.print_help(self.context, inc_global=False)
 
-
         # if single word was typed, evaluate for completion or context help
         elif len(commands) == 1:
             self.complete_cmd(commands)
@@ -567,6 +580,13 @@ class TUAH():
                                 help["context"].update({f'<{ck}>': cv.get("description")})
                             else:
                                 help["context"].update({ck: cv.get("description")})
+                    # if options_func is present, add options to contexts
+                    options_func = context.get("options_func")
+                    if options_func:
+                        options = self.handler_func(self.handler, context.get("options_func"))
+
+                        for o in options:
+                            help["context"].update({o: "*Queried option"})
                 elif k == "actions":
                     for ck,cv in v.items():
                         if cv.get("description"):
