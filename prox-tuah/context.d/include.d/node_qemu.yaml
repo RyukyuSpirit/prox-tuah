@@ -1,4 +1,6 @@
 description: Node QEMU (VM)
+options_func: get_vmids
+options_display_func: get_vmids_names_string
 actions:
   docs:
     description: Open PVE API docs for this endpoint in web browser
@@ -209,6 +211,7 @@ context:
   vmid:
     description: "Specific QEMU VM"
     is_var: true
+    validation_func: validate_vmid
     actions:
       docs:
         description: Open PVE API docs for this endpoint in web browser

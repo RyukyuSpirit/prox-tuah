@@ -60,6 +60,20 @@ class ProxmoxHandler(ProxmoxAPI):
     def _get_vms_name_list(self, *args, **kwargs):
         return [{vm['vmid']: vm['name']} for vm in self._get_vms()]
 
+    def _get_vmids_names_string(self, node="all", *args, **kwargs):
+        """Returns a list of strings containing vmid and vm name"""
+        if node == "all":
+            return [f"{vm['vmid']} ({vm['name']})" for vm in self._get_vms()]
+        else:
+            return [f"{vm['vmid']} ({vm['name']})" for vm in self._get_vms() if vm['node'] == node]
+
+    def _get_vmids(self, node="all", *args, **kwargs):
+        """Returns a list of vmids"""
+        if node == "all":
+            return [str(vm['vmid']) for vm in self._get_vms()]
+        else:
+            return [str(vm['vmid']) for vm in self._get_vms() if vm['node'] == node]
+
     def _get_vms_brief(self, template=False):
         return [{'vmid': vm['vmid'], 'name': vm['name'], 'node': vm['node'], 'status': vm['status']} for vm in self._get_vms(template=template)]
 
@@ -485,6 +499,44 @@ class ProxmoxHandler(ProxmoxAPI):
                 return self._get_vms()
             case "config":
                 return "TO BE IMPLEMENTED"
+
+    def get_vmids_names_string(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of vmids/names strings
+        """
+        if level_list[0] == "api":
+            node = level_list[-2]
+        else:
+            node = "all"
+
+        return self._get_vmids_names_string(node=node)
+
+    def get_vmids(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of vmids
+        """
+        if level_list[0] == "api":
+            node = level_list[-2]
+        else:
+            node = "all"
+
+        return self._get_vmids(node=node)
+
+    def validate_vmid(self, level_list=[], params=[]):
+        """
+        Validate whether specified vm exists
+        """
+        if level_list[0] == "api":
+            node = level_list[-3]
+        else:
+            node = "all"
+
+        vmid = level_list[-1]
+
+        if vmid in self._get_vmids(node=node):
+            return True
+        else:
+            return f"VM '{vmid}' is not valid"
 
     def change_vm_status(self, level_list=[], params=[]):
         """

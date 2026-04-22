@@ -85,8 +85,8 @@ class TUAH():
         self.typed_text = get_app().current_buffer.text
         event.app.exit(exception=KeyboardInterrupt)
 
-    def print_help(self, context, inc_global=True):
-        help = self.get_help(context)
+    def print_help(self, context, level_list=[], inc_global=True):
+        help = self.get_help(context, level_list=level_list)
 
         print("")
         if help.get('actions'):
@@ -113,7 +113,7 @@ class TUAH():
             print("  Global Commands")
             print(f'{indent(tabulate(self.global_help.items()), "  ")}\n')
 
-    def _get_matches(self, text, context):
+    def _get_matches(self, text, context, level_list=[]):
         """
         Returns list of matches of text in context {<child|action|param>: <description>})
         """
@@ -145,7 +145,7 @@ class TUAH():
                 matches.append({"name": k, "description": v.get("description")})
 
         if context.get("options_func"):
-            options = self.handler_func(self.handler, context.get("options_func"))
+            options = self.handler_func(self.handler, context.get("options_func"), level_list=level_list)
 
             for o in options:
                 if o.startswith(text):
@@ -247,7 +247,7 @@ class TUAH():
                         break
                 # process potential partial kwarg
                 else:
-                    matches = self._get_matches(text, self.pipe_context)
+                    matches = self._get_matches(text, self.pipe_context, level_list=running_level_list)
 
                     # if unambiguous or exact param match found, autocomplete
                     if len(matches) == 1 or any(text == m["name"] for m in matches):
@@ -351,7 +351,7 @@ class TUAH():
                 # check for autocompletion
                 else:
                     # get kwarg key matches in running_context
-                    matches = self._get_matches(text, action_context)
+                    matches = self._get_matches(text, action_context, level_list=running_level_list)
 
                     # if unambiguous or exact param match found, autocomplete
                     if len(matches) == 1 or any(text == m["name"] for m in matches):
@@ -396,7 +396,7 @@ class TUAH():
                 do_print_help = False
 
                 # get matches in running_context
-                matches = self._get_matches(text, running_context)
+                matches = self._get_matches(text, running_context, level_list=running_level_list)
 
                 # if unambiguous or exact match found, autocomplete
                 if len(matches) == 1 or any(text == m["name"] for m in matches):
@@ -531,14 +531,14 @@ class TUAH():
                 if not is_ambiguous:
                     # print pipe help if piped
                     if is_piped:
-                        self.print_help(self.pipe_context, inc_global=False)
+                        self.print_help(self.pipe_context, level_list=running_level_list, inc_global=False)
 
                     # otherwise print context help
                     else:
-                        self.print_help(running_context, inc_global=False)
+                        self.print_help(running_context, level_list=running_level_list, inc_global=False)
             # if command starts at top print help from running context
             elif completed_commands[0] == "top":
-                self.print_help(running_context, inc_global=False)
+                self.print_help(running_context, level_list=running_level_list, inc_global=False)
 
             # add space after typed_text if unambiguous
             if leave_space:
@@ -549,7 +549,7 @@ class TUAH():
 
         # if entry is empty, print help
         if not commands:
-            self.print_help(self.context, inc_global=False)
+            self.print_help(self.context, level_list=self.level_list, inc_global=False)
 
         # if single word was typed, evaluate for completion or context help
         elif len(commands) == 1:
@@ -559,7 +559,7 @@ class TUAH():
         else:
             self.complete_cmd(commands)
 
-    def get_help(self, context):
+    def get_help(self, context, level_list=[]):
         """
         Return dict of help
         """
@@ -581,11 +581,12 @@ class TUAH():
                             else:
                                 help["context"].update({ck: cv.get("description")})
                     # if options_func is present, add options to contexts
-                    options_func = context.get("options_func")
+                    options_func = context.get("options_display_func", context.get("options_func"))
                     if options_func:
-                        options = self.handler_func(self.handler, context.get("options_func"))
 
-                        for o in options:
+                        options = self.handler_func(self.handler, options_func, level_list=level_list)
+
+                        for o in sorted(options):
                             help["context"].update({o: "*Queried option"})
                 elif k == "actions":
                     for ck,cv in v.items():
