@@ -23,6 +23,7 @@ class TUAH():
         self.context = context # context at current level
         self.global_help = {
             "exit": "Go back one context",
+            "history": "View history",
             "top": "Return to top or execute from top (if followed by commands)",
             "quit": "Quit application",
             "..": "Go back one context or execute from previous context, if followed by '/' and commands (Nestable. Ex. '../../nodes get')",
@@ -112,6 +113,9 @@ class TUAH():
         if inc_global:
             print("  Global Commands")
             print(f'{indent(tabulate(self.global_help.items()), "  ")}\n')
+
+    def _get_history(self):
+        return self.session.history.get_strings()
 
     def _get_matches(self, text, context, level_list=[]):
         """
@@ -914,6 +918,9 @@ class TUAH():
                 # return one level
                 else:
                     self.go_to_context(self.level_list[:-1])
+
+            elif entry in ["history"]:
+                self.handle_output(f"\n".join(self._get_history()))
 
             elif entry.startswith("..") and (entry.endswith("/") or entry.endswith("..")):
                 depth = 0 # number of levels to back up to
