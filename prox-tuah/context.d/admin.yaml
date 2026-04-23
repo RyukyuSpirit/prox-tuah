@@ -317,6 +317,8 @@ admin:
                   description: Show template information
     vms:
       description: "Virtual machines"
+      options_func: get_vmids
+      options_display_func: get_vmids_names_string
       actions:
         delete:
           description: "Delete VM(s)"
@@ -338,6 +340,7 @@ admin:
       context:
         vmid:
           is_var: True
+          validation_func: validate_vmid
           description: "Virtual machine"
           actions:
             clone:
