@@ -158,6 +158,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
 ### NETWORK ###
     def _get_networks(self):
+        """Returns list of networks including node per-network"""
         nodes = self._get_node_names()
         networks = []
         for node in nodes:
@@ -185,6 +186,13 @@ class ProxmoxHandler(ProxmoxAPI):
             networks.append(n)
 
         return networks
+
+    def _get_ifaces(self, node="all", *args, **kwargs):
+        """Returns a list of ifaces"""
+        if node == "all":
+            return [net['iface'] for net in self._get_networks()]
+        else:
+            return [net['iface'] for net in self._get_networks() if net['node'] == node]
 
 
     def _get_node_networks(self, node):
@@ -996,6 +1004,33 @@ class ProxmoxHandler(ProxmoxAPI):
                 results.append(f"ERROR: Failed to edit network device {iface} on {n}")
 
         return "\n".join(results)
+
+    def get_ifaces(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of networks
+        """
+        if level_list[0] == "api":
+            node = level_list[-2]
+        else:
+            node = "all"
+
+        return self._get_ifaces(node=node)
+
+    def validate_iface(self, level_list=[], params=[]):
+        """
+        Validate whether specified vm exists
+        """
+        if level_list[0] == "api":
+            node = level_list[-3]
+        else:
+            node = "all"
+
+        iface = level_list[-1]
+
+        if iface in self._get_ifaces(node=node):
+            return True
+        else:
+            return f"Network interface '{iface}' is not valid"
 
 ### POOL ###
     def list_pools(self, level_list=[], params=[]):
