@@ -149,7 +149,7 @@ class TUAH():
 
             for o in options:
                 if o.startswith(text):
-                    matches.append({"name": o, "description": f"Queried option"})
+                    matches.append({"name": o, "description": f"*Queried option"})
 
         return matches
 
@@ -200,7 +200,7 @@ class TUAH():
             running_context = self.full_context
             running_level_list = []
         # if starts with DDs, get running context based on parent depth
-        if ".." in commands[0]:
+        elif ".." in commands[0]:
             # remove typed_text, to be reconstructed through rest of the func
             self.typed_text = ""
 
