@@ -92,23 +92,23 @@ class TUAH():
         print("")
         if help.get('actions'):
             print("  Actions")
-            print(f'{indent(tabulate(help['actions'].items()), "  ")}\n')
+            print(f'{indent(tabulate(help["actions"].items()), "  ")}\n')
 
         if help.get('context'):
             print("  Contexts")
-            print(f'{indent(tabulate(help['context'].items()), "  ")}\n')
+            print(f'{indent(tabulate(help["context"].items()), "  ")}\n')
 
         if help.get('params'):
             print("  Parameters")
-            print(f'{indent(tabulate(help['params'].items()), "  ")}\n')
+            print(f'{indent(tabulate(help["params"].items()), "  ")}\n')
 
         if help.get('pipe_params'):
             print("  Pipe Options")
-            print(f'{indent(tabulate(help['pipe_params'].items()), "  ")}\n')
+            print(f'{indent(tabulate(help["pipe_params"].items()), "  ")}\n')
 
         if help.get('options'):
             print("  Options")
-            print(f'{indent(tabulate(help['options'].items()), "  ")}\n')
+            print(f'{indent(tabulate(help["options"].items()), "  ")}\n')
 
         if inc_global:
             print("  Global Commands")
