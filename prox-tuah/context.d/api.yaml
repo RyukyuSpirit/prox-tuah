@@ -421,6 +421,7 @@ api:
                   description: Try to wake a node via 'wake on LAN' network packet
     pools:
       description: "PVE pools"
+      options_func: get_pools
       actions:
         delete:
           description: Delete pool
@@ -465,6 +466,7 @@ api:
         poolid:
           is_var: True
           description: Pool
+          validation_func: validate_pool
           actions:
             delete:
               description: Delete pool
