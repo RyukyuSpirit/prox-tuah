@@ -203,9 +203,15 @@ class ProxmoxHandler(ProxmoxAPI):
         """Returns dict of pools"""
         return self._order_dict_list(self.pools.get(), ["poolid", "comment"])
 
+<<<<<<< HEAD
     def _get_poolids(self):
         """Returns list of poolids"""
         return [p["poolid"] for p in self._get_pools()]
+=======
+    def _get_pools_list(self):
+        """Returns sorted list of pools"""
+        return sorted([ pool["poolid"] for pool in self.pools.get()])
+>>>>>>> 64730432a139e489e1faf0f0967a55cf8e115601
 
     def _get_pools_members(self):
         """Returns list of pool dicts, including their members"""
@@ -1148,6 +1154,24 @@ class ProxmoxHandler(ProxmoxAPI):
             return True
         else:
             return f"network interface '{pool}' is not valid"
+
+    def get_pools(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of pools
+        """
+
+        return self._get_pools_list()
+
+    def validate_pool(self, level_list=[], params=[]):
+        """
+        Validate whether specified pools exists
+        """
+        pool = level_list[-1]
+
+        if pool in self._get_pools_list():
+            return True
+        else:
+            return f"Pool '{pool}' is not valid"
 
 ### DEV ###
     def rawdog(self, level_list=[], params=[]):

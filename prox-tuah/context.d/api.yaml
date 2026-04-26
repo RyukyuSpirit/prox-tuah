@@ -467,6 +467,7 @@ api:
           is_var: True
           validation_func: validate_pool
           description: Pool
+          validation_func: validate_pool
           actions:
             delete:
               description: Delete pool
