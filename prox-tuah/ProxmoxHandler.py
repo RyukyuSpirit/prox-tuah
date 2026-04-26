@@ -203,6 +203,10 @@ class ProxmoxHandler(ProxmoxAPI):
         """Returns dict of pools"""
         return self._order_dict_list(self.pools.get(), ["poolid", "comment"])
 
+    def _get_poolids(self):
+        """Returns list of poolids"""
+        return [p["poolid"] for p in self._get_pools()]
+
     def _get_pools_members(self):
         """Returns list of pool dicts, including their members"""
         f_pools = []
@@ -1007,7 +1011,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
     def get_ifaces(self, level_list=[], params=[]):
         """
-        Wrapper to provide list of networks
+        wrapper to provide list of networks
         """
         if level_list[0] == "api":
             node = level_list[-2]
@@ -1018,7 +1022,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
     def validate_iface(self, level_list=[], params=[]):
         """
-        Validate whether specified vm exists
+        validate whether specified vm exists
         """
         if level_list[0] == "api":
             node = level_list[-3]
@@ -1030,7 +1034,7 @@ class ProxmoxHandler(ProxmoxAPI):
         if iface in self._get_ifaces(node=node):
             return True
         else:
-            return f"Network interface '{iface}' is not valid"
+            return f"network interface '{iface}' is not valid"
 
 ### POOL ###
     def list_pools(self, level_list=[], params=[]):
@@ -1128,6 +1132,22 @@ class ProxmoxHandler(ProxmoxAPI):
                 results.append(f"ERROR: Failed to remove VM '{vm}' from pool '{poolid}': ({e})")
 
         return "\n".join(results)
+    def get_pools(self, level_list=[], params=[]):
+        """
+        wrapper to provide list of pools (poolids)
+        """
+        return self._get_poolids()
+
+    def validate_pool(self, level_list=[], params=[]):
+        """
+        validate whether specified pool exists
+        """
+        pool = level_list[-1]
+
+        if pool in self._get_poolids():
+            return True
+        else:
+            return f"network interface '{pool}' is not valid"
 
 ### DEV ###
     def rawdog(self, level_list=[], params=[]):
