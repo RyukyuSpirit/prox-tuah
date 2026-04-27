@@ -493,6 +493,7 @@ api:
                   description: List of guest VMIDs to add or remove from this pool
     storage:
       description: "PVE storage"
+      options_func: get_storages
       actions:
         docs:
           description: Open PVE API docs for this endpoint in web browser
@@ -631,6 +632,7 @@ api:
       context:
         storage:
           is_var: True
+          validation_func: validate_storage
           description: Storage
           actions:
             delete:

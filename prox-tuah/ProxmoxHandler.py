@@ -225,6 +225,12 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return [f"({m['vmid']}) {m['name']}" for m in members]
 
+### STORAGE ###
+    def _get_storages(self):
+        """Returns list of storages"""
+        storages = self.storage.get()
+        return [s["storage"] for s in storages]
+
 ### UTILITY ###
     def _get_syntax_block(self, method="get", endpoint="", kwargs_str=""):
         """Returns a formatted string block of api syntaxes for given method/endpoint/kwargs and api_syntaxes in config"""
@@ -1151,17 +1157,24 @@ class ProxmoxHandler(ProxmoxAPI):
         else:
             return f"Pool '{pool}' is not valid"
 
-
-    def validate_pool(self, level_list=[], params=[]):
+### STORAGE ###
+    def get_storages(self, level_list=[], params=[]):
         """
-        Validate whether specified pools exists
+        Wrapper to provide list of storages
         """
-        pool = level_list[-1]
 
-        if pool in self._get_pools_list():
+        return self._get_storages()
+
+    def validate_storage(self, level_list=[], params=[]):
+        """
+        validate whether specified storage exists
+        """
+        storage = level_list[-1]
+
+        if storage in self._get_storages():
             return True
         else:
-            return f"Pool '{pool}' is not valid"
+            return f"storage '{storage}' is not valid"
 
 ### DEV ###
     def rawdog(self, level_list=[], params=[]):
