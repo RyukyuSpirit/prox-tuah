@@ -228,7 +228,7 @@ context:
             description: Ignore locks (<0|1>)
     context:
       agent:
-        description: QEMU Guest Agent
+        description: VM QEMU Guest Agent
         actions:
           docs:
             description: Open PVE API docs for this endpoint in web browser
@@ -449,7 +449,7 @@ context:
               post:
                 description: Execute suspend-ram
       cloudinit:
-        description: QEMU cloud-init
+        description: VM cloud-init
         actions:
           docs:
             description: Open PVE API docs for this endpoint in web browser
