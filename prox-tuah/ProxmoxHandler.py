@@ -822,7 +822,7 @@ class ProxmoxHandler(ProxmoxAPI):
                 return "TO BE IMPLEMENTED"
 
 ### NODES ###
-    def list_nodes(self, level_list=[], params=[]):
+    def show_nodes(self, level_list=[], params=[]):
         """
         Wrapper to provide list of all nodes info depending on received scope
         """
@@ -851,7 +851,7 @@ class ProxmoxHandler(ProxmoxAPI):
             return f"Node '{node}' is not valid"
 
 ### ISO ###
-    def list_isos(self, level_list=[], params=[]):
+    def show_isos(self, level_list=[], params=[]):
         """
         Wrapper to provide list of all iso info depending on received scope
         """
@@ -930,7 +930,7 @@ class ProxmoxHandler(ProxmoxAPI):
             return f"ERROR: Storage {node}/{storage} not found"
 
 ### NETWORKS ###
-    def list_networks(self, level_list=[], params=[]):
+    def show_networks(self, level_list=[], params=[]):
         """
         Wrapper to provide list of networks depending on received scope
         """
@@ -1079,7 +1079,7 @@ class ProxmoxHandler(ProxmoxAPI):
             return f"network interface '{iface}' is not valid"
 
 ### POOL ###
-    def list_pools(self, level_list=[], params=[]):
+    def show_pools(self, level_list=[], params=[]):
         """
         Wrapper to provide list of pools
         """
