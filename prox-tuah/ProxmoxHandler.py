@@ -82,6 +82,40 @@ class ProxmoxHandler(ProxmoxAPI):
         node = vm["node"]
         return self.nodes(node).qemu(vmid).delete()
 
+    def _get_vms_ip(self):
+        vms = []
+        for vm in self._get_vms():
+            try:
+                results = self.nodes(vm["node"]).qemu(vm["vmid"]).agent("network-get-interfaces").get()
+            except:
+                results = None
+
+            ips = []
+            try:
+                if results.get("result"):
+                    for net in results["result"]:
+                        if net.get("name") and net.get("name") != 'lo':
+                            if net.get("ip-addresses"):
+                                for a in net.get("ip-addresses"):
+                                    ips.append(f'{a.get("ip-address")}/{a.get("prefix")} ({net.get("name")})')
+            except Exception as e:
+                ips = []
+
+            if ips:
+                ips_str = "\n".join(ips)
+            else:
+                ips_str = "N/A"
+
+            vm_nets = {
+                "vmid": vm["vmid"],
+                "name": vm["name"],
+                "ip": ips_str
+            }
+
+            vms.append(vm_nets)
+
+        return vms
+
 ### NODE ###
     def _get_nodes(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'node']
@@ -515,6 +549,8 @@ class ProxmoxHandler(ProxmoxAPI):
                 return self._get_vms_brief()
             case "detail":
                 return self._get_vms()
+            case "ip":
+                return self._get_vms_ip()
             case "config":
                 return "TO BE IMPLEMENTED"
 

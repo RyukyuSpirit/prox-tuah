@@ -327,16 +327,19 @@ admin:
             vmid(s):
               is_var: True
               description: Delete VM or VMs (comma-separated if multiple)
-        list:
-          description: "List all VMs"
+        show:
+          description: "Show all VMs"
           run_func: show_vms
           params:
             brief:
               is_fixed: True
-              description: "Show brief information"
+              description: "Show brief information (default)"
             detail:
               is_fixed: True
               description: "Show detailed information"
+            ip:
+              is_fixed: True
+              description: "Show IP information"
       context:
         vmid:
           is_var: True

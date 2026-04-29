@@ -390,13 +390,13 @@ context:
                 description: Open PVE API docs for this endpoint in web browser
               get:
                 description: Execute info
-          network-get-interface:
-            description: QGA network-get-interface
+          network-get-interfaces:
+            description: QGA network-get-interfaces
             actions:
               docs:
                 description: Open PVE API docs for this endpoint in web browser
               get:
-                description: Execute network-get-interface
+                description: Execute network-get-interfaces
           ping:
             description: QGA ping
             actions:
