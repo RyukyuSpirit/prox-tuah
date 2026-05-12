@@ -460,6 +460,36 @@ class ProxmoxHandler(ProxmoxAPI):
                         commands[i+1] = f"{{id}}"
         return commands
 
+
+### INTERNAL - CONNECTION BROKERING ###
+    def _connect_spice(self, vmid, node):
+        """
+        Attempts to connect to VM via SPICE
+        """
+        # get and write formatted spice file
+        try:
+            spice_conf = self.get_spice_config(vmid, node)
+            filename = self.config.get('spice_file', 'tmp_spice.vv')
+        except Exception as e:
+            return f"ERROR: Failed to pull spice config for VM {vmid}\n({e})"
+
+        try:
+            with open(filename, "w") as f:
+                f.write("[virt-viewer]\n")
+                for k,v in spice_conf.items():
+                    f.write(f"{k}={v}\n")
+        except IOError as e:
+            return f"ERROR: Failed to create spice file '{filename}'\n({e})"
+
+        # open spice file with spice client
+        try:
+            spice_client = Path(self.config.get('spice_command', 'remote-viewer'))
+            subprocess.Popen([str(spice_client), filename], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return f"Launched spice client"
+        except Exception as e:
+            return f"ERROR: Unable to launch spice client '{spice_client}'\n({e})"
+
+
 ### PARAM HANDLING ###
     def _get_vmid(self, level_list, template=False):
         """
@@ -778,28 +808,12 @@ class ProxmoxHandler(ProxmoxAPI):
         vmid = self._get_vmid(level_list)
         node = self._get_vmid_node(vmid)
 
-        # get and write formatted spice file
-        try:
-            spice_conf = self.get_spice_config(vmid, node)
-            filename = self.config.get('spice_file', 'tmp_spice.vv')
-        except Exception as e:
-            return f"ERROR: Failed to pull spice config for VM {vmid}\n({e})"
+        params_dict = self._get_kwargs_dict(params)
 
-        try:
-            with open(filename, "w") as f:
-                f.write("[virt-viewer]\n")
-                for k,v in spice_conf.items():
-                    f.write(f"{k}={v}\n")
-        except IOError as e:
-            return f"ERROR: Failed to create spice file '{filename}'\n({e})"
+        proto = params_dict.get("connect", "spice")
 
-        # open spice file with spice client
-        try:
-            spice_client = Path(self.config.get('spice_client_path', 'remote-viewer'))
-            subprocess.Popen([str(spice_client), filename], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            return f"Launched spice client"
-        except Exception as e:
-            return f"ERROR: Unable to launch spice client '{spice_client}'\n({e})"
+        if proto == "spice":
+            return self._connect_spice(vmid, node)
 
 
     def show_vm(self, level_list=[], params=[]):

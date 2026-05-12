@@ -359,7 +359,10 @@ admin:
               run_func: connect_vm
               params:
                 protocol:
-                  description: Connection protocol (<spice>)
+                  description: Connection protocol (<spice|ssh>)
+                user:
+                  description: Username, if applicable (ssh)
+
             delete:
               description: "Delete VM"
               run_func: delete_vm
