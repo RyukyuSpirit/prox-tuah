@@ -121,7 +121,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
     def _get_vm_ips(self, vmid, node):
         """
-        Returns list of a vm's IPs
+        Returns sorted list of a vm's IPs
         """
         try:
             results = self.nodes(node).qemu(vmid).agent("network-get-interfaces").get()
@@ -139,7 +139,7 @@ class ProxmoxHandler(ProxmoxAPI):
         except Exception as e:
             ips = []
 
-        return ips
+        return sorted(ips)
 
 ### NODE ###
     def _get_nodes(self):
@@ -513,7 +513,7 @@ class ProxmoxHandler(ProxmoxAPI):
         except Exception as e:
             return f"ERROR: Unable to launch spice client '{spice_client}'\n({e})"
 
-    def _connect_ssh(self, vmid, node, user=None):
+    def _connect_ssh(self, vmid, node, user=None, ip=None):
         """
         Attempts to connect to VM via SSH
         """
@@ -524,6 +524,13 @@ class ProxmoxHandler(ProxmoxAPI):
             return f"ERROR: Unable to find IP for VM '{vmid}'"
         elif len(ips) == 1:
             return self._initiate_ssh(ips[0], user)
+        if len(ips) > 1:
+            if ip:
+                return self._initiate_ssh(ips[int(ip) - 1], user)
+            output_list = ["More than one IP found. Re-run command and include one of the following IP option numbers (ex. ip=1):"]
+            for i, ip in enumerate(ips, start=1):
+               output_list.append(f"  {i}: {ip}")
+            return "\n".join(output_list)
 
     def _initiate_ssh(self, host, user):
         """Attempts to initiate ssh connection to given host (hostname or ip) as given user"""
@@ -864,7 +871,7 @@ class ProxmoxHandler(ProxmoxAPI):
         if proto == "spice":
             return self._connect_spice(vmid, node)
         elif proto == "ssh":
-            return self._connect_ssh(vmid, node, user=params_dict.get("user", None))
+            return self._connect_ssh(vmid, node, user=params_dict.get("user", None), ip=params_dict.get("ip", None))
 
 
     def show_vm(self, level_list=[], params=[]):

@@ -358,6 +358,8 @@ admin:
               description: "Connect to VM (default: SPICE)"
               run_func: connect_vm
               params:
+                ip:
+                  description: IP option number (options returned when multiple IPs are present)
                 protocol:
                   description: Connection protocol (<spice|ssh>)
                 user:
