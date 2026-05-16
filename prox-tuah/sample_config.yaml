@@ -9,3 +9,10 @@ api_syntax:
   - pvesh
   - proxmoxer
   - curl
+
+## Remote Access Protocol Mapping ##
+#connect_commands:
+#  spice: "remote-viewer"
+#  rdp: "remmina -c rdp://{ip}"
+#  ssh: "gnome-terminal -- ssh {user}@{ip}"
+#  ssh_terminator: 'terminator -e "ssh -p {port} {user}@{ip}"'

@@ -360,10 +360,12 @@ admin:
               params:
                 ip:
                   description: IP option number (options returned when multiple IPs are present)
+                port:
+                  description: Port number
                 protocol:
-                  description: Connection protocol (<spice|ssh>)
+                  description: Connection protocol, see connect_commands in config (<spice|ssh|rdp>)
                 user:
-                  description: Username, if applicable (ssh)
+                  description: Username, if applicable
 
             delete:
               description: "Delete VM"

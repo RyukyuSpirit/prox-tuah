@@ -486,6 +486,29 @@ class ProxmoxHandler(ProxmoxAPI):
 
 
 ### INTERNAL - CONNECTION BROKERING ###
+    def _connect_vm(self, vmid, node, proto, user, ip, port):
+        """
+        Attempts to connect to VM by specified params
+        """
+        # special handling for spice (proxied through pve node)
+        if proto == "spice":
+            return self._connect_spice(vmid, node)
+        # handling for ip-based protocols
+        else:
+            ips = self._get_vm_ips(vmid, node)
+
+            if not ips:
+                return f"ERROR: Unable to find IP for VM '{vmid}'"
+            elif len(ips) == 1:
+                return self._initiate_connection(proto, user, ips[0], port)
+            if len(ips) > 1:
+                if ip:
+                    return self._initiate_connection(proto, user, ips[0], port)
+                output_list = ["More than one IP found. Re-run command and include one of the following IP option numbers (ex. ip=1):"]
+                for i, ip in enumerate(ips, start=1):
+                   output_list.append(f"  {i}: {ip}")
+                return "\n".join(output_list)
+
     def _connect_spice(self, vmid, node):
         """
         Attempts to connect to VM via SPICE
@@ -507,44 +530,50 @@ class ProxmoxHandler(ProxmoxAPI):
 
         # open spice file with spice client
         try:
-            spice_client = Path(self.config.get('spice_command', 'remote-viewer'))
+            spice_client = Path(self.config.get("connect_commands", {}).get("spice", "remote-viewer"))
             subprocess.Popen([str(spice_client), filename], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             return f"Launched spice client"
         except Exception as e:
             return f"ERROR: Unable to launch spice client '{spice_client}'\n({e})"
 
-    def _connect_ssh(self, vmid, node, user=None, ip=None):
-        """
-        Attempts to connect to VM via SSH
-        """
-        # get and write formatted spice file
-        ips = self._get_vm_ips(vmid, node)
 
-        if not ips:
-            return f"ERROR: Unable to find IP for VM '{vmid}'"
-        elif len(ips) == 1:
-            return self._initiate_ssh(ips[0], user)
-        if len(ips) > 1:
-            if ip:
-                return self._initiate_ssh(ips[int(ip) - 1], user)
-            output_list = ["More than one IP found. Re-run command and include one of the following IP option numbers (ex. ip=1):"]
-            for i, ip in enumerate(ips, start=1):
-               output_list.append(f"  {i}: {ip}")
-            return "\n".join(output_list)
-
-    def _initiate_ssh(self, host, user):
-        """Attempts to initiate ssh connection to given host (hostname or ip) as given user"""
+    def _initiate_connection(self, proto, user, ip, port):
+        """Attempts to initiate initiate connection based on given parameters"""
         try:
-            command_str = self.config.get("ssh_command", "gnome-terminal -- ssh")
-            command_list = command_str.split(" ")
+            command_str = self.config.get("connect_commands",{}).get(proto)
 
-            host_str = host if not user else f"{user}@{host}"
+            # replace vars in string, if any
+            if user:
+                command_str = command_str.replace("{user}", user)
+            if ip:
+                command_str = command_str.replace("{ip}", ip)
+            if port:
+                command_str = command_str.replace("{port}", port)
 
-            subprocess.Popen(command_list + [host_str], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            return f"Launched ssh client"
+            # generate list of command string, with multi-word quotes as single item
+            command_list = []
+            quote_gathering = False
+            quote_str = ""
+            for word in command_str.split(" "):
+                if quote_gathering:
+                    if word.endswith('"'):
+                        quote_str += f" {word[:-1]}"
+                        command_list.append(quote_str)
+                        quote_gathering = False
+                elif word.startswith('"'):
+                    if word.endswith('"'):
+                        command_list.append(word)
+                        continue
+                    else:
+                        quote_str += word[1:]
+                        quote_gathering = True
+                else:
+                    command_list.append(word)
+
+            subprocess.Popen(command_list, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return f"Launched {proto.upper()} client: {" ".join(command_list)}"
         except Exception as e:
-            return f"ERROR: Unable to launch ssh client '{ssh_client}'\n({e})"
-
+            return f"ERROR: Unable to launch {proto} client '{" ".join(command_list)}'\n({e})"
 
 ### PARAM HANDLING ###
     def _get_vmid(self, level_list, template=False):
@@ -868,11 +897,13 @@ class ProxmoxHandler(ProxmoxAPI):
 
         proto = params_dict.get("protocol", "spice")
 
-        if proto == "spice":
-            return self._connect_spice(vmid, node)
-        elif proto == "ssh":
-            return self._connect_ssh(vmid, node, user=params_dict.get("user", None), ip=params_dict.get("ip", None))
-
+        if proto in self.config.get("connect_commands", {}).keys():
+            user = params_dict.get("user")
+            ip = params_dict.get("ip")
+            port = params_dict.get("port")
+            return self._connect_vm(vmid, node, proto, user, ip, port)
+        else:
+            return f"ERROR: Protocol '{proto}' not defined in config (connect_commands)"
 
     def show_vm(self, level_list=[], params=[]):
         """
