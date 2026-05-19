@@ -7,6 +7,8 @@ from prompt_toolkit import prompt,PromptSession
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.input import create_pipe_input
+from prompt_toolkit.history import InMemoryHistory
 from pprint import pprint
 from tabulate import tabulate
 from textwrap import indent
@@ -52,7 +54,8 @@ class TUAH():
         self.welcome = f"{logo}\nWelcome to prox-tuah. Enter commands, '?' for help, or 'quit' to exit application.\n"
         self.typed_text = "" # last text string typed into the prompt (even if 'enter' not pressed)
         self.entry = "" # last text string entered into the prompt
-        self.session = PromptSession() # The prompt session
+        self.history = InMemoryHistory()
+        self.session = PromptSession(history=self.history) # The prompt session
         self.handle_help = False # should help be displayed before next prompt
         self.handle_tab = False # should tab press be handled before next prompt
         self.handle_clear_screen = False # should screen be cleared before next prompt
@@ -652,31 +655,61 @@ class TUAH():
             self.tabbed()
             self.handle_tab = False
 
-    def start(self):
+    def start(self, interactive=True, command=None, command_file=None):
+        """
+        Starts the TUAH either interactively, by running defined command or command_file, or all
+        """
 
-        self.clear_screen()
-        self.go_to_top()
-        self.run()
+        if interactive:
+            self.clear_screen()
+            self.go_to_top()
+        self.run(interactive=interactive, command=command, command_file=command_file)
 
-    def run(self):
-        print(f"{self.welcome}")
-        while True:
-            try:
-                self.handle_events()
+    def run(self, interactive=True, command=None, command_file=None):
+        commands = []
+        if command:
+            commands.append(command)
 
-                # create prompt pre-filled with typed text
-                if self.retain_text:
-                    self.retain_text = False
-                    self.entry = self.session.prompt(self.prompt, default=self.typed_text, key_bindings=self.bindings)
-                # create empty prompt
-                else:
-                    self.entry = self.session.prompt(self.prompt, key_bindings=self.bindings)
-            except(KeyboardInterrupt):
-                continue
-            except(EOFError):
-                break
+        if command_file:
+            print("processing file")
+            with open(command_file, "r") as file:
+                for c in file:
+                    if not c.startswith("#"):
+                        commands.append(c)
 
-            self.handle_entry(self.entry)
+        if interactive:
+            print(f"{self.welcome}")
+
+            if commands:
+                for c in commands:
+                    print(f"{self.prompt} {c}")
+                    self.history.append_string(c.rstrip())
+                    self.handle_entry(c)
+
+            while True:
+                try:
+                    self.handle_events()
+
+                    # create prompt pre-filled with typed text
+                    if self.retain_text:
+                        self.retain_text = False
+                        self.entry = self.session.prompt(self.prompt, default=self.typed_text, key_bindings=self.bindings)
+                    # create empty prompt
+                    else:
+                        self.entry = self.session.prompt(self.prompt, key_bindings=self.bindings)
+                except(KeyboardInterrupt):
+                    continue
+                except(EOFError):
+                    break
+
+                self.handle_entry(self.entry)
+        else:
+            print(f"commands: {commands}")
+            if commands:
+                for c in commands:
+                    print(f"{self.prompt} {c}")
+                    self.history.append_string(c.rstrip())
+                    self.handle_entry(c)
 
     def go_to_top(self):
         """
@@ -938,7 +971,7 @@ class TUAH():
 
         # handle multi-word entry
         else:
-            self.complete_cmd(self.entry.split(), run=True)
+            self.complete_cmd(entry_list, run=True)
 
     def go_to_context(self, level_list=[]):
         """Go to context specified by level list"""

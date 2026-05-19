@@ -2,6 +2,7 @@ import sys
 import yaml
 import glob
 import os
+import argparse
 from TUAH import TUAH
 from proxmoxer import ProxmoxAPI
 from ProxmoxHandler import ProxmoxHandler
@@ -9,7 +10,7 @@ from yamlinclude import YamlIncludeConstructor
 
 def load_context(context_dir):
     """
-    loads all contexts in given context_dir 
+    loads all contexts in given context_dir
     """
     context = {'context': {}}
 
@@ -31,13 +32,33 @@ def load_context(context_dir):
                     print(f"Warning: {f} did not load as a dictionary")
             except yaml.YAMLError as exc:
                 print(f"Error parsing YAML file {f}: {exc}")
-    
+
     return context
 
 
 if __name__ == "__main__":
     handler = ProxmoxHandler()
-    context = load_context('context.d') 
+    context = load_context('context.d')
+    command = None
+    command_file = None
+    interactive = True
+
+    # config argparser
+    parser = argparse.ArgumentParser(description="Proxmox text-based user and administration handler")
+    parser.add_argument("-c", metavar="<command>", type=str, help="Command to run, in quotes (non-interactive mode)")
+    parser.add_argument("-f", metavar="<filename>", type=str, help="Command file to run (non-interactive mode)")
+    parser.add_argument("-i", action="store_true", help="Run in interactive mode (default), or enter interactive mode after running command (-c) or file (-f)")
+
+    args = parser.parse_args()
+
+    if args.c:
+        command = args.c
+
+    if args.f:
+        command_file = args.f
+
+    if (command or command_file) and not args.i:
+        interactive = False
 
     tuah = TUAH(handler, context)
-    tuah.start()
+    tuah.start(interactive=interactive, command=command, command_file=command_file)
