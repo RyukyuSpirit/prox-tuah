@@ -3,10 +3,11 @@ import yaml
 import glob
 import os
 import argparse
-from TUAH import TUAH
+from .TUAH import TUAH
 from proxmoxer import ProxmoxAPI
-from ProxmoxHandler import ProxmoxHandler
+from .ProxmoxHandler import ProxmoxHandler
 from yamlinclude import YamlIncludeConstructor
+from pathlib import Path
 
 def load_context(context_dir):
     """
@@ -38,7 +39,7 @@ def load_context(context_dir):
 
 if __name__ == "__main__":
     handler = ProxmoxHandler()
-    context = load_context('context.d')
+    context = load_context(f"{Path(__file__).parent}/context.d")
     command = None
     command_file = None
     interactive = True

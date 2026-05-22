@@ -14,6 +14,7 @@ class ProxmoxHandler(ProxmoxAPI):
     Interface for interacting with Proxmox API
     """
     def __init__(self, config_path='config.yaml', **kwargs):
+        config_path = f"{Path(__file__).parent}/" + config_path
         self.config = self.load_config(config_path)
         self.api_doc_root = "https://pve.proxmox.com/pve-docs/api-viewer/index.html#/"
 
