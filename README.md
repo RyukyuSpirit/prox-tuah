@@ -12,7 +12,40 @@ The primary contexts are:
 - PVE API Docs: https://pve.proxmox.com/pve-docs/api-viewer/
 - Proxmoxer API Docs: https://proxmoxer.github.io/docs/latest/
 
+## Getting Started: 
+Note: I will eventually compile this when it's in a more stable state, but while actively being built out it I'm just keeping as raw files.
+
+- Clone repo
+- Change into repo root directory (first "prox-tuah") 
+- Create/activate venv in project dir (suggested, ex. "python -m venv .venv")
+- Download requirements in your env/venv ("pip install -r requirements.txt")
+- Create prox-tuah/prox-tuah/config.yaml with your own environment variables (see sample_config.yaml to copy/reference)
+  - If planning to access VMs from your client, ensure you install a client for each desired protocol and specify proto/paths in the "connect_commands" dictionary in config.yaml
+- Run as module ("python -m prox-tuah")
+
 ## Examples
+### Starting prox-tuah
+Drop into interactive prox-tuah interface (standard method)
+```
+python -m prox-tuah
+```
+
+Non-interactive one-liner to SPICE to VM from command-line (for example as part of a click-script on your desktop)
+```
+python -m prox-tuah -c "admin vm 101 connect"
+```
+
+Drop into interactive prox-tuah interface and script your session into a file to be executed non-interactively later (useful for rudimentary automation or reviewing previous sessions)
+```
+python -m prox-tuah -s myScriptFile.txt
+```
+
+Run a saved script file non-interactively
+```
+python -m prox-tuah -f myScriptFile.txt
+```
+
+### prox-tuah interactive interface
 
 **Note: When performing commands you can either write out the entire path to the action you're trying to perform, or you can first walk to that context and issue the command directly. So the following two examples have the same effect.**
 
@@ -116,3 +149,6 @@ main# dev func get_vms_brief()
     6969  myclone          pve01   stopped
     8329  newafterstuff    pve01   stopped
 ```
+
+d
+

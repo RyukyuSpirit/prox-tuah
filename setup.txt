@@ -1,5 +1,6 @@
 - Clone repo
+- Change into repo root directory (first "prox-tuah") 
 - Create/activate venv in project dir (suggested)
 - Create prox-tuah/prox-tuah/config.yaml with your own environment variables (see sample_config.yaml to copy/reference)
-  - If planning to access VMs directly over spice, ensure you install a client and specify path in config.yaml
-- Run __main__.py
+  - If planning to access VMs from your client, ensure you install a client for each desired protocol and specify proto/paths in the "connect_commands" dictionary in config.yaml
+- Run as module ("python -m prox-tuah")
