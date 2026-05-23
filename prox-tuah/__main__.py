@@ -42,13 +42,15 @@ if __name__ == "__main__":
     context = load_context(f"{Path(__file__).parent}/context.d")
     command = None
     command_file = None
+    script_file = None
     interactive = True
 
     # config argparser
     parser = argparse.ArgumentParser(description="Proxmox text-based user and administration handler")
     parser.add_argument("-c", metavar="<command>", type=str, help="Command to run, in quotes (non-interactive mode)")
-    parser.add_argument("-f", metavar="<filename>", type=str, help="Command file to run (non-interactive mode)")
+    parser.add_argument("-f", metavar="<src_file>", type=str, help="Run commands in specified file (non-interactive mode)")
     parser.add_argument("-i", action="store_true", help="Run in interactive mode (default), or enter interactive mode after running command (-c) or file (-f)")
+    parser.add_argument("-s", metavar="<dst_file>", type=str, help="Script all commands to specified file")
 
     args = parser.parse_args()
 
@@ -61,5 +63,8 @@ if __name__ == "__main__":
     if (command or command_file) and not args.i:
         interactive = False
 
+    if args.s:
+        script_file = args.s
+
     tuah = TUAH(handler, context)
-    tuah.start(interactive=interactive, command=command, command_file=command_file)
+    tuah.start(interactive=interactive, command=command, command_file=command_file, script_file=script_file)

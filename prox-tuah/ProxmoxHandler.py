@@ -533,7 +533,7 @@ class ProxmoxHandler(ProxmoxAPI):
         try:
             spice_client = Path(self.config.get("connect_commands", {}).get("spice", "remote-viewer"))
             subprocess.Popen([str(spice_client), filename], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            return f"Launched spice client"
+            return f"Launched SPICE client"
         except Exception as e:
             return f"ERROR: Unable to launch spice client '{spice_client}'\n({e})"
 

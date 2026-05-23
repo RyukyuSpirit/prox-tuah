@@ -23,6 +23,7 @@ class TUAH():
         self.handler = handler # handler object
         self.full_context = context # dictionary of application context(s)
         self.context = context # context at current level
+        self.script_file = None
         self.global_help = {
             "exit": "Go back one context",
             "history": "View history",
@@ -655,10 +656,11 @@ class TUAH():
             self.tabbed()
             self.handle_tab = False
 
-    def start(self, interactive=True, command=None, command_file=None):
+    def start(self, interactive=True, command=None, command_file=None, script_file=None):
         """
         Starts the TUAH either interactively, by running defined command or command_file, or all
         """
+        self.script_file = script_file
 
         if interactive:
             self.clear_screen()
@@ -700,6 +702,7 @@ class TUAH():
                 except(KeyboardInterrupt):
                     continue
                 except(EOFError):
+                    self.exit_session()
                     break
 
                 self.handle_entry(self.entry)
@@ -920,6 +923,18 @@ class TUAH():
         else:
             self.print_string(f"Unknown format type: {format}", title="ERROR")
 
+    def exit_session(self):
+        """
+        Exits interactive session
+        """
+        if self.script_file:
+            output = f"Script file saved at: {self.script_file}\n"
+        else:
+            output = ""
+        output += "Terminated session."
+        self.handle_output(output)
+        sys.exit()
+
     def handle_entry(self, entry):
         """
         Perform context navigation or function based on entry
@@ -929,13 +944,16 @@ class TUAH():
         # do nothing if entry is empty
         if not entry_list:
             return
+        # add entry to script file, if sent in
+        elif self.script_file:
+            with open(self.script_file, 'a') as f:
+                f.write(f"{entry}\n")
 
         # handle single-word entry
-        elif len(entry_list) == 1:
+        if len(entry_list) == 1:
             entry = entry.strip()
             if entry in ["logout", "quit"]:
-                print("  Terminating session...")
-                sys.exit()
+                self.exit_session()
 
             elif entry in ["top"]:
                 self.go_to_top()
