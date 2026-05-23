@@ -3,6 +3,7 @@ import sys
 import colorama
 import re
 import fnmatch
+import time
 from prompt_toolkit import prompt,PromptSession
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.application import run_in_terminal
@@ -27,6 +28,7 @@ class TUAH():
         self.global_help = {
             "exit": "Go back one context",
             "history": "View history",
+            "sleep <secs>": "Sleep for <secs> seconds (useful for non-interactive scripts)",
             "top": "Return to top or execute from top (if followed by commands)",
             "quit": "Quit application",
             "..": "Go back one context or execute from previous context, if followed by '/' and commands (Nestable. Ex. '../../nodes get')",
@@ -707,7 +709,6 @@ class TUAH():
 
                 self.handle_entry(self.entry)
         else:
-            print(f"commands: {commands}")
             if commands:
                 for c in commands:
                     print(f"{self.prompt} {c}")
@@ -986,6 +987,15 @@ class TUAH():
             # handle non-global single-word entry
             else:
                 self.complete_cmd([entry.strip()], run=True)
+
+        # handle sleep
+        elif entry_list[0] == "sleep":
+            s_time = entry_list[1]
+            if s_time.isdigit():
+                self.print_string(f"Sleeping for {s_time} seconds", title="INFO")
+                time.sleep(int(s_time))
+            else:
+                self.print_string("Sleep argument must be an integer (seconds to sleep)", title="ERROR")
 
         # handle multi-word entry
         else:
