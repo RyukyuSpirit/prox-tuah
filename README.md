@@ -42,7 +42,7 @@ python -m prox-tuah -s myScriptFile.txt
 
 Run a saved script file non-interactively
 ```
-python -m prox-tuah -s myScriptFile.txt
+python -m prox-tuah -f myScriptFile.txt
 ```
 
 ### prox-tuah interactive interface
