@@ -13,12 +13,21 @@ class ProxmoxHandler(ProxmoxAPI):
     """
     Interface for interacting with Proxmox API
     """
-    def __init__(self, config_path='config.yaml', **kwargs):
+    def __init__(self, config_path='config.yaml', user=None, realm=None, password=None, node=None, **kwargs):
         config_path = f"{Path(__file__).parent}/" + config_path
         self.config = self.load_config(config_path)
         self.api_doc_root = "https://pve.proxmox.com/pve-docs/api-viewer/index.html#/"
 
-        super().__init__(self.config['server'], user=f'{self.config["user"]}@{self.config["realm"]}', password=self.config['password'], verify_ssl=self.config.get('verify_ssl', False), **kwargs)
+        if user:
+            self.config.update({'user': user})
+        if realm:
+            self.config.update({'realm': realm})
+        if password:
+            self.config.update({'password': password})
+        if node:
+            self.config.update({'node': node})
+
+        super().__init__(self.config['node'], user=f'{self.config["user"]}@{self.config["realm"]}', password=self.config['password'], verify_ssl=self.config.get('verify_ssl', False), **kwargs)
 
 
     def load_config(self, config_path="config.yaml"):

@@ -1,6 +1,6 @@
 ## Login Information ##
 ## optional, any of these fields can be passed as command line args
-server: <pve_ip>
+node: <node_ip>
 user: <user>
 realm: <realm>
 password: <password>

@@ -38,7 +38,6 @@ def load_context(context_dir):
 
 
 if __name__ == "__main__":
-    handler = ProxmoxHandler()
     context = load_context(f"{Path(__file__).parent}/context.d")
     command = None
     command_file = None
@@ -50,9 +49,19 @@ if __name__ == "__main__":
     parser.add_argument("-c", metavar="<command>", type=str, help="Command to run, in quotes (non-interactive mode)")
     parser.add_argument("-f", metavar="<src_file>", type=str, help="Run commands in specified file (non-interactive mode)")
     parser.add_argument("-i", action="store_true", help="Run in interactive mode (default), or enter interactive mode after running command (-c) or file (-f)")
+    parser.add_argument("-n", metavar="<node>", type=str, help="Node IP or hostname")
+    parser.add_argument("-p", metavar="<password>", type=str, help="Password")
+    parser.add_argument("-r", metavar="<realm>", type=str, help="Authentication realm (<pam|pve|ldap_domain>)")
     parser.add_argument("-s", metavar="<dst_file>", type=str, help="Script all commands to specified file")
+    parser.add_argument("-u", metavar="<user@realm>", type=str, help="Username")
+
 
     args = parser.parse_args()
+
+    user = None
+    password = None
+    node = None
+    realm = None
 
     if args.c:
         command = args.c
@@ -63,8 +72,23 @@ if __name__ == "__main__":
     if (command or command_file) and not args.i:
         interactive = False
 
+    if args.n:
+        node = args.n
+
+    if args.p:
+        password = args.p
+
+    if args.r:
+        realm = args.r
+
     if args.s:
         script_file = args.s
+
+    if args.u:
+        user = args.u
+
+
+    handler = ProxmoxHandler(user=user, realm=realm, password=password, node=node)
 
     tuah = TUAH(handler, context)
     tuah.start(interactive=interactive, command=command, command_file=command_file, script_file=script_file)
