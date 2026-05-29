@@ -315,6 +315,19 @@ admin:
                 default:
                   is_fixed: True
                   description: Show template information
+    token:
+      description: "API tokens"
+      actions:
+        show:
+          description: "Show API tokens"
+          run_func: show_tokens
+          params:
+            user:
+              description: "Show current user's tokens"
+              is_fixed: True
+            all:
+              description: "Show all users' tokens"
+              is_fixed: True
     vm:
       description: "Virtual machines"
       options_func: get_vmids

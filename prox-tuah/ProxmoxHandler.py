@@ -238,6 +238,29 @@ class ProxmoxHandler(ProxmoxAPI):
     def get_templates_name_list(self):
         return [{vm['vmid']: vm['name']} for vm in self.get_templates_list()]
 
+### USER/TOKEN ###
+    def _get_userids(self):
+        return [u["userid"] for u in self.access.users.get()]
+
+    def _get_tokens(self):
+        users = self._get_userids()
+
+        tokens = []
+        for u in users:
+            u_tokens = self._get_user_tokens(user=u)
+
+            if u_tokens:
+                for t in u_tokens:
+                    t.update({'user': u})
+                    tokens.append(t)
+        return self._sort_dict_list(tokens)
+
+    def _get_user_tokens(self, user="_current"):
+        if user == "_current":
+            user = f"{self.config['user']}@{self.config['realm']}"
+
+        return self._sort_dict_list([t for t in self.access.users(user).token.get()])
+
 ### NETWORK ###
     def _get_networks(self):
         """Returns list of networks including node per-network"""
@@ -376,6 +399,13 @@ class ProxmoxHandler(ProxmoxAPI):
                 o_dict.update({k: u_dict.get(k, "N/A")})
             ordered.append(o_dict)
 
+        return ordered
+
+    def _sort_dict_list(self, _list):
+        """Returns a list of dict with keys sorted alphabetically"""
+        ordered = []
+        for i in _list:
+            ordered.append(dict(sorted(i.items())))
         return ordered
 
     def get_spice_config(self, vmid, node):
@@ -946,6 +976,21 @@ class ProxmoxHandler(ProxmoxAPI):
                 return [vm for vm in self._get_vms() if f'{vm.get("vmid","")}' == vmid][0]
             case "config":
                 return "TO BE IMPLEMENTED"
+### TOKENS ###
+    def show_tokens(self, level_list=[], params=[]):
+        """
+        Wrapper to provide list of all VM info depending on received scope
+        """
+        scope = "user"
+
+        if params:
+            scope = params[0]
+
+        match scope.lower():
+            case "all":
+                return self._get_tokens()
+            case "user":
+                return self._get_user_tokens()
 
 ### NODES ###
     def show_nodes(self, level_list=[], params=[]):
