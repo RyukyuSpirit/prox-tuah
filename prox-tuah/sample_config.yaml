@@ -3,7 +3,9 @@
 node: <node_ip>
 user: <user>
 realm: <realm>
-password: <password>
+token_name: <token_name>
+token_value: <token_value>
+password: <password> # password used instead of token if both provided
 
 # Required for SPICE connection if pve node fqdn is not DNS or hosts file resolvable
 custom_hosts:

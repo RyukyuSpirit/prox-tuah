@@ -13,7 +13,7 @@ class ProxmoxHandler(ProxmoxAPI):
     """
     Interface for interacting with Proxmox API
     """
-    def __init__(self, config_path='config.yaml', user=None, realm=None, password=None, node=None, **kwargs):
+    def __init__(self, config_path='config.yaml', user=None, realm=None, password=None, token_name=None, token_value=None, node=None, **kwargs):
         config_path = f"{Path(__file__).parent}/" + config_path
         self.config = self.load_config(config_path)
         self.api_doc_root = "https://pve.proxmox.com/pve-docs/api-viewer/index.html#/"
@@ -24,10 +24,23 @@ class ProxmoxHandler(ProxmoxAPI):
             self.config.update({'realm': realm})
         if password:
             self.config.update({'password': password})
+        if token_name:
+            self.config.update({'token_name': token_name})
+        if token_value:
+            self.config.update({'token_value': token_value})
         if node:
             self.config.update({'node': node})
 
-        super().__init__(self.config['node'], user=f'{self.config["user"]}@{self.config["realm"]}', password=self.config['password'], verify_ssl=self.config.get('verify_ssl', False), **kwargs)
+        if self.config.get('user'):
+            if self.config.get('password'):
+                super().__init__(self.config['node'], user=f'{self.config["user"]}@{self.config["realm"]}', password=self.config['password'], verify_ssl=self.config.get('verify_ssl', False), **kwargs)
+            elif self.config.get('token_name') and self.config.get('token_value'):
+                super().__init__(self.config['node'], user=f'{self.config["user"]}@{self.config["realm"]}', token_name=self.config['token_name'], token_value=self.config['token_value'], verify_ssl=self.config.get('verify_ssl', False), **kwargs)
+            else:
+                raise ValueError("User, realm, and password or token_name/token_value are required (via config.yaml or command-line arguments)")
+        else:
+            raise ValueError("User, realm, and password or token_name/token_value are required (via config.yaml or command-line arguments)")
+
 
 
     def load_config(self, config_path="config.yaml"):

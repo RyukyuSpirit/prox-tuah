@@ -46,20 +46,24 @@ if __name__ == "__main__":
 
     # config argparser
     parser = argparse.ArgumentParser(description="Proxmox text-based user and administration handler")
-    parser.add_argument("-c", metavar="<command>", type=str, help="Command to run, in quotes (non-interactive mode)")
+    parser.add_argument("-c", metavar="<command>", type=str, help="Run this commeand (in quotes, non-interactive mode)")
     parser.add_argument("-f", metavar="<src_file>", type=str, help="Run commands in specified file (non-interactive mode)")
     parser.add_argument("-i", action="store_true", help="Run in interactive mode (default), or enter interactive mode after running command (-c) or file (-f)")
     parser.add_argument("-n", metavar="<node>", type=str, help="Node IP or hostname")
-    parser.add_argument("-p", metavar="<password>", type=str, help="Password")
+    parser.add_argument("-p", metavar="<password>", type=str, help="Authentication password (used instead of token, if both present)")
     parser.add_argument("-r", metavar="<realm>", type=str, help="Authentication realm (<pam|pve|ldap_domain>)")
     parser.add_argument("-s", metavar="<dst_file>", type=str, help="Script all commands to specified file")
-    parser.add_argument("-u", metavar="<user@realm>", type=str, help="Username")
+    parser.add_argument("-t", metavar="<token_name>", type=str, help="Authenticate token name")
+    parser.add_argument("-T", metavar="<token_value>", type=str, help="Authenticate token value")
+    parser.add_argument("-u", metavar="<user>", type=str, help="Username")
 
 
     args = parser.parse_args()
 
     user = None
     password = None
+    token_name = None
+    token_value = None
     node = None
     realm = None
 
@@ -84,11 +88,20 @@ if __name__ == "__main__":
     if args.s:
         script_file = args.s
 
+    if args.t:
+        token_name = args.t
+
+    if args.T:
+        token_value = args.T
+
     if args.u:
         user = args.u
 
-
-    handler = ProxmoxHandler(user=user, realm=realm, password=password, node=node)
+    try:
+        handler = ProxmoxHandler(user=user, realm=realm, password=password, token_name=token_name, token_value=token_value, node=node)
+    except ValueError as e:
+        print(f"  ERROR: {e}")
+        sys.exit()
 
     tuah = TUAH(handler, context)
     tuah.start(interactive=interactive, command=command, command_file=command_file, script_file=script_file)
