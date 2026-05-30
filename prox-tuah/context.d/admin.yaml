@@ -1,44 +1,45 @@
 admin:
   description: "Admin mode"
   context:
-    iso:
-      description: ISO images
-      actions:
-        delete:
-          description: Delete ISO
-          run_func: delete_iso
-          params:
-            filename:
-              required: True
-              is_var: True
-              description: Name of ISO to delete
-        download:
-          description: Download ISO from URL
-          run_func: download_iso
-          params:
-            filename:
-              required: True
-              description: Name to save ISO as
-            url:
-              required: True
-              description: URL to download
-            node:
-              description: Node that contains the storage for the ISO (defaults to random)
-            storage:
-              description: Storage to save ISO to (defaults to random)
-        show:
-          description: show all ISOs
-          run_func: show_isos
-          params:
-            brief:
-              is_fixed: True
-              description: "Show brief information"
-            detail:
-              is_fixed: True
-              description: "Show detailed information"
-            storage:
-              is_fixed: True
-              description: "Show ISO storage/node"
+## not really useful here unless creating VMs from scratch is implemented ##
+#    iso:
+#      description: ISO images
+#      actions:
+#        delete:
+#          description: Delete ISO
+#          run_func: delete_iso
+#          params:
+#            filename:
+#              required: True
+#              is_var: True
+#              description: Name of ISO to delete
+#        download:
+#          description: Download ISO from URL
+#          run_func: download_iso
+#          params:
+#            filename:
+#              required: True
+#              description: Name to save ISO as
+#            url:
+#              required: True
+#              description: URL to download
+#            node:
+#              description: Node that contains the storage for the ISO (defaults to random)
+#            storage:
+#              description: Storage to save ISO to (defaults to random)
+#        show:
+#          description: show all ISOs
+#          run_func: show_isos
+#          params:
+#            brief:
+#              is_fixed: True
+#              description: "Show brief information"
+#            detail:
+#              is_fixed: True
+#              description: "Show detailed information"
+#            storage:
+#              is_fixed: True
+#              description: "Show ISO storage/node"
     network:
       description: Networks
       actions:
