@@ -504,7 +504,6 @@ class TUAH():
                         # notify of missing params and retain typed_text
                         if missing_req_params:
                             results = f"ERROR: Missing required parameter(s): {' | '.join(missing_req_params)}"
-                            completed_commands.append(text)
                             self.typed_text = " ".join(completed_commands)
                             self.retain_text = True
                         else:
