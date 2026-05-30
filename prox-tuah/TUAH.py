@@ -892,6 +892,10 @@ class TUAH():
             self.print_string("No returned values", title="INFO")
             return
 
+        # if dict, sort
+        if isinstance(raw_output, dict):
+            raw_output = dict(sorted(raw_output.items()))
+
         # reduce output to items matching filter
         if filter:
             output = self.filter_output(raw_output, filter)
@@ -903,7 +907,7 @@ class TUAH():
             if isinstance(output, list) or isinstance(output, dict):
                 output = self.get_fields(output, fields)
             else:
-                print_string(f"Specifying fields is only supported by 'dictionary' return types", title="ERROR")
+                self.print_string(f"Specifying fields is only supported by 'dictionary' return types", title="ERROR")
 
         # finalize output based on format
         if format == "raw":

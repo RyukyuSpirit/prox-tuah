@@ -328,6 +328,19 @@ admin:
             all:
               description: "Show all users' tokens"
               is_fixed: True
+        create:
+          description: "Create new token"
+          run_func: create_token
+          params:
+            tokenid:
+              description: Token identifer
+              required: True
+            comment:
+              description: Token description
+            privsep:
+              description: Whether token privileges should be restricted with separate ACLs from user (<0|1>)
+            userid:
+              description: Full user ID, if different than current user (<user@realm>)
     vm:
       description: "Virtual machines"
       options_func: get_vmids

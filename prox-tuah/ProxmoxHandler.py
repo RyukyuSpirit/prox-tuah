@@ -979,7 +979,7 @@ class ProxmoxHandler(ProxmoxAPI):
 ### TOKENS ###
     def show_tokens(self, level_list=[], params=[]):
         """
-        Wrapper to provide list of all VM info depending on received scope
+        Wrapper to show tokens for received scope
         """
         scope = "user"
 
@@ -991,6 +991,20 @@ class ProxmoxHandler(ProxmoxAPI):
                 return self._get_tokens()
             case "user":
                 return self._get_user_tokens()
+
+    def create_token(self, level_list=[], params=[]):
+        """
+        Wrapper to create token
+        """
+        params_dict = self._get_kwargs_dict(params)
+
+        userid = params_dict.pop("userid", f"{self.config['user']}@{self.config['realm']}")
+        tokenid = params_dict.pop("tokenid")
+
+        try:
+            return self.access.users(userid).token(tokenid).post(**params_dict)
+        except Exception as e:
+            return f"ERROR: Failed to create tokenid '{tokenid}' for user '{userid}': ({e})"
 
 ### NODES ###
     def show_nodes(self, level_list=[], params=[]):
