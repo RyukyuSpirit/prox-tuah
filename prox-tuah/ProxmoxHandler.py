@@ -1006,6 +1006,21 @@ class ProxmoxHandler(ProxmoxAPI):
         except Exception as e:
             return f"ERROR: Failed to create tokenid '{tokenid}' for user '{userid}': ({e})"
 
+    def delete_token(self, level_list=[], params=[]):
+        """
+        Wrapper to delete token
+        """
+        params_dict = self._get_kwargs_dict(params)
+
+        userid = params_dict.pop("userid", f"{self.config['user']}@{self.config['realm']}")
+        tokenid = params_dict.pop("tokenid")
+
+        try:
+            self.access.users(userid).token(tokenid).delete(**params_dict)
+            return f"Deleted tokenid '{tokenid}' for user '{userid}'"
+        except Exception as e:
+            return f"ERROR: Failed to delete tokenid '{tokenid}' for user '{userid}': ({e})"
+
 ### NODES ###
     def show_nodes(self, level_list=[], params=[]):
         """

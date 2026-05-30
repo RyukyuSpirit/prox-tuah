@@ -318,18 +318,8 @@ admin:
     token:
       description: "API tokens"
       actions:
-        show:
-          description: "Show API tokens"
-          run_func: show_tokens
-          params:
-            user:
-              description: "Show current user's tokens"
-              is_fixed: True
-            all:
-              description: "Show all users' tokens"
-              is_fixed: True
         create:
-          description: "Create new token"
+          description: "Create token"
           run_func: create_token
           params:
             tokenid:
@@ -341,6 +331,25 @@ admin:
               description: Whether token privileges should be restricted with separate ACLs from user (<0|1>)
             userid:
               description: Full user ID, if different than current user (<user@realm>)
+        delete:
+          description: "Delete token"
+          run_func: delete_token
+          params:
+            tokenid:
+              description: Token identifer
+              required: True
+            userid:
+              description: Full user ID, if different than current user (<user@realm>)
+        show:
+          description: "Show API tokens"
+          run_func: show_tokens
+          params:
+            user:
+              description: "Show current user's tokens"
+              is_fixed: True
+            all:
+              description: "Show all users' tokens"
+              is_fixed: True
     vm:
       description: "Virtual machines"
       options_func: get_vmids
