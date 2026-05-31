@@ -1,6 +1,6 @@
 # prox-tuah
 ## Summary
-prox-tuah (Proxmox text-based user and administration handler) is a text user interface to Proxmox Virtual Environment. It can be used to walk (and execute) the PVE API, manage a PVE, and access guest VMs/LXCs. The interface handles similarly to network device CLIs with tab completion and context-specific help menus, as well as output modifiers to adjust return content and formatting.
+prox-tuah is a remote CLI for PVE. It can be used to walk and call the PVE API, manage a PVE, and "broker" connections to VMs. The interface handles similar to network device CLIs with tab completion and context-specific help menus, as well as output modifiers to adjust return content and formatting.
 
 The primary contexts are:
 - user: Simple user operations on VMs/CTs (display, power-control, access)
