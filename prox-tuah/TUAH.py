@@ -4,11 +4,9 @@ import colorama
 import re
 import fnmatch
 import time
-from prompt_toolkit import prompt,PromptSession
+from prompt_toolkit import PromptSession
 from prompt_toolkit.application.current import get_app
-from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.history import InMemoryHistory
 from pprint import pprint
 from tabulate import tabulate

@@ -4,7 +4,6 @@ import subprocess
 import webbrowser
 import random
 from proxmoxer import ProxmoxAPI
-from pprint import pprint
 from pathlib import Path
 from tabulate import tabulate
 from textwrap import indent
@@ -41,8 +40,6 @@ class ProxmoxHandler(ProxmoxAPI):
         else:
             raise ValueError("User, realm, and password or token_name/token_value are required (via config.yaml or command-line arguments)")
 
-
-
     def load_config(self, config_path="config.yaml"):
         """
         Loads config
@@ -57,7 +54,6 @@ class ProxmoxHandler(ProxmoxAPI):
         except yaml.YAMLError as e:
             print(f"Error parsing YAML file: {e}")
             return None
-
 
 ### VM/TEMPLATE ###
     def _get_vms(self, template=False):
@@ -673,7 +669,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
 ### TUAH HANDLER FUNCS BELOW THIS LINE ###
 
-### VM ###
+### VM HANDLER ###
 
     def show_vm_info(self, level_list=[], params=[], template=False):
         """
@@ -891,7 +887,7 @@ class ProxmoxHandler(ProxmoxAPI):
         except Exception as e:
             return f"ERROR: Failed to delete {v_type} {vmid}: ({e})"
 
-### TEMPLATE ###
+### TEMPLATE HANDLER ###
     def show_templates(self, level_list=[], params=[]):
         """
         Wrapper to provide list of all VM info depending on received scope
@@ -976,7 +972,7 @@ class ProxmoxHandler(ProxmoxAPI):
                 return [vm for vm in self._get_vms() if f'{vm.get("vmid","")}' == vmid][0]
             case "config":
                 return "TO BE IMPLEMENTED"
-### TOKENS ###
+### TOKENS HANDLER ###
     def show_tokens(self, level_list=[], params=[]):
         """
         Wrapper to show tokens for received scope
@@ -1021,7 +1017,7 @@ class ProxmoxHandler(ProxmoxAPI):
         except Exception as e:
             return f"ERROR: Failed to delete tokenid '{tokenid}' for user '{userid}': ({e})"
 
-### NODES ###
+### NODES HANDLER ###
     def show_nodes(self, level_list=[], params=[]):
         """
         Wrapper to provide list of all nodes info depending on received scope
@@ -1050,7 +1046,7 @@ class ProxmoxHandler(ProxmoxAPI):
         else:
             return f"Node '{node}' is not valid"
 
-### ISO ###
+### ISO HANDLER ###
     def show_isos(self, level_list=[], params=[]):
         """
         Wrapper to provide list of all iso info depending on received scope
@@ -1129,7 +1125,7 @@ class ProxmoxHandler(ProxmoxAPI):
         else:
             return f"ERROR: Storage {node}/{storage} not found"
 
-### NETWORKS ###
+### NETWORKS HANDLER ###
     def show_networks(self, level_list=[], params=[]):
         """
         Wrapper to provide list of networks depending on received scope
@@ -1278,7 +1274,7 @@ class ProxmoxHandler(ProxmoxAPI):
         else:
             return f"network interface '{iface}' is not valid"
 
-### POOL ###
+### POOL HANDLER ###
     def show_pools(self, level_list=[], params=[]):
         """
         Wrapper to provide list of pools
@@ -1393,7 +1389,7 @@ class ProxmoxHandler(ProxmoxAPI):
         else:
             return f"Pool '{pool}' is not valid"
 
-### STORAGE ###
+### STORAGE HANDLER ###
     def get_storages(self, level_list=[], params=[]):
         """
         Wrapper to provide list of storages
@@ -1412,7 +1408,7 @@ class ProxmoxHandler(ProxmoxAPI):
         else:
             return f"storage '{storage}' is not valid"
 
-### DEV ###
+### DEV HANDLER ###
     def rawdog(self, level_list=[], params=[]):
         """
         Accepts fully formatted function call (including 'self' reference) and attempts to run it
@@ -1462,7 +1458,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return results
 
-### API ###
+### API HANDLER ###
     def get(self, level_list=[], params=[]):
         """
         Executes api get call
