@@ -62,6 +62,7 @@ class TUAH():
         self.handle_clear_screen = False # should screen be cleared before next prompt
         self.retain_text = False # should typed_text be inserted into next prompt
 
+### PROMPT_SESSION ###
         # add keybindings for prompt
         self.bindings = KeyBindings()
         @self.bindings.add('?')
@@ -90,34 +91,93 @@ class TUAH():
         self.typed_text = get_app().current_buffer.text
         event.app.exit(exception=KeyboardInterrupt)
 
-    def print_help(self, context, level_list=[], inc_global=True):
-        help = self.get_help(context, level_list=level_list)
+### SESSION ###
+    def clear_screen(self):
+        """
+        clears the terminal screen but retains the scrollback buffer
+        """
+        # clears screen and moves cursor to top left
+        sys.stdout.write('\033[H\033[2J')
+        try:
+            # moves cursor to bottom-left
+            rows, columns = os.get_terminal_size()
+            sys.stdout.write(f'\033[{rows};1H')
 
-        print("")
-        if help.get('actions'):
-            print("  Actions")
-            print(f'{indent(tabulate(help["actions"].items()), "  ")}\n')
+        except OSError:
+            sys.stdout.write('\n' * 100)
 
-        if help.get('context'):
-            print("  Contexts")
-            print(f'{indent(tabulate(help["context"].items()), "  ")}\n')
+        sys.stdout.flush()
 
-        if help.get('params'):
-            print("  Parameters")
-            print(f'{indent(tabulate(help["params"].items()), "  ")}\n')
+    def start(self, interactive=True, command=None, command_file=None, script_file=None):
+        """
+        Starts the TUAH either interactively, by running defined command or command_file, or all
+        """
+        self.script_file = script_file
 
-        if help.get('pipe_params'):
-            print("  Pipe Options")
-            print(f'{indent(tabulate(help["pipe_params"].items()), "  ")}\n')
+        if interactive:
+            self.clear_screen()
+            self.go_to_top()
+        self.run(interactive=interactive, command=command, command_file=command_file)
 
-        if help.get('options'):
-            print("  Options")
-            print(f'{indent(tabulate(help["options"].items()), "  ")}\n')
+    def run(self, interactive=True, command=None, command_file=None):
+        commands = []
+        if command:
+            commands.append(command)
 
-        if inc_global:
-            print("  Global Commands")
-            print(f'{indent(tabulate(self.global_help.items()), "  ")}\n')
+        if command_file:
+            print("processing file")
+            with open(command_file, "r") as file:
+                for c in file:
+                    if not c.startswith("#"):
+                        commands.append(c)
 
+        if interactive:
+            print(f"{self.welcome}")
+
+            if commands:
+                for c in commands:
+                    print(f"{self.prompt} {c}")
+                    self.history.append_string(c.rstrip())
+                    self.handle_entry(c)
+
+            while True:
+                try:
+                    self.handle_events()
+
+                    # create prompt pre-filled with typed text
+                    if self.retain_text:
+                        self.retain_text = False
+                        self.entry = self.session.prompt(self.prompt, default=self.typed_text, key_bindings=self.bindings)
+                    # create empty prompt
+                    else:
+                        self.entry = self.session.prompt(self.prompt, key_bindings=self.bindings)
+                except(KeyboardInterrupt):
+                    continue
+                except(EOFError):
+                    self.exit_session()
+                    break
+
+                self.handle_entry(self.entry)
+        else:
+            if commands:
+                for c in commands:
+                    print(f"{self.prompt} {c}")
+                    self.history.append_string(c.rstrip())
+                    self.handle_entry(c)
+
+    def exit_session(self):
+        """
+        Exits interactive session
+        """
+        if self.script_file:
+            output = f"Script file saved at: {self.script_file}\n"
+        else:
+            output = ""
+        output += "Terminated session."
+        self.handle_output(output)
+        sys.exit()
+
+### UTILITY ###
     def _get_history(self):
         return self.session.history.get_strings()
 
@@ -161,7 +221,7 @@ class TUAH():
 
         return matches
 
-    def get_required_params(self, action_context):
+    def _get_required_params(self, action_context):
         """
         Returns list of required parameters from given action_context
         """
@@ -178,6 +238,378 @@ class TUAH():
 
         return req_params
 
+    def _get_help(self, context, level_list=[]):
+        """
+        Return dict of help
+        """
+        # update help
+        help = {}
+        help['context'] = {}
+        help['actions'] = {}
+        help['params'] = {}
+        help['pipe_params'] = {}
+
+        for k,v in context.items():
+            if isinstance(v, dict):
+                if k == "context":
+                    for ck,cv in v.items():
+                        if cv.get("description"):
+                            if cv.get("is_var"):
+                                help["context"].update({f'<{ck}>': cv.get("description")})
+                            else:
+                                help["context"].update({ck: cv.get("description")})
+                    # if options_func is present, add options to contexts
+                    options_func = context.get("options_display_func", context.get("options_func"))
+                    if options_func:
+
+                        options = self.handler_func(self.handler, options_func, level_list=level_list)
+
+                        for o in sorted(options):
+                            help["context"].update({o: "*Queried option"})
+                elif k == "actions":
+                    for ck,cv in v.items():
+                        if cv.get("description"):
+                            help["actions"].update({ck: cv.get("description")})
+                elif k == "params":
+                    for ck,cv in v.items():
+                        # format field according to var type
+                        if cv.get("description"):
+                            if cv.get("is_var"):
+                                key = f'<{ck}>'
+                            elif cv.get("is_part_var"):
+                                var_suffix = cv.get("var_suffix", "N")
+                                key = f'{ck}<{var_suffix}>'
+                            elif cv.get("is_fixed"):
+                                key = ck
+                            else:
+                                key = f'{ck}='
+
+                            # add prefix if required
+                            if cv.get("required"):
+                                description = f"[REQ] {cv.get('description', ck)}"
+                            else:
+                                description = cv.get("description", ck)
+
+                            help["params"].update({key: description})
+
+                elif k == "pipe_params":
+                    for ck,cv in v.items():
+                        if cv.get("description"):
+                            help["pipe_params"].update({f'{ck}=': cv.get("description")})
+
+        return help
+
+    def _container_has_match(self, container, r_pattern):
+        """
+        Returns True if container's child contains a match
+        """
+        if isinstance(container, list):
+            # return True if list child contains match
+            for i in container:
+                # check for match in child(ren)
+                if isinstance(i, list) or isinstance(i, dict):
+                    if self._container_has_match(i, r_pattern):
+                        return True
+                elif isinstance(i, str):
+                    if re.search(r_pattern, i):
+                        return True
+                elif re.search(r_pattern, str(i)):
+                    return True
+
+        elif isinstance(container, dict):
+
+            # return True if dict child contains match
+            for k,v in container.items():
+                if re.search(r_pattern, k):
+                    return True
+                # check for match in child(ren)
+                elif isinstance(v, list) or isinstance(v, dict):
+                    if self._container_has_match(v, r_pattern):
+                        return True
+                elif isinstance(v, str):
+                    if re.search(r_pattern, v):
+                        return True
+                elif re.search(r_pattern, str(v)):
+                    return True
+
+        return False
+
+    def _get_matching_container(self, container, r_pattern):
+        """
+        Returns dict/children items containining match
+        """
+        matching = []
+
+        if isinstance(container, list):
+
+            # add lists that contain match to matching list
+            for i in container:
+                # check for matches in child(ren)
+                if isinstance(i, list) or isinstance(i, dict):
+                    if self._container_has_match(i, r_pattern):
+                        matching.append(i)
+                elif isinstance(i, str):
+                    if re.search(r_pattern, i):
+                        matching.append(i)
+                else:
+                    if re.search(r_pattern, str(i)):
+                        matching.append(i)
+            return matching
+
+        elif isinstance(container, dict):
+            matching = {}
+
+            # add dicts that contain match to matching list
+            for k,v in container.items():
+                if re.search(r_pattern, k):
+                    matches = True
+                # check for matches in child(ren)
+                elif isinstance(v, list) or isinstance(v, dict):
+                    if self._container_has_match(v, r_pattern):
+                        matching.update({k:v})
+                elif isinstance(v, str):
+                    if re.search(r_pattern, v):
+                        matching.update({k:v})
+                else:
+                    if re.search(r_pattern, str(v)):
+                        matching.update({k:v})
+
+        return matching
+
+    def _filter_output(self, raw_output, m_pattern):
+        """
+        Returns filtered output based on given match pattern (m_pattern)
+        """
+
+        # convert pattern string into regex pattern
+        regex_pattern = fnmatch.translate(m_pattern)
+        # filter depending on type
+        if isinstance(raw_output, str):
+            print_string("Specifying 'filter' is not supported for 'str' return types", title="ERROR")
+            return raw_output
+        elif isinstance(raw_output, list) or isinstance(raw_output, dict):
+            return self._get_matching_container(raw_output, regex_pattern)
+        else:
+            self.print_string(f"Unhandled return type: {raw_output}", title="ERROR")
+
+    def _get_fields(self, output, fields_str):
+        """
+        Returns only specific fields from dict or list of dicts
+        """
+        fields = fields_str.split(',')
+
+        if isinstance(output, dict):
+            f_dict = {}
+
+            # add requested fields in order received
+            for f in fields:
+                f_dict[f] = "N/A"
+
+            for k,v in output.items():
+                if k in fields:
+                    f_dict[k] = v
+#                    f_dict.update({k:v})
+            return f_dict
+        elif isinstance(output, list):
+            f_list = []
+            for i in output:
+                if isinstance(i, dict):
+                    f_dict = {}
+
+                    # add requested fileds in order received
+                    for f in fields:
+                        f_dict[f] = "N/A"
+
+                    for k,v in i.items():
+                        if k in fields:
+                            f_dict[k] = v
+                    f_list.append(f_dict)
+                else:
+                    self.print_string(f"Targeting 'field(s)' not supported by this return type: {output}", title="ERROR")
+            return f_list
+        return
+
+    def _get_context(self, level_list=[]):
+        """Returns context specified by level list"""
+        f_context = self.full_context
+
+        # iterate through level_list to get to new last context
+        for level in level_list:
+
+            # progress through static child
+            if f_context['context'].get(level):
+                f_context = f_context['context'][level]
+            # check if var child
+            else:
+                # if entry is variable then enter its context
+                var_name = ""
+                for k,v in f_context.get('context', {}).items():
+                    if v.get('is_var', {}):
+                        var_name = k
+
+                if var_name:
+                    f_context = f_context.get('context')[var_name]
+
+                # print error if not found as static/var child
+                else:
+                    self.print_string(f"Child '{level}' not found in context: {f_context}", title="ERROR")
+        return f_context
+
+### OUTPUT HANDLING ###
+    def handle_output(self, raw_output, out_modifiers={}):
+        """
+        Outputs information from raw_output based on any output modifiers provided in the out_modifiers dict
+        """
+        fields = out_modifiers.get("fields", "all")
+        filter = out_modifiers.get("filter", None)
+        if isinstance(raw_output, str):
+            format = out_modifiers.get("format", "raw")
+        else:
+            format = out_modifiers.get("format", "table")
+
+        # handle no output
+        if not raw_output:
+            self.print_string("No returned values", title="INFO")
+            return
+
+        # if dict, sort
+        if isinstance(raw_output, dict):
+            raw_output = dict(sorted(raw_output.items()))
+
+        # reduce output to items matching filter
+        if filter:
+            output = self._filter_output(raw_output, filter)
+        else:
+            output = raw_output
+
+        # reduce output to requested fields, if this is a list or dict
+        if fields != "all":
+            if isinstance(output, list) or isinstance(output, dict):
+                output = self._get_fields(output, fields)
+            else:
+                self.print_string(f"Specifying fields is only supported by 'dictionary' return types", title="ERROR")
+
+        # finalize output based on format
+        if format == "raw":
+            print(f"\n{indent(str(output), '  ')}\n")
+        elif format == "table":
+            if isinstance(output, list):
+                # print list of dict table
+                print(f'\n{indent(tabulate(output, headers="keys"), "  ")}\n')
+            elif isinstance(output, dict):
+                # print dict table
+                print(f'\n{indent(tabulate(output.items(), headers=["Field", "Value"]), "  ")}\n')
+            else:
+                print(f'\n{output}\n')
+        elif format == "pretty":
+            print()
+            pprint(output)
+            print()
+        else:
+            self.print_string(f"Unknown format type: {format}", title="ERROR")
+
+    def print_help(self, context, level_list=[], inc_global=True):
+        help = self._get_help(context, level_list=level_list)
+
+        print("")
+        if help.get('actions'):
+            print("  Actions")
+            print(f'{indent(tabulate(help["actions"].items()), "  ")}\n')
+
+        if help.get('context'):
+            print("  Contexts")
+            print(f'{indent(tabulate(help["context"].items()), "  ")}\n')
+
+        if help.get('params'):
+            print("  Parameters")
+            print(f'{indent(tabulate(help["params"].items()), "  ")}\n')
+
+        if help.get('pipe_params'):
+            print("  Pipe Options")
+            print(f'{indent(tabulate(help["pipe_params"].items()), "  ")}\n')
+
+        if help.get('options'):
+            print("  Options")
+            print(f'{indent(tabulate(help["options"].items()), "  ")}\n')
+
+        if inc_global:
+            print("  Global Commands")
+            print(f'{indent(tabulate(self.global_help.items()), "  ")}\n')
+
+    def print_string(self, msg, title=None):
+        """
+        Wrapper to print a string to the screen
+        """
+        if title:
+            print(f"\n  {title}: {msg}\n")
+        else:
+            print(f"\n  {msg}\n")
+
+### INPUT HANDLING ###
+    def handle_entry(self, entry):
+        """
+        Perform context navigation or function based on entry
+        """
+        entry_list = entry.split()
+
+        # do nothing if entry is empty
+        if not entry_list:
+            return
+        # add entry to script file, if sent in
+        elif self.script_file:
+            with open(self.script_file, 'a') as f:
+                f.write(f"{entry}\n")
+
+        # handle single-word entry
+        if len(entry_list) == 1:
+            entry = entry.strip()
+            if entry in ["logout", "quit"]:
+                self.exit_session()
+
+            elif entry in ["top"]:
+                self.go_to_top()
+
+            elif entry in ["exit", "back"]:
+                # return to top if 1 level deep
+                if len(self.level_list) == 1:
+                    self.go_to_top()
+                    return
+                elif not self.level_list:
+                    print("  Already at the top")
+                    return
+                # return one level
+                else:
+                    self.go_to_context(self.level_list[:-1])
+
+            elif entry in ["history"]:
+                self.handle_output(f"\n".join(self._get_history()))
+
+            elif entry.startswith("..") and (entry.endswith("/") or entry.endswith("..")):
+                depth = 0 # number of levels to back up to
+                for c in entry.split("/"):
+                    if c == "..":
+                        depth += 1
+                if depth > len(self.level_list) - 1:
+                    self.go_to_top()
+                else:
+                    self.go_to_context(self.level_list[:-depth])
+
+            # handle non-global single-word entry
+            else:
+                self.complete_cmd([entry.strip()], run=True)
+
+        # handle sleep
+        elif entry_list[0] == "sleep":
+            s_time = entry_list[1]
+            if s_time.isdigit():
+                self.print_string(f"Sleeping for {s_time} seconds", title="INFO")
+                time.sleep(int(s_time))
+            else:
+                self.print_string("Sleep argument must be an integer (seconds to sleep)", title="ERROR")
+
+        # handle multi-word entry
+        else:
+            self.complete_cmd(entry_list, run=True)
 
     def complete_cmd(self, commands, run=False):
         """
@@ -186,7 +618,6 @@ class TUAH():
         is_action = False
         is_ambiguous = False
         leave_space = True
-        is_same = False
         has_params = False
         is_piped = False
         depth = 0 # number of levels between current context and DD'd parent context
@@ -195,7 +626,6 @@ class TUAH():
         do_print_help = False
         out_modifiers = {} # output modifiers
         completed_commands = []
-        parent_prefix = ""
 
         running_level_list = self.level_list.copy()
         running_params_list = []
@@ -233,7 +663,7 @@ class TUAH():
             # otherwise, grab running_context from desired depth
             else:
                 running_level_list = self.level_list[:-depth]
-                running_context = self.get_context(running_level_list)
+                running_context = self._get_context(running_level_list)
 
         # otherwise, running context is current context
         else:
@@ -484,7 +914,7 @@ class TUAH():
             if is_action:
                 # use defined run_func or name of action if not defined
                 run_func = running_context.get('run_func', running_level_list[-1])
-                req_params = self.get_required_params(action_context)
+                req_params = self._get_required_params(action_context)
 
                 # if has a run_func assigned, have handler run it
                 if run_func:
@@ -566,78 +996,6 @@ class TUAH():
         else:
             self.complete_cmd(commands)
 
-    def get_help(self, context, level_list=[]):
-        """
-        Return dict of help
-        """
-
-        # update help
-        help = {}
-        help['context'] = {}
-        help['actions'] = {}
-        help['params'] = {}
-        help['pipe_params'] = {}
-
-        for k,v in context.items():
-            if isinstance(v, dict):
-                if k == "context":
-                    for ck,cv in v.items():
-                        if cv.get("description"):
-                            if cv.get("is_var"):
-                                help["context"].update({f'<{ck}>': cv.get("description")})
-                            else:
-                                help["context"].update({ck: cv.get("description")})
-                    # if options_func is present, add options to contexts
-                    options_func = context.get("options_display_func", context.get("options_func"))
-                    if options_func:
-
-                        options = self.handler_func(self.handler, options_func, level_list=level_list)
-
-                        for o in sorted(options):
-                            help["context"].update({o: "*Queried option"})
-                elif k == "actions":
-                    for ck,cv in v.items():
-                        if cv.get("description"):
-                            help["actions"].update({ck: cv.get("description")})
-                elif k == "params":
-                    for ck,cv in v.items():
-                        # format field according to var type
-                        if cv.get("description"):
-                            if cv.get("is_var"):
-                                key = f'<{ck}>'
-                            elif cv.get("is_part_var"):
-                                var_suffix = cv.get("var_suffix", "N")
-                                key = f'{ck}<{var_suffix}>'
-                            elif cv.get("is_fixed"):
-                                key = ck
-                            else:
-                                key = f'{ck}='
-
-                            # add prefix if required
-                            if cv.get("required"):
-                                description = f"[REQ] {cv.get('description', ck)}"
-                            else:
-                                description = cv.get("description", ck)
-
-                            help["params"].update({key: description})
-
-                elif k == "pipe_params":
-                    for ck,cv in v.items():
-                        if cv.get("description"):
-                            help["pipe_params"].update({f'{ck}=': cv.get("description")})
-
-        return help
-
-    def update_context(self, new_context, new_level_list):
-        self.context = new_context
-        self.level_list = new_level_list
-
-        # update prompt
-        if self.context == self.full_context:
-            self.prompt = "top# "
-        else:
-            self.prompt = f"{self.context.get('prompt', '/'.join(self.level_list))}# "
-
     def handle_events(self):
         """
         Handle events (key-presses) if needed
@@ -655,69 +1013,7 @@ class TUAH():
             self.tabbed()
             self.handle_tab = False
 
-    def start(self, interactive=True, command=None, command_file=None, script_file=None):
-        """
-        Starts the TUAH either interactively, by running defined command or command_file, or all
-        """
-        self.script_file = script_file
-
-        if interactive:
-            self.clear_screen()
-            self.go_to_top()
-        self.run(interactive=interactive, command=command, command_file=command_file)
-
-    def run(self, interactive=True, command=None, command_file=None):
-        commands = []
-        if command:
-            commands.append(command)
-
-        if command_file:
-            print("processing file")
-            with open(command_file, "r") as file:
-                for c in file:
-                    if not c.startswith("#"):
-                        commands.append(c)
-
-        if interactive:
-            print(f"{self.welcome}")
-
-            if commands:
-                for c in commands:
-                    print(f"{self.prompt} {c}")
-                    self.history.append_string(c.rstrip())
-                    self.handle_entry(c)
-
-            while True:
-                try:
-                    self.handle_events()
-
-                    # create prompt pre-filled with typed text
-                    if self.retain_text:
-                        self.retain_text = False
-                        self.entry = self.session.prompt(self.prompt, default=self.typed_text, key_bindings=self.bindings)
-                    # create empty prompt
-                    else:
-                        self.entry = self.session.prompt(self.prompt, key_bindings=self.bindings)
-                except(KeyboardInterrupt):
-                    continue
-                except(EOFError):
-                    self.exit_session()
-                    break
-
-                self.handle_entry(self.entry)
-        else:
-            if commands:
-                for c in commands:
-                    print(f"{self.prompt} {c}")
-                    self.history.append_string(c.rstrip())
-                    self.handle_entry(c)
-
-    def go_to_top(self):
-        """
-        Go to main (top) context
-        """
-        self.update_context(self.full_context, [])
-
+### HANDLER ###
     def handler_func(self, handler, func_name, level_list=[], params=[]):
         """
         Runs func_name function on handler with args
@@ -732,328 +1028,25 @@ class TUAH():
         except AttributeError:
             return f"Function not found on handler: '{func_name}'"
 
-    def print_string(self, msg, title=None):
-        """
-        Wrapper to print a string to the screen
-        """
-        if title:
-            print(f"\n  {title}: {msg}\n")
-        else:
-            print(f"\n  {msg}\n")
-
-    def container_has_match(self, container, r_pattern):
-        """
-        Returns True if container's child contains a match
-        """
-        if isinstance(container, list):
-            # return True if list child contains match
-            for i in container:
-                # check for match in child(ren)
-                if isinstance(i, list) or isinstance(i, dict):
-                    if self.container_has_match(i, r_pattern):
-                        return True
-                elif isinstance(i, str):
-                    if re.search(r_pattern, i):
-                        return True
-                elif re.search(r_pattern, str(i)):
-                    return True
-
-        elif isinstance(container, dict):
-
-            # return True if dict child contains match
-            for k,v in container.items():
-                if re.search(r_pattern, k):
-                    return True
-                # check for match in child(ren)
-                elif isinstance(v, list) or isinstance(v, dict):
-                    if self.container_has_match(v, r_pattern):
-                        return True
-                elif isinstance(v, str):
-                    if re.search(r_pattern, v):
-                        return True
-                elif re.search(r_pattern, str(v)):
-                    return True
-
-        return False
-
-    def get_matching_container(self, container, r_pattern):
-        """
-        Returns dict/children items containining match
-        """
-        matching = []
-
-        if isinstance(container, list):
-
-            # add lists that contain match to matching list
-            for i in container:
-                # check for matches in child(ren)
-                if isinstance(i, list) or isinstance(i, dict):
-                    if self.container_has_match(i, r_pattern):
-                        matching.append(i)
-                elif isinstance(i, str):
-                    if re.search(r_pattern, i):
-                        matching.append(i)
-                else:
-                    if re.search(r_pattern, str(i)):
-                        matching.append(i)
-            return matching
-
-        elif isinstance(container, dict):
-            matching = {}
-
-            # add dicts that contain match to matching list
-            for k,v in container.items():
-                if re.search(r_pattern, k):
-                    matches = True
-                # check for matches in child(ren)
-                elif isinstance(v, list) or isinstance(v, dict):
-                    if self.container_has_match(v, r_pattern):
-                        matching.update({k:v})
-                elif isinstance(v, str):
-                    if re.search(r_pattern, v):
-                        matching.update({k:v})
-                else:
-                    if re.search(r_pattern, str(v)):
-                        matching.update({k:v})
-
-        return matching
-
-
-    def filter_output(self, raw_output, m_pattern):
-        """
-        Returns filtered output based on given match pattern (m_pattern)
-        """
-
-        # convert pattern string into regex pattern
-        regex_pattern = fnmatch.translate(m_pattern)
-        # filter depending on type
-        if isinstance(raw_output, str):
-            print_string("Specifying 'filter' is not supported for 'str' return types", title="ERROR")
-            return raw_output
-        elif isinstance(raw_output, list) or isinstance(raw_output, dict):
-            return self.get_matching_container(raw_output, regex_pattern)
-        else:
-            self.print_string(f"Unhandled return type: {raw_output}", title="ERROR")
-
-    def get_fields(self, output, fields_str):
-        """
-        Returns only specific fields from dict or list of dicts
-        """
-        fields = fields_str.split(',')
-
-        if isinstance(output, dict):
-            f_dict = {}
-
-            # add requested fields in order received
-            for f in fields:
-                f_dict[f] = "N/A"
-
-            for k,v in output.items():
-                if k in fields:
-                    f_dict[k] = v
-#                    f_dict.update({k:v})
-            return f_dict
-        elif isinstance(output, list):
-            f_list = []
-            for i in output:
-                if isinstance(i, dict):
-                    f_dict = {}
-
-                    # add requested fileds in order received
-                    for f in fields:
-                        f_dict[f] = "N/A"
-
-                    for k,v in i.items():
-                        if k in fields:
-                            f_dict[k] = v
-                    f_list.append(f_dict)
-                else:
-                    self.print_string(f"Targeting 'field(s)' not supported by this return type: {output}", title="ERROR")
-            return f_list
-        return
-
-
-    def handle_output(self, raw_output, out_modifiers={}):
-        """
-        Outputs information from raw_output based on any output modifiers provided in the out_modifiers dict
-        """
-        fields = out_modifiers.get("fields", "all")
-        filter = out_modifiers.get("filter", None)
-        if isinstance(raw_output, str):
-            format = out_modifiers.get("format", "raw")
-        else:
-            format = out_modifiers.get("format", "table")
-
-        # handle no output
-        if not raw_output:
-            self.print_string("No returned values", title="INFO")
-            return
-
-        # if dict, sort
-        if isinstance(raw_output, dict):
-            raw_output = dict(sorted(raw_output.items()))
-
-        # reduce output to items matching filter
-        if filter:
-            output = self.filter_output(raw_output, filter)
-        else:
-            output = raw_output
-
-        # reduce output to requested fields, if this is a list or dict
-        if fields != "all":
-            if isinstance(output, list) or isinstance(output, dict):
-                output = self.get_fields(output, fields)
-            else:
-                self.print_string(f"Specifying fields is only supported by 'dictionary' return types", title="ERROR")
-
-        # finalize output based on format
-        if format == "raw":
-            print(f"\n{indent(str(output), '  ')}\n")
-        elif format == "table":
-            if isinstance(output, list):
-                # print list of dict table
-                print(f'\n{indent(tabulate(output, headers="keys"), "  ")}\n')
-            elif isinstance(output, dict):
-                # print dict table
-                print(f'\n{indent(tabulate(output.items(), headers=["Field", "Value"]), "  ")}\n')
-            else:
-                print(f'\n{output}\n')
-        elif format == "pretty":
-            print()
-            pprint(output)
-            print()
-        else:
-            self.print_string(f"Unknown format type: {format}", title="ERROR")
-
-    def exit_session(self):
-        """
-        Exits interactive session
-        """
-        if self.script_file:
-            output = f"Script file saved at: {self.script_file}\n"
-        else:
-            output = ""
-        output += "Terminated session."
-        self.handle_output(output)
-        sys.exit()
-
-    def handle_entry(self, entry):
-        """
-        Perform context navigation or function based on entry
-        """
-        entry_list = entry.split()
-
-        # do nothing if entry is empty
-        if not entry_list:
-            return
-        # add entry to script file, if sent in
-        elif self.script_file:
-            with open(self.script_file, 'a') as f:
-                f.write(f"{entry}\n")
-
-        # handle single-word entry
-        if len(entry_list) == 1:
-            entry = entry.strip()
-            if entry in ["logout", "quit"]:
-                self.exit_session()
-
-            elif entry in ["top"]:
-                self.go_to_top()
-
-            elif entry in ["exit", "back"]:
-                # return to top if 1 level deep
-                if len(self.level_list) == 1:
-                    self.go_to_top()
-                    return
-                elif not self.level_list:
-                    print("  Already at the top")
-                    return
-                # return one level
-                else:
-                    self.go_to_context(self.level_list[:-1])
-
-            elif entry in ["history"]:
-                self.handle_output(f"\n".join(self._get_history()))
-
-            elif entry.startswith("..") and (entry.endswith("/") or entry.endswith("..")):
-                depth = 0 # number of levels to back up to
-                for c in entry.split("/"):
-                    if c == "..":
-                        depth += 1
-                if depth > len(self.level_list) - 1:
-                    self.go_to_top()
-                else:
-                    self.go_to_context(self.level_list[:-depth])
-
-            # handle non-global single-word entry
-            else:
-                self.complete_cmd([entry.strip()], run=True)
-
-        # handle sleep
-        elif entry_list[0] == "sleep":
-            s_time = entry_list[1]
-            if s_time.isdigit():
-                self.print_string(f"Sleeping for {s_time} seconds", title="INFO")
-                time.sleep(int(s_time))
-            else:
-                self.print_string("Sleep argument must be an integer (seconds to sleep)", title="ERROR")
-
-        # handle multi-word entry
-        else:
-            self.complete_cmd(entry_list, run=True)
-
+### NAVIGATION ###
     def go_to_context(self, level_list=[]):
         """Go to context specified by level list"""
-        parent_context = self.get_context(level_list=level_list)
+        parent_context = self._get_context(level_list=level_list)
 
         self.update_context(parent_context, level_list)
 
-    def get_context(self, level_list=[]):
-        """Returns context specified by level list"""
-        f_context = self.full_context
-        last_level = level_list[-1]
-        # iterate through level_list to get to new last context
-        for level in level_list:
-
-            # progress through static child
-            if f_context['context'].get(level):
-                f_context = f_context['context'][level]
-            # check if var child
-            else:
-                # if entry is variable then enter its context
-                var_name = ""
-                for k,v in f_context.get('context', {}).items():
-                    if v.get('is_var', {}):
-                        var_name = k
-
-                if var_name:
-                    f_context = f_context.get('context')[var_name]
-
-                # print error if not found as static/var child
-                else:
-                    self.print_string(f"Child '{level}' not found in context: {f_context}", title="ERROR")
-        return f_context
-
-    def clear_screen(self):
+    def go_to_top(self):
         """
-        clears the terminal screen but retains the scrollback buffer
+        Go to main (top) context
         """
+        self.update_context(self.full_context, [])
 
-        # clears screen and moves cursor to top left
-        sys.stdout.write('\033[H\033[2J')
-        try:
-            # moves cursor to bottom-left
-            rows, columns = os.get_terminal_size()
-            sys.stdout.write(f'\033[{rows};1H')
+    def update_context(self, new_context, new_level_list):
+        self.context = new_context
+        self.level_list = new_level_list
 
-        except OSError:
-            sys.stdout.write('\n' * 100)
-
-        sys.stdout.flush()
-
-    def quit(self, argline):
-        """
-        Close application
-        """
-        sys.exit(0)
-
+        # update prompt
+        if self.context == self.full_context:
+            self.prompt = "top# "
+        else:
+            self.prompt = f"{self.context.get('prompt', '/'.join(self.level_list))}# "
