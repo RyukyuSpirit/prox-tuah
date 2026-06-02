@@ -53,6 +53,16 @@ Perform a get request (api context): (Note: API SYNTAX section is shown because 
 ```
 top# api nodes pve01 qemu 501 config get
 
+  --API SYNTAX--
+
+    API Caller    Syntax
+  ------------  --------------------------------------------------------------------------------------------------------------
+  pvesh         pvesh get /nodes/pve01/qemu/501/config
+  proxmoxer     ProxmoxAPI("nodes/pve01/qemu/501/config").get()
+  curl          curl -k -H "Authorization: PVEAPIToken=<token>" https://<server_ip>:8006/api2/json/nodes/pve01/qemu/501/config
+
+  --CALL RESULTS--
+
   Field        Value
   -----------  ------------------------------------------------
   agent        1
