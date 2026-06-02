@@ -55,13 +55,12 @@ class ProxmoxHandler(ProxmoxAPI):
             print(f"Error parsing YAML file: {e}")
             return None
 
-### VM/TEMPLATE ###
+### VM/TEMPLATE UTILITY ###
     def _get_vms(self, template=False):
         if template:
             return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 1]
         else:
             return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 0]
-
 
     def _get_vms_dict(self, template=False):
         vms = {}
@@ -74,7 +73,6 @@ class ProxmoxHandler(ProxmoxAPI):
 
     def _get_vm_keyvalue(self, vmid, key, template=False):
         return {key: self._get_vm(vmid, template=template).get(key,"N/A")}
-
 
     def _get_vms_name_list(self, *args, **kwargs):
         return [{vm['vmid']: vm['name']} for vm in self._get_vms()]
@@ -160,7 +158,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return sorted(ips)
 
-### NODE ###
+### NODE UTILITY ###
     def _get_nodes(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'node']
 
@@ -179,7 +177,7 @@ class ProxmoxHandler(ProxmoxAPI):
     def _get_node_storage_names(self, node):
         return [s['storage'] for s in self.nodes(node).storage.get()]
 
-### ISO ###
+### ISO UTILITY ###
     def _get_isos(self):
         """Returns all ISOs"""
         isos = []
@@ -227,14 +225,14 @@ class ProxmoxHandler(ProxmoxAPI):
                 storages.append({"storage": storage["storage"], "node": storage["node"]})
         return storages
 
-### TEMPLATE ###
+### TEMPLATE UTILITY ###
     def get_templates_list(self):
         return [vm for vm in self.cluster.resources.get() if vm.get('type') == 'qemu' and vm.get('template') == 1]
 
     def get_templates_name_list(self):
         return [{vm['vmid']: vm['name']} for vm in self.get_templates_list()]
 
-### USER/TOKEN ###
+### USER/TOKEN UTILITY###
     def _get_userids(self):
         return [u["userid"] for u in self.access.users.get()]
 
@@ -257,7 +255,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return self._sort_dict_list([t for t in self.access.users(user).token.get()])
 
-### NETWORK ###
+### NETWORK UTILITY ###
     def _get_networks(self):
         """Returns list of networks including node per-network"""
         nodes = self._get_node_names()
@@ -298,7 +296,7 @@ class ProxmoxHandler(ProxmoxAPI):
     def _get_node_networks(self, node):
         return self.nodes(node).network.get()
 
-### POOL ###
+### POOL UTILITY ###
     def _get_pools(self):
         """Returns dict of pools"""
         return self._order_dict_list(self.pools.get(), ["poolid", "comment"])
@@ -325,13 +323,13 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return [f"({m['vmid']}) {m['name']}" for m in members]
 
-### STORAGE ###
+### STORAGE UTILITY ###
     def _get_storages(self):
         """Returns list of storages"""
         storages = self.storage.get()
         return [s["storage"] for s in storages]
 
-### UTILITY ###
+### MISC UTILITY ###
     def _get_syntax_block(self, method="get", endpoint="", kwargs_str=""):
         """Returns a formatted string block of api syntaxes for given method/endpoint/kwargs and api_syntaxes in config"""
         syntax_list = []
@@ -404,30 +402,7 @@ class ProxmoxHandler(ProxmoxAPI):
             ordered.append(dict(sorted(i.items())))
         return ordered
 
-    def get_spice_config(self, vmid, node):
-        spice_conf = self.nodes(node).qemu(vmid).spiceproxy.create()
-
-        custom_hosts = self.config.get('custom_hosts')
-        if custom_hosts:
-            url = spice_conf['proxy']
-            host = url.split("//")[1].split(':')[0]
-            if host in custom_hosts.keys():
-              old_host = host
-              url = f"http://{custom_hosts[host]}:3128"
-              spice_conf["proxy"] = url
-        return spice_conf
-
-    def rawdog_dotted(self, call):
-        """
-        Accepts function call in dotted notation and attempts to run it on self
-        """
-        try:
-            results = eval(f"self.{call}")
-        except Exception as e:
-            results = f"Error: Failed to run {call}: {e}"
-        return results
-
-    def get_endpoint_list(self, commands):
+    def _get_endpoint_list(self, commands):
         """
         Returns a string-notation formatted endpoint string of commands list
         """
@@ -533,8 +508,20 @@ class ProxmoxHandler(ProxmoxAPI):
                         commands[i+1] = f"{{id}}"
         return commands
 
+### CONNECTION UTILITY ###
+    def get_spice_config(self, vmid, node):
+        spice_conf = self.nodes(node).qemu(vmid).spiceproxy.create()
 
-### INTERNAL - CONNECTION BROKERING ###
+        custom_hosts = self.config.get('custom_hosts')
+        if custom_hosts:
+            url = spice_conf['proxy']
+            host = url.split("//")[1].split(':')[0]
+            if host in custom_hosts.keys():
+              old_host = host
+              url = f"http://{custom_hosts[host]}:3128"
+              spice_conf["proxy"] = url
+        return spice_conf
+
     def _connect_vm(self, vmid, node, proto, user, ip, port):
         """
         Attempts to connect to VM by specified params
@@ -584,7 +571,6 @@ class ProxmoxHandler(ProxmoxAPI):
             return f"Launched SPICE client"
         except Exception as e:
             return f"ERROR: Unable to launch spice client '{spice_client}'\n({e})"
-
 
     def _initiate_connection(self, proto, user, ip, port):
         """Attempts to initiate initiate connection based on given parameters"""
@@ -667,10 +653,7 @@ class ProxmoxHandler(ProxmoxAPI):
 
         return ",".join(kwargs_list)
 
-### TUAH HANDLER FUNCS BELOW THIS LINE ###
-
 ### VM HANDLER ###
-
     def show_vm_info(self, level_list=[], params=[], template=False):
         """
         Show vm's info at requested level
@@ -972,6 +955,7 @@ class ProxmoxHandler(ProxmoxAPI):
                 return [vm for vm in self._get_vms() if f'{vm.get("vmid","")}' == vmid][0]
             case "config":
                 return "TO BE IMPLEMENTED"
+
 ### TOKENS HANDLER ###
     def show_tokens(self, level_list=[], params=[]):
         """
@@ -1032,8 +1016,6 @@ class ProxmoxHandler(ProxmoxAPI):
                 return self._get_nodes_brief()
             case "detail":
                 return self._get_nodes()
-            case "config":
-                return "TO BE IMPLEMENTED"
 
     def validate_node(self, level_list=[], params=[]):
         """
@@ -1125,7 +1107,7 @@ class ProxmoxHandler(ProxmoxAPI):
         else:
             return f"ERROR: Storage {node}/{storage} not found"
 
-### NETWORKS HANDLER ###
+### NETWORK HANDLER ###
     def show_networks(self, level_list=[], params=[]):
         """
         Wrapper to provide list of networks depending on received scope
@@ -1464,7 +1446,7 @@ class ProxmoxHandler(ProxmoxAPI):
         Executes api get call
         """
         # get endpoint for string-notation call
-        endpoint = "/".join(self.get_endpoint_list(level_list))
+        endpoint = "/".join(self._get_endpoint_list(level_list))
 
         kwargs_str = self._get_kwargs_str(params)
 
@@ -1491,7 +1473,7 @@ class ProxmoxHandler(ProxmoxAPI):
         """
 
         # get endpoint for string-notation call
-        endpoint = "/".join(self.get_endpoint_list(level_list))
+        endpoint = "/".join(self._get_endpoint_list(level_list))
 
         kwargs_str = self._get_kwargs_str(params)
 
@@ -1519,7 +1501,7 @@ class ProxmoxHandler(ProxmoxAPI):
         """
 
         # get endpoint for string-notation call
-        endpoint = "/".join(self.get_endpoint_list(level_list))
+        endpoint = "/".join(self._get_endpoint_list(level_list))
 
         kwargs_str = self._get_kwargs_str(params)
 
@@ -1547,7 +1529,7 @@ class ProxmoxHandler(ProxmoxAPI):
         """
 
         # get endpoint for string-notation call
-        endpoint = "/".join(self.get_endpoint_list(level_list))
+        endpoint = "/".join(self._get_endpoint_list(level_list))
 
         kwargs_str = self._get_kwargs_str(params)
 
