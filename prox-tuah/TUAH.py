@@ -26,6 +26,7 @@ class TUAH():
         self.global_help = {
             "exit": "Go back one context",
             "history": "View history",
+            "search <string1>": "Search for string in current context (subsequent strings search from output of previous string)",
             "sleep <secs>": "Sleep for <secs> seconds (useful for non-interactive scripts)",
             "top": "Return to top or execute from top (if followed by commands)",
             "quit": "Quit application",
@@ -455,6 +456,34 @@ class TUAH():
                     self.print_string(f"Child '{level}' not found in context: {f_context}", title="ERROR")
         return f_context
 
+    def _search_context(self, pattern, context, level_list, type):
+        """Recursively searches context for pattern and returns list of dict matches"""
+        found = []
+        for k,v in context.items():
+            if isinstance(v, dict):
+                # pass through recursion for meta dicts
+                if k in ["context", "action", "params"]:
+                    found.extend(self._search_context(pattern, v, level_list, k))
+                else:
+                    desc = context[k].get("description", k)
+                    r_level_list = level_list + [k]
+                    r_level_str = "/".join(r_level_list)
+
+                    # add to found if key or its description match
+                    if isinstance(desc, str):
+                        if any(pattern.lower() in s for s in [k.lower(), desc.lower()]):
+                            found.append({"type": type.removesuffix("s"), "endpoint": r_level_str, "description": desc})
+
+                    # recurse through sub-dicts
+                    for ck, cv in v.items():
+                        r_found = []
+                        if isinstance(cv, dict):
+                            r_found.extend(self._search_context(pattern, v[ck], r_level_list, ck))
+
+                        found.extend(r_found)
+
+        return found
+
 ### OUTPUT HANDLING ###
     def handle_output(self, raw_output, out_modifiers={}):
         """
@@ -606,6 +635,26 @@ class TUAH():
                 time.sleep(int(s_time))
             else:
                 self.print_string("Sleep argument must be an integer (seconds to sleep)", title="ERROR")
+
+        # handle context search
+        elif entry_list[0] == "search":
+
+            output = self._search_context(entry_list[1], self.context, self.level_list, "context")
+
+            # search on returned output for subsequent strings
+            if output:
+                if len(entry_list) > 2:
+                    pattern_list = entry_list[2:]
+                    new_output = []
+
+                    # filter for findings that contain each string in pattern_list
+                    for f in output:
+                        if all(any(p.lower() in v.lower() for v in f.values()) for p in pattern_list):
+                            new_output.append(f)
+
+                    output = new_output
+
+            self.handle_output(output)
 
         # handle multi-word entry
         else:
