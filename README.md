@@ -92,9 +92,11 @@ top# api nodes pve01 qemu 501 config post cores=4 name=mynewname
 ```
 
 Open a web-page to official API documentation for a specific endpoint: (Note: requires desktop environment and a default web browser, otherwise URL is displayed to copy/paste externally)
+```
 top# api nodes pve01 qemu 501 spiceproxy docs
 
   Opening web browser to PVE API endpoint documentation: https://pve.proxmox.com/pve-docs/api-viewer/index.html#/nodes/{node}/qemu/{vmid}/spiceproxy
+```
 
 Search by keywords (global command):
 ```
