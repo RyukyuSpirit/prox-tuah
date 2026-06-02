@@ -94,7 +94,18 @@ top# search token permissions
   ------  ---------------------------------  --------------------------------------------------
   action  api/access/permissions/get         Retrieve effective permissions of given user/token
   param   api/access/permissions/get/userid  User ID or full API token ID
-  ```
+```
+
+Create a token (admin context): (Note: you could then use this token for future logins via "token_name" and "token_value" keys in config.yaml)
+```
+top# admin token create tokenid=my_token comment="a test token" userid=tester@pve privsep=1
+
+  Field         Value
+  ------------  -------------------------------------------
+  full-tokenid  tester@pve!my_token
+  info          {'comment': 'a test token', 'privsep': '1'}
+  value         <token_value_omitted>
+```
 
 Clone a VM (admin context):
 ```
