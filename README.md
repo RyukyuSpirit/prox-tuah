@@ -47,32 +47,54 @@ python -m prox-tuah -f myScriptFile.txt
 
 ### prox-tuah interactive interface
 
-**Note: When performing commands you can either write out the entire path to the action you're trying to perform, or you can first walk to that context and issue the command directly. So the following two examples have the same effect.**
+**Note: When performing commands you can either write out the entire path to the action you're trying to perform, or you can first walk to that context and issue the command directly. You can also tab-autocomplete or tab for context-specific help**
 
+Perform a get request (api context): (Note: API SYNTAX section is shown because of "api_syntax" key in config.yaml)
+```
+top# api nodes pve01 qemu 501 config get
 
-Show VM details (user context):
+  Field        Value
+  -----------  ------------------------------------------------
+  agent        1
+  boot         order=scsi0;net0
+  cores        4
+  cpu          x86-64-v2-AES
+  description  some asdf asdf asdf sadf asdf asdf aaaa
+  digest       255ba614f82d743a52e1843c1d6c5a61689d1d5b
+  memory       4096
+  meta         creation-qemu=10.0.2,ctime=1763184965
+  name         Copy-of-VM-dev
+  net0         virtio=BC:24:11:90:33:5C,bridge=vmbr0,firewall=1
+  numa         0
+  ostype       l26
+  scsi0        local-lvm:vm-501-disk-0,iothread=1,size=50G
+  scsihw       virtio-scsi-single
+  smbios1      uuid=34ea954d-ed00-4070-b5af-39f213e6295d
+  sockets      1
+  vga          qxl2,memory=128
+  vmgenid      c894fb8d-5b1f-494a-9591-27c838604c30
 ```
-main# user vm 100 show
 
-  Field    Value
-  -------  -------
-  vmid     100
-  name     salt
-  node     pve01
-  status   stopped
+Perform a post request (api context):
 ```
-OR
+top# api nodes pve01 qemu 501 config post cores=4 name=mynewname
+  UPID:pve01:00010CD7:2F9A2362:6A1E3FD0:qmconfig:501:root@pam:
 ```
-main# user vm 100
-user/vm/100# show
 
-  Field    Value
-  -------  -------
-  vmid     100
-  name     salt
-  node     pve01
-  status   stopped
+Open a web-page to official API documentation for a specific endpoint: (Note: requires desktop environment and a default web browser, otherwise URL is displayed to copy/paste externally)
+top# api nodes pve01 qemu 501 spiceproxy docs
+
+  Opening web browser to PVE API endpoint documentation: https://pve.proxmox.com/pve-docs/api-viewer/index.html#/nodes/{node}/qemu/{vmid}/spiceproxy
+
+Search by keywords (global command):
 ```
+top# search token permissions
+
+  type    endpoint                           description
+  ------  ---------------------------------  --------------------------------------------------
+  action  api/access/permissions/get         Retrieve effective permissions of given user/token
+  param   api/access/permissions/get/userid  User ID or full API token ID
+  ```
 
 Clone a VM (admin context):
 ```
@@ -149,6 +171,4 @@ main# dev func get_vms_brief()
     6969  myclone          pve01   stopped
     8329  newafterstuff    pve01   stopped
 ```
-
-d
 
