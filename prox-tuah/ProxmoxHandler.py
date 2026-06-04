@@ -1,4 +1,6 @@
 import yaml
+import os
+import sys
 import re
 import subprocess
 import webbrowser
@@ -567,7 +569,10 @@ class ProxmoxHandler(ProxmoxAPI):
         # open spice file with spice client
         try:
             spice_client = Path(self.config.get("connect_commands", {}).get("spice", "remote-viewer"))
-            subprocess.Popen([str(spice_client), filename], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if sys.platform == "win32":
+                subprocess.Popen([str(spice_client), filename], creationflags=subprocess.DETACHED_PROCESS, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            elif sys.platform == "linux":
+                subprocess.Popen([str(spice_client), filename], preexec_fn=os.setsid, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             return f"Launched SPICE client"
         except Exception as e:
             return f"ERROR: Unable to launch spice client '{spice_client}'\n({e})"
@@ -605,7 +610,10 @@ class ProxmoxHandler(ProxmoxAPI):
                 else:
                     command_list.append(word)
 
-            subprocess.Popen(command_list, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if sys.platform == "win32":
+                subprocess.Popen(command_list, creationflags=subprocess.DETACHED_PROCESS, stdin=subprocess.DEVNULL,  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            elif sys.platform == "linux":
+                subprocess.Popen(command_list, preexec_fn=os.setsid, stdin=subprocess.DEVNULL,  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             return f"Launched {proto.upper()} client: {" ".join(command_list)}"
         except Exception as e:
             return f"ERROR: Unable to launch {proto} client '{" ".join(command_list)}'\n({e})"
