@@ -1,12 +1,12 @@
 # prox-tuah
 ## Summary
-prox-tuah is an interactive CLI for PVE built for interactively exploring the PVE API as well as for basic PVE management and VM connection brokering (SPICE/RDP/SSH/etc). The interface handles similar to network device CLIs with tab completion and context-specific help menus, as well as output modifiers to adjust return content and formatting.
+prox-tuah is an interactive CLI for PVE to interactively explore the PVE API. It also includes some convenience functions to manage PVE and broker connections (SPICE/RDP/SSH/etc) to VMs. The interface handles similar to network device CLIs with tab completion and context-specific help menus, as well as output modifiers to adjust return content and formatting.
 
 The primary contexts are:
-- user: Simple user operations on VMs/CTs (display, power-control, access)
 - admin: Administrative operations on all PVE resources (create, edit, delete)
 - api: Exploration and execution of PVE API endpoints
 - dev: Direct interaction with prox-tuah handler and PVE API
+- user: Simple user operations on VMs/CTs (display, power-control, access)
 
 ## Reference:
 - PVE API Docs: https://pve.proxmox.com/pve-docs/api-viewer/
